@@ -18,5 +18,5 @@
 - 船越 : 
 - 並木 : 
 - 上田 : 
-- リイカ : 
+- リイカ : https://github.com/shinoharahiroto981-oss
 - 幸春 : 
