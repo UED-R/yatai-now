@@ -16,7 +16,7 @@
 
 ## チーム名：**ぽいっとサーチ**
 - 船越 : https://github.com/Takafumi122
-- 並木 : 
-- 上田 : 
+- 並木 : https://github.com/namiki254
+- 上田 : https://github.com/UED-R
 - リイカ : 
 - 幸春 : 
