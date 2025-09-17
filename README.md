@@ -18,5 +18,5 @@
 - 船越 : https://github.com/Takafumi122
 - 並木 : https://github.com/namiki254
 - 上田 : https://github.com/UED-R
-- リイカ : 
-- 幸春 : 
+- リイカ : https://github.com/shinoharahiroto981-oss
+- 幸春 : https://github.com/Lumi1127
