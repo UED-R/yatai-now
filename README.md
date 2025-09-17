@@ -16,7 +16,7 @@
 
 ### 環境
 - 言語：javaScript
-- フレームワーク：Node.js
+- フロントエンドフレームワーク：React
 - Webホスティング：Github Pages
 
 ## チーム名：**ぽいっとサーチ**
@@ -25,3 +25,21 @@
 - 上田 : https://github.com/UED-R
 - リイカ : https://github.com/shinoharahiroto981-oss
 - 幸春 : https://github.com/Lumi1127
+
+
+## 管理者向け
+1. ファイルを編集する
+    - vscodeとかで編集
+    - ブランチきってやる？mainでやる？
+1. ローカルでチェックする場合
+    - cd <プロジェクトのディレクトリ>
+    - npm run dev
+    - https://localhost...のリンクをブラウザで見る
+    - 終了はCtrl+C
+1. githubにアップロード
+    - vscodeでcommit & push
+    - ブランチ切ってる場合はプルリク
+1. Webページとして公開
+    - npm run deploy
+    - 1分くらいで https://ued-r.github.io/yatai-now/ に出るはず
+
