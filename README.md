@@ -17,7 +17,8 @@
 ### 環境
 - 言語：javaScript
 - フロントエンドフレームワーク：React
-- Webホスティング：Github Pages
+- Webホスティング：最初はGithub Pages、その後Vercelに移行
+    - Vercelはデータ量に制限があるらしいので...
 
 ## チーム名：**ぽいっとサーチ**
 - 船越 : https://github.com/Takafumi122
