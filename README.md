@@ -30,11 +30,11 @@
 ## 管理者向け
 1. ファイルを編集する
     - vscodeとかで編集
-    - ブランチきってやる？mainでやる？
+    - > ブランチきってやる？mainでやる？
 1. ローカルでチェックする場合
     - cd <プロジェクトのディレクトリ>
     - npm run dev
-    - https://localhost...のリンクをブラウザで見る
+    - https\://localhost... のリンクをブラウザで見る
     - 終了はCtrl+C
 1. githubにアップロード
     - vscodeでcommit & push
