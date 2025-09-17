@@ -14,6 +14,11 @@
 出店者：店や出し物を提供する人  
 主催者：イベント全体を運営・管理する人  
 
+### 環境
+- 言語：javaScript
+- フレームワーク：Node.js
+- Webホスティング：Github Pages
+
 ## チーム名：**ぽいっとサーチ**
 - 船越 : https://github.com/Takafumi122
 - 並木 : https://github.com/namiki254
