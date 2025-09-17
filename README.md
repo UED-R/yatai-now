@@ -15,8 +15,8 @@
 主催者：イベント全体を運営・管理する人  
 
 ## チーム名：**ぽいっとサーチ**
-- 船越 : 
-- 並木 : 
-- 上田 : 
-- リイカ : https://github.com/shinoharahiroto981-oss
+- 船越 : https://github.com/Takafumi122
+- 並木 : https://github.com/namiki254
+- 上田 : https://github.com/UED-R
+- リイカ : 
 - 幸春 : 
