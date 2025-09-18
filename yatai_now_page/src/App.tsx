@@ -1,13 +1,13 @@
-import './App.css'
+import "./App.css";
+import PinSystem from "./PinSystem";
 
 function App() {
-
   return (
     <div>
-      <h1>Hello World</h1>
-      <h2>09/17 : Github pagesで更新</h2>
+      <h1>ピン機能テスト</h1>
+      <PinSystem />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
