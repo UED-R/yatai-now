@@ -1,4 +1,5 @@
-import { useState, MouseEvent, TouchEvent } from 'react';
+import { useState } from 'react';
+import type {MouseEvent, TouchEvent} from 'react';
 import './App.css'; // App.cssをインポート
 
 function App() {
