@@ -54,24 +54,18 @@ body {
 }
 
 /* --- マップ関連のスタイル --- */
-
-/* マップの表示領域（ビューポート） */
 .map-area {
   width: 60vw;
-  /* ▼▼ 高さを画面の85%に増やして、上下の余白を狭くしました ▼▼ */
   height: 100vh; 
   max-width: 1200px;
-  
   position: relative;
   overflow: hidden;
   touch-action: none;
-  
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   border: 3px solid rgba(255, 255, 255, 0.3);
 }
 
-/* マップ画像とピンをまとめるコンテナ */
 .map-content {
   position: absolute;
   top: 0;
@@ -81,7 +75,6 @@ body {
   transform-origin: 0 0;
 }
 
-/* マップ画像のスタイル */
 .map-image {
   width: 100%;
   height: 100%;
@@ -111,13 +104,11 @@ body {
   box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
 }
 
-/* --- フッターのスタイル --- */
 .info-footer {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  
   background-color: rgba(255, 255, 255, 0.9);
   padding: 15px;
   text-align: center;
@@ -128,11 +119,9 @@ body {
   box-sizing: border-box;
 }
 
-/* --- ▼▼ 以下を新しく追加 ▼▼ --- */
-
 /* --- Organizer Login Screen Styles --- */
 .login-screen {
-  background-color: #f0f2f5; /* 背景色 */
+  background-color: #f0f2f5;
 }
 
 .login-container {
@@ -143,9 +132,9 @@ body {
   padding: 30px;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 4px R12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 90%;
-  max-width: 400px; /* PCでの最大幅 */
+  max-width: 400px;
 }
 
 .login-container h2 {
@@ -165,5 +154,116 @@ body {
   font-size: 1.1em;
   border: 1px solid #ccc;
   border-radius: 8px;
+}
+
+.btn {
+  padding: 15px 30px;
+  font-size: 1.3em;
+  color: white;
+  background-color: #ff6347;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-secondary {
+  background-color: #888;
+}
+
+.btn-secondary:hover {
+  background-color: #777;
+}
+
+/* --- Map Upload Screen Styles --- */
+.upload-screen {
+  background-color: #f7fafc;
+  justify-content: flex-start; /* 上からコンテンツを配置 */
+  padding-top: 80px; /* ヘッダーとの重なりを避ける */
+}
+
+.upload-container {
+  width: 90%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.upload-container h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.upload-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.upload-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.upload-input {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1em;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.upload-preview-box {
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 200px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-placeholder {
+  color: #64748b;
+  font-size: 13px;
+  text-align: center;
+}
+
+.upload-error {
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-primary-disabled {
+  background: black;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 0;
+  opacity: 0.5;
+  cursor: not-allowed;
+  flex-grow: 1; /* 幅を広げる */
+}
+
+.upload-actions .btn-secondary {
+  background: white;
+  color: #111827;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
 }
 

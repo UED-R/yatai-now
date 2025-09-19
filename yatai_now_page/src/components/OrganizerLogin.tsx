@@ -1,17 +1,18 @@
 import type { FormEvent } from 'react';
 
-// 親コンポーネントから受け取るPropsの型を定義
+// ▼▼ onLoginSuccessを受け取るようにPropsを更新 ▼▼
 type OrganizerLoginScreenProps = {
-  onBack: () => void; // 戻るボタンが押されたときに呼ばれる関数
+  onBack: () => void;
+  onLoginSuccess: () => void; // ログイン成功時に呼ばれる関数
 };
 
-function OrganizerLoginScreen({ onBack }: OrganizerLoginScreenProps) {
+function OrganizerLoginScreen({ onBack, onLoginSuccess }: OrganizerLoginScreenProps) {
 
-  // ログインボタンが押されたときの処理
   const handleLoginSubmit = (e: FormEvent) => {
-    e.preventDefault(); // ページの再読み込みを防ぐ
+    e.preventDefault();
     console.log('Organizer login attempt');
-    alert('ログインしました（現在はダミー機能です）');
+    // alertの代わりに、親から渡された画面遷移関数を呼び出す
+    onLoginSuccess();
   };
 
   return (
@@ -35,3 +36,4 @@ function OrganizerLoginScreen({ onBack }: OrganizerLoginScreenProps) {
 }
 
 export default OrganizerLoginScreen;
+
