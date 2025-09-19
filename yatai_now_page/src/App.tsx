@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type {MouseEvent, TouchEvent, FormEvent} from 'react';
 // import { useState, MouseEvent, TouchEvent, FormEvent } from 'react';
 import './App.css'; // App.cssをインポート
+import Db_header from './dbaccess';
 
 // 表示する画面の種類を定義
 type ScreenType = 'home' | 'map' | 'login';
@@ -84,6 +85,7 @@ function App() {
         <button className="btn" onClick={showHome} style={{ marginTop: '20px' }}>
           戻る
         </button>
+        <Db_header />
       </div>
     );
   }
