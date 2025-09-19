@@ -1,14 +1,17 @@
 import React, { useState } from "react";
+import { writePinData, readPinData } from '../dbaccess'
 
 type Pin = { id: number; x: number; y: number; text?: string };
+
 
 interface PinInformationProps {
   pin: Pin;
   onClose: () => void;
-  onSave: (id: number, text: string) => void; // 保存用 callback
+  onSave: (id: number, text: string) => void;
+  onDelete: (id: number) => void; // ← 追加：削除用 callback
 }
 
-export default function PinInformation({ pin, onClose, onSave }: PinInformationProps) {
+export default function PinInformation({ pin, onClose, onSave, onDelete }: PinInformationProps) {
   const [description, setDescription] = useState(pin.text || "");
 
   return (
@@ -61,12 +64,12 @@ export default function PinInformation({ pin, onClose, onSave }: PinInformationP
         {/* 座標表示 */}
         <p>X座標: {pin?.x?.toFixed(2) ?? "N/A"}</p>
         <p>Y座標: {pin?.y?.toFixed(2) ?? "N/A"}</p>
-
+        
         {/* 説明テキスト欄 */}
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="説明を入力"
+          placeholder="サークル説明を入力してください"
           style={{
             width: "100%",
             height: "60px",
@@ -78,8 +81,25 @@ export default function PinInformation({ pin, onClose, onSave }: PinInformationP
           }}
         />
 
-        {/* ボタン */}
+        {/* ボタン：消去・閉じる・保存 */}
         <div style={{ marginTop: "12px", display: "flex", justifyContent: "space-between" }}>
+          <button
+            onClick={() => {
+              onDelete(pin.id); // ← 削除処理
+              onClose();        // モーダル閉じる
+            }}
+            style={{
+              padding: "6px 12px",
+              background: "red",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            消去
+          </button>
+
           <button
             onClick={onClose}
             style={{
