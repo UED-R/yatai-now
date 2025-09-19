@@ -4,7 +4,7 @@ import type {MouseEvent, TouchEvent, FormEvent} from 'react';
 import './App.css'; // App.cssをインポート
 
 // アップロード画面コンポーネントを読み込む
-import MapsUpload from './componets/pages/MapUpload';
+import MapsUpload from './componets/pages/admin/MapUpload';
 
 // 表示する画面の種類を定義
 type ScreenType = 'home' | 'map' | 'login' | 'upload';
