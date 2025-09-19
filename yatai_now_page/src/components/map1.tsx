@@ -1,19 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, TouchEvent } from 'react';
 
-// ピン情報の型を定義
+// ... (ファイル上部の型定義などは変更なし) ...
 type PinData = {
   pinID: string;
   pinx: number;
   piny: number;
   text: string;
 };
-
 type ApiResponse = {
   eventid: PinData[];
 };
-
-// --- モックデータ ---
 const mockApiResponse: ApiResponse = {
   eventid: [
     { pinID: '001', pinx: 25, piny: 30, text: '中央図書館前の広場で焼きそばを販売しています！' },
@@ -21,25 +18,24 @@ const mockApiResponse: ApiResponse = {
     { pinID: '003', pinx: 75, piny: 70, text: 'ステージイベント開催中！次の出演は13:00からです。' },
   ],
 };
+// -----------------------------------------
 
-// ▼▼ 親から受け取るPropsの型定義を追加 ▼▼
+// ▼▼ 親から受け取るPropsの型定義を更新 ▼▼
 type Map1ScreenProps = {
   onShowOrganizerLogin: () => void;
+  onShowVendorLogin: () => void;
 };
 
 // ▼▼ Propsを受け取るように関数の引数を変更 ▼▼
-function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
+function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps) {
   const [pins, setPins] = useState<PinData[]>([]);
+  // ... (ファイル中盤のstateや関数は変更なし) ...
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
-  
-  // ▼▼ マップの表示状態を一つのstateに統合して管理しやすくしました ▼▼
   const [viewState, setViewState] = useState({
     scale: 1,
     position: { x: 0, y: 0 },
   });
-
   const [isDragging, setIsDragging] = useState(false);
-  // useRefを使い、レンダリングをまたいで最新のドラッグ位置を保持します
   const dragStartPos = useRef({ x: 0, y: 0 });
   const mapAreaRef = useRef<HTMLDivElement>(null);
 
@@ -47,26 +43,19 @@ function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
     setPins(mockApiResponse.eventid);
   }, []);
 
-  // --- ▼▼ ズーム処理の計算方法を修正 ▼▼ ---
   const handleWheel = useCallback((e: globalThis.WheelEvent) => {
     e.preventDefault();
     const rect = mapAreaRef.current?.getBoundingClientRect();
     if (!rect) return;
-
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     const zoomFactor = 1 - e.deltaY * 0.01;
-
     setViewState(prev => {
       const newScale = Math.max(1, Math.min(prev.scale * zoomFactor, 5));
-      
-      // マウス位置を基準に新しいpositionを計算
       const pointX = (mouseX - prev.position.x) / prev.scale;
       const pointY = (mouseY - prev.position.y) / prev.scale;
-      
       const newX = mouseX - pointX * newScale;
       const newY = mouseY - pointY * newScale;
-      
       return {
         scale: newScale,
         position: { x: newX, y: newY },
@@ -87,30 +76,23 @@ function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
     e.stopPropagation();
     setSelectedPin(pin);
   };
-
   const handleBackClick = () => {
     alert('戻るボタンが押されました');
   };
-
-  // --- ▼▼ ドラッグ処理をより安定した方法に修正 ▼▼ ---
   const handleDragStart = (clientX: number, clientY: number) => {
     setIsDragging(true);
-    // ドラッグ開始時のカーソル位置と、その時点でのマップの位置の差を保存
     dragStartPos.current = {
       x: clientX - viewState.position.x,
       y: clientY - viewState.position.y,
     };
     setSelectedPin(null);
   };
-
   const handleDragMove = (clientX: number, clientY: number) => {
     if (!isDragging) return;
-    // 最新のカーソル位置から、保存した開始時の差分を引いて新しい位置を計算
     const newX = clientX - dragStartPos.current.x;
     const newY = clientY - dragStartPos.current.y;
     setViewState(prev => ({ ...prev, position: { x: newX, y: newY } }));
   };
-  
   const handleDragEnd = () => {
     setIsDragging(false);
   };
@@ -120,9 +102,9 @@ function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
       <header className="event-header">
         <button className="btn-back" onClick={handleBackClick}>&lt; 戻る</button>
         <div className="header-right-buttons">
-          {/* ▼▼ ボタンにonClickイベントを追加 ▼▼ */}
           <button className="btn-header" onClick={onShowOrganizerLogin}>主催者はこちら</button>
-          <button className="btn-header">出店者はこちら</button>
+          {/* ▼▼ ボタンにonClickイベントを追加 ▼▼ */}
+          <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
         </div>
       </header>
       
@@ -167,5 +149,4 @@ function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
 }
 
 export default Map1Screen;
-
 
