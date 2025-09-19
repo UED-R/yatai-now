@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, child, get } from "firebase/database";
 import React, { useState } from "react";
 
 
@@ -34,7 +34,7 @@ function getCurrentTimestamp(): string {
 const eventId = "0"; // テスト用
 
 
-function writePinData(pinX_data :Float16Array, pinY_data:Float16Array, text_data:String){
+function writePinData(pinX_data:String, pinY_data:String, text_data:String){
   const pinId_data = getCurrentTimestamp();
   // json形式
   set(ref(fire_database, eventId), {
@@ -43,6 +43,18 @@ function writePinData(pinX_data :Float16Array, pinY_data:Float16Array, text_data
     pinY: pinY_data,
     text: text_data
   });
+}
+
+function readPinData(){
+    get(child(ref(fire_database), `${eventId}/`)).then((snapshot) => {
+    if (snapshot.exists()) {
+        console.log(snapshot.val());
+    } else {
+        console.log("No data available");
+    }
+    }).catch((error) => {
+        console.error(error);
+    });
 }
 
 
@@ -54,11 +66,12 @@ const Db_header = () => {
 
   // -----ハンドラ
   const writePinData_handler = () =>{
-
-    // writePinData(inputPinX, inputPinY, inputPinText);
+    alert("DBに書き込みます");
+    writePinData(inputPinX, inputPinY, inputPinText);
   }
 
   const readPinData_handler = () =>{
+    alert("DBから読み込みます");
     
   }
 
@@ -67,10 +80,6 @@ const Db_header = () => {
   // -----HTML要素
   return (
     <div>
-        <br></br>
-        <br></br>
-        <br></br>
-        
       <h1>Hello World</h1>
       <p>X座標</p><input
         type="number"
@@ -82,9 +91,13 @@ const Db_header = () => {
         value={inputPinY}
         onChange={(e) => setInputPinY(e.target.value)}
       />
+      <p>テキスト</p><input
+        type="text"
+        value={inputPinText}
+        onChange={(e) => setInputPinText(e.target.value)}
+      />
+
       <button onClick={writePinData_handler}>データベース書き込み</button>
-      
-      <div></div>
       <button onClick={readPinData_handler}>データベース読み込み</button>
     </div>
   )
