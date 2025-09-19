@@ -24,10 +24,11 @@ const mockApiResponse: ApiResponse = {
 type Map1ScreenProps = {
   onShowOrganizerLogin: () => void;
   onShowVendorLogin: () => void;
+  onBack: () => void; // 戻るボタン用の関数
 };
 
 // ▼▼ Propsを受け取るように関数の引数を変更 ▼▼
-function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps) {
+function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin, onBack }: Map1ScreenProps) {
   const [pins, setPins] = useState<PinData[]>([]);
   // ... (ファイル中盤のstateや関数は変更なし) ...
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
@@ -49,7 +50,7 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
     if (!rect) return;
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    const zoomFactor = 1 - e.deltaY * 0.01;
+    const zoomFactor = 1 - e.deltaY * 0.01; // ズーム速度を0.01に設定
     setViewState(prev => {
       const newScale = Math.max(1, Math.min(prev.scale * zoomFactor, 5));
       const pointX = (mouseX - prev.position.x) / prev.scale;
@@ -76,9 +77,12 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
     e.stopPropagation();
     setSelectedPin(pin);
   };
+  
+  // ▼▼ 戻るボタンの処理を更新 ▼▼
   const handleBackClick = () => {
-    alert('戻るボタンが押されました');
+    onBack(); // 親から渡された関数を実行
   };
+
   const handleDragStart = (clientX: number, clientY: number) => {
     setIsDragging(true);
     dragStartPos.current = {
@@ -100,10 +104,10 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
   return (
     <div className="screen event-screen">
       <header className="event-header">
+        {/* ▼▼ このボタンでイベント選択画面に戻るようになります ▼▼ */}
         <button className="btn-back" onClick={handleBackClick}>&lt; 戻る</button>
         <div className="header-right-buttons">
           <button className="btn-header" onClick={onShowOrganizerLogin}>主催者はこちら</button>
-          {/* ▼▼ ボタンにonClickイベントを追加 ▼▼ */}
           <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
         </div>
       </header>
