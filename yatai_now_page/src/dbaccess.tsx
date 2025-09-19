@@ -66,12 +66,8 @@ const Db_header = () => {
 
   // -----HTML要素
   return (
-    <div>
-        <br></br>
-        <br></br>
-        <br></br>
-        
-      <h1>Hello World</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '40px' }}>
+      <h2>データベースアクセス</h2>
       <p>X座標</p><input
         type="number"
         value={inputPinX}
@@ -83,8 +79,6 @@ const Db_header = () => {
         onChange={(e) => setInputPinY(e.target.value)}
       />
       <button onClick={writePinData_handler}>データベース書き込み</button>
-      
-      <div></div>
       <button onClick={readPinData_handler}>データベース読み込み</button>
     </div>
   )
