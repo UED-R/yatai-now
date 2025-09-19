@@ -7,6 +7,7 @@ import React, { useState } from "react";
 const firebaseConfig = {
   apiKey: "AIzaSyAxxocdjMi0CkRYSwNlfa2chCE653Cqat8",
   authDomain: "yatai-now-test01.firebaseapp.com",
+  databaseURL: "https://yatai-now-test01-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "yatai-now-test01",
   storageBucket: "yatai-now-test01.firebasestorage.app",
   messagingSenderId: "585308141782",
@@ -37,8 +38,7 @@ const eventId = "0"; // テスト用
 function writePinData(pinX_data:String, pinY_data:String, text_data:String){
   const pinId_data = getCurrentTimestamp();
   // json形式
-  set(ref(fire_database, eventId), {
-    pinId: pinId_data,
+  set(ref(fire_database, `${eventId}/${pinId_data}`), {
     pinX: pinX_data,
     pinY: pinY_data,
     text: text_data
