@@ -1,34 +1,161 @@
-/* 画面コンテナのスタイル */
+/* --- グローバルスタイル --- */
+body {
+  margin: 0;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  background-color: #f0f2f5;
+}
+
 .screen {
   display: flex;
   flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   justify-content: center;
   align-items: center;
+}
+
+/* --- Map1Screen のスタイル --- */
+.event-screen {
+  position: relative;
+  background-color: #d1e7dd;
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
-/* ホーム画面のタイトル */
-h1 {
-  color: #333;
-  font-size: 3.5em;
-  margin-bottom: 50px;
-  text-align: center;
-}
-
-/* マップ・ログイン画面のタイトル */
-h2 {
-  color: #444;
-  margin-bottom: 20px;
-}
-
-/* ボタンを並べるためのコンテナ */
-.button-container {
+.event-header {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  z-index: 10;
   display: flex;
-  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* ボタンの共通デザイン */
+.header-right-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-header, .btn-back {
+  padding: 8px 16px;
+  font-size: 0.9em;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-header:hover, .btn-back:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* --- マップ関連のスタイル --- */
+.map-area {
+  width: 60vw;
+  height: 100vh; 
+  max-width: 1200px;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.map-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 0;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.map-pin {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #ff3b30;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding: 0;
+}
+.map-pin:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+}
+.map-pin.selected {
+  background-color: #007bff;
+  transform: translate(-50%, -50%) scale(1.5);
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
+}
+
+.info-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  text-align: center;
+  font-size: 1.1em;
+  color: #333;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+/* --- Organizer Login Screen Styles --- */
+.login-screen {
+  background-color: #f0f2f5;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 400px;
+}
+
+.login-container h2 {
+  margin: 0;
+  color: #333;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.login-input {
+  padding: 12px 15px;
+  font-size: 1.1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
 .btn {
   padding: 15px 30px;
   font-size: 1.3em;
@@ -40,85 +167,103 @@ h2 {
   transition: background-color 0.3s, transform 0.2s;
 }
 
-.btn:hover {
-  background-color: #e5533d;
-  transform: translateY(-px);
-}
-
-/* --- マップ関連のスタイル --- */
-.map-container {
-  width: 85vw;
-  height: 75vh;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-  background-color: #e9e9e9;
-  touch-action: none;
-}
-.map-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.1s ease-out;
-}
-.zoom-controls {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-.zoom-btn {
-  width: 40px;
-  height: 40px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #555;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: background-color 0.2s, box-shadow 0.2s;
-}
-.zoom-btn:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-.zoom-btn:active {
-  background-color: #e0e0e0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-/* --- ログイン関連のスタイル --- */
-
-/* ログインフォームのコンテナ */
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px; /* 各入力欄の間隔 */
-  width: 100%;
-  max-width: 320px; /* フォームの最大幅 */
-  margin-bottom: 20px;
-}
-
-/* ログイン入力欄のスタイル */
-.login-input {
-  padding: 12px 15px;
-  font-size: 1.1em;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* 補助的なボタン（戻るボタンなど）のスタイル */
 .btn-secondary {
   background-color: #888;
 }
 
 .btn-secondary:hover {
   background-color: #777;
+}
+
+/* --- Map Upload Screen Styles --- */
+.upload-screen {
+  background-color: #f7fafc;
+  justify-content: flex-start; /* 上からコンテンツを配置 */
+  padding-top: 80px; /* ヘッダーとの重なりを避ける */
+}
+
+.upload-container {
+  width: 90%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.upload-container h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.upload-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.upload-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.upload-input {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1em;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.upload-preview-box {
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 200px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-placeholder {
+  color: #64748b;
+  font-size: 13px;
+  text-align: center;
+}
+
+.upload-error {
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-primary-disabled {
+  background: black;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 0;
+  opacity: 0.5;
+  cursor: not-allowed;
+  flex-grow: 1; /* 幅を広げる */
+}
+
+.upload-actions .btn-secondary {
+  background: white;
+  color: #111827;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
 }
 
