@@ -55,7 +55,7 @@ function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
 
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    const zoomFactor = 1 - e.deltaY * 0.002;
+    const zoomFactor = 1 - e.deltaY * 0.01;
 
     setViewState(prev => {
       const newScale = Math.max(1, Math.min(prev.scale * zoomFactor, 5));
