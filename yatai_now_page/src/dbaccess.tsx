@@ -79,8 +79,8 @@ const Db_header = () => {
 
   // -----HTML要素
   return (
-    <div>
-      <h1>Hello World</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '40px' }}>
+      <h2>データベースアクセス</h2>
       <p>X座標</p><input
         type="number"
         value={inputPinX}
