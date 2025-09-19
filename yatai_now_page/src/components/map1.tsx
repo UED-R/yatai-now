@@ -27,7 +27,7 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin, onBack }: Map1Scr
   // ▼▼ Firebaseからデータを取得するuseEffect ▼▼
   useEffect(() => {
     const fetchPins = async () => {
-      const eventId = 'sohosai-2025'; // 将来的に動的にする
+      const eventId = '0'; // 将来的に動的にする
       // readPinDataは型がany[]で返ってくるため、asで型アサーションを行う
       const pinsDataFromDb = await readPinData(eventId) as PinData[];
       if (pinsDataFromDb) {
