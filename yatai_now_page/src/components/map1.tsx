@@ -22,7 +22,13 @@ const mockApiResponse: ApiResponse = {
   ],
 };
 
-function Map1Screen() {
+// ▼▼ 親から受け取るPropsの型定義を追加 ▼▼
+type Map1ScreenProps = {
+  onShowOrganizerLogin: () => void;
+};
+
+// ▼▼ Propsを受け取るように関数の引数を変更 ▼▼
+function Map1Screen({ onShowOrganizerLogin }: Map1ScreenProps) {
   const [pins, setPins] = useState<PinData[]>([]);
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
   
@@ -49,7 +55,7 @@ function Map1Screen() {
 
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    const zoomFactor = 1 - e.deltaY * 0.01;
+    const zoomFactor = 1 - e.deltaY * 0.002;
 
     setViewState(prev => {
       const newScale = Math.max(1, Math.min(prev.scale * zoomFactor, 5));
@@ -114,7 +120,8 @@ function Map1Screen() {
       <header className="event-header">
         <button className="btn-back" onClick={handleBackClick}>&lt; 戻る</button>
         <div className="header-right-buttons">
-          <button className="btn-header">主催者はこちら</button>
+          {/* ▼▼ ボタンにonClickイベントを追加 ▼▼ */}
+          <button className="btn-header" onClick={onShowOrganizerLogin}>主催者はこちら</button>
           <button className="btn-header">出店者はこちら</button>
         </div>
       </header>
@@ -160,4 +167,5 @@ function Map1Screen() {
 }
 
 export default Map1Screen;
+
 
