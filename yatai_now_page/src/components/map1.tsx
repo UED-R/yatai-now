@@ -1,46 +1,40 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { MouseEvent } from 'react';
+// ▼▼ dbaccess.tsxからreadPinData関数をインポート ▼▼
+import { readPinData } from '../dbaccess';
 
-// ... (ファイル上部の型定義などは変更なし) ...
+// ▼▼ データベースから返ってくる型に合わせて更新 ▼▼
 type PinData = {
-  pinID: string;
-  pinx: number;
-  piny: number;
+  pinX: number; // データベースのキーに合わせる (pinx -> pinX)
+  pinY: number; // データベースのキーに合わせる (piny -> pinY)
   text: string;
 };
-type ApiResponse = {
-  eventid: PinData[];
-};
-const mockApiResponse: ApiResponse = {
-  eventid: [
-    { pinID: '001', pinx: 25, piny: 30, text: '中央図書館前の広場で焼きそばを販売しています！' },
-    { pinID: '002', pinx: 60, piny: 45, text: '3A棟前にて、サークル活動の展示を行っています。' },
-    { pinID: '003', pinx: 75, piny: 70, text: 'ステージイベント開催中！次の出演は13:00からです。' },
-  ],
-};
-// -----------------------------------------
 
-// ▼▼ 親から受け取るPropsの型定義を更新 ▼▼
 type Map1ScreenProps = {
   onShowOrganizerLogin: () => void;
   onShowVendorLogin: () => void;
+  onBack: () => void;
 };
 
-// ▼▼ Propsを受け取るように関数の引数を変更 ▼▼
-function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps) {
+function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin, onBack }: Map1ScreenProps) {
   const [pins, setPins] = useState<PinData[]>([]);
-  // ... (ファイル中盤のstateや関数は変更なし) ...
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
-  const [viewState, setViewState] = useState({
-    scale: 1,
-    position: { x: 0, y: 0 },
-  });
+  const [viewState, setViewState] = useState({ scale: 1, position: { x: 0, y: 0 } });
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPos = useRef({ x: 0, y: 0 });
   const mapAreaRef = useRef<HTMLDivElement>(null);
 
+  // ▼▼ Firebaseからデータを取得するuseEffect ▼▼
   useEffect(() => {
-    setPins(mockApiResponse.eventid);
+    const fetchPins = async () => {
+      const eventId = 'sohosai-2025'; // 将来的に動的にする
+      // readPinDataは型がany[]で返ってくるため、asで型アサーションを行う
+      const pinsDataFromDb = await readPinData(eventId) as PinData[];
+      if (pinsDataFromDb) {
+        setPins(pinsDataFromDb);
+      }
+    };
+    fetchPins();
   }, []);
 
   const handleWheel = useCallback((e: globalThis.WheelEvent) => {
@@ -71,14 +65,13 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
     };
   }, [handleWheel]);
 
-
   const handlePinClick = (e: MouseEvent, pin: PinData) => {
     e.stopPropagation();
     setSelectedPin(pin);
   };
-  const handleBackClick = () => {
-    alert('戻るボタンが押されました');
-  };
+
+  const handleBackClick = () => onBack();
+
   const handleDragStart = (clientX: number, clientY: number) => {
     setIsDragging(true);
     dragStartPos.current = {
@@ -87,15 +80,15 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
     };
     setSelectedPin(null);
   };
+
   const handleDragMove = (clientX: number, clientY: number) => {
     if (!isDragging) return;
     const newX = clientX - dragStartPos.current.x;
     const newY = clientY - dragStartPos.current.y;
     setViewState(prev => ({ ...prev, position: { x: newX, y: newY } }));
   };
-  const handleDragEnd = () => {
-    setIsDragging(false);
-  };
+  
+  const handleDragEnd = () => setIsDragging(false);
 
   return (
     <div className="screen event-screen">
@@ -103,7 +96,6 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
         <button className="btn-back" onClick={handleBackClick}>&lt; 戻る</button>
         <div className="header-right-buttons">
           <button className="btn-header" onClick={onShowOrganizerLogin}>主催者はこちら</button>
-          {/* ▼▼ ボタンにonClickイベントを追加 ▼▼ */}
           <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
         </div>
       </header>
@@ -130,13 +122,14 @@ function Map1Screen({ onShowOrganizerLogin, onShowVendorLogin }: Map1ScreenProps
             className="map-image"
             draggable="false"
           />
-          {pins.map((pin) => (
+          {pins.map((pin, index) => (
             <button 
-              key={pin.pinID} 
-              className={`map-pin ${selectedPin?.pinID === pin.pinID ? 'selected' : ''}`}
-              style={{ left: `${pin.pinx}%`, top: `${pin.piny}%` }}
+              key={index} // DBにIDがないため、一時的にindexをキーとして使用
+              className={`map-pin ${selectedPin === pin ? 'selected' : ''}`}
+              // ▼▼ プロパティ名を pinX, pinY に変更 ▼▼
+              style={{ left: `${pin.pinX}%`, top: `${pin.pinY}%` }}
               onClick={(e) => handlePinClick(e, pin)}
-              aria-label={`Pin ${pin.pinID}`}
+              aria-label={`Pin ${pin.text}`}
             />
           ))}
         </div>
