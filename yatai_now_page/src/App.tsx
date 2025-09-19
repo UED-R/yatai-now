@@ -4,8 +4,6 @@ import Map1Screen from './components/map1';
 import OrganizerLoginScreen from './components/OrganizerLogin';
 // ▼▼ 新しく作成したアップロードページをインポート ▼▼
 import MapUploadScreen from './components/MapUpload';
-import Db_header from './dbaccess';
-
 
 // ▼▼ 管理する画面の種類に 'map_upload' を追加 ▼▼
 type ScreenType = 'map1' | 'organizer_login' | 'map_upload';
