@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { MouseEvent, TouchEvent } from 'react';
+import type { MouseEvent } from 'react';
 
 // ピン情報の型を定義
 type PinData = {
