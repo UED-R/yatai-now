@@ -3,8 +3,11 @@ import type {MouseEvent, TouchEvent, FormEvent} from 'react';
 // import { useState, MouseEvent, TouchEvent, FormEvent } from 'react';
 import './App.css'; // App.cssをインポート
 
+// アップロード画面コンポーネントを読み込む
+import MapsUpload from './componets/pages/MapUpload';
+
 // 表示する画面の種類を定義
-type ScreenType = 'home' | 'map' | 'login';
+type ScreenType = 'home' | 'map' | 'login' | 'upload';
 
 function App() {
   // 現在表示している画面を管理する状態
@@ -29,6 +32,10 @@ function App() {
 
   const showHome = () => {
     setCurrentScreen('home');
+  };
+
+  const mapsUpload = () => {
+    setCurrentScreen('upload')
   };
 
   // --- マップ操作の関数 ---
@@ -105,12 +112,27 @@ function App() {
     );
   }
 
+    // ★ 追加：upload 画面の分岐
+  if (currentScreen === 'upload') {
+    return (
+      <div className="screen">
+        {/* 戻るボタン（好きな場所に置いてOK） */}
+        <button className="btn btn-secondary" onClick={() => setCurrentScreen('home')} style={{ marginBottom: 16 }}>
+          最初のページに戻る
+        </button>
+
+        {/* アップロード画面をそのまま表示 */}
+        <MapsUpload />
+      </div>
+    );
+  }
+
   return (
     // --- ホーム画面 ---
     <div className="screen">
       <h1>屋台なう！</h1>
       <div className="button-container">
-        <button className="btn" onClick={showLogin}>主催者はこちら</button>
+        <button className="btn" onClick={mapsUpload}>主催者はこちら</button>
         <button className="btn" onClick={showLogin}>出店者はこちら</button>
         <button className="btn" onClick={showMap}>参加者はこちら</button>
       </div>
