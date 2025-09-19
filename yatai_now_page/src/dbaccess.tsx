@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get } from "firebase/database";
-import React, { useState } from "react";
+// import React, { useState } from "react";
 
 
 // 呼び出し方
