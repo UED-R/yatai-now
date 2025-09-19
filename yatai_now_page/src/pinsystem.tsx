@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import mapPin from "./image/map_pin.png";
 
 type Pin = { id: number; x: number; y: number; text?: string };
 
@@ -6,6 +7,7 @@ export default function PinSystem() {
   const [pins, setPins] = useState<Pin[]>([]);
   const [selectedPin, setSelectedPin] = useState<Pin | null>(null);
   const [draftText, setDraftText] = useState("");
+  const [scale, setScale] = useState(1); // 拡大縮小率
 
   // ページ読み込み時に localStorage からデータを読み込む
   useEffect(() => {
@@ -20,22 +22,30 @@ export default function PinSystem() {
     localStorage.setItem("pins", JSON.stringify(pins));
   }, [pins]);
 
+  // ピン設置（scale補正あり）
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+
+    // scale補正：拡縮後のクリック位置を元の座標系に変換
+    const offsetX = (e.clientX - rect.left) / scale;
+    const offsetY = (e.clientY - rect.top) / scale;
+
     const newPin: Pin = {
       id: Date.now(),
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: offsetX,
+      y: offsetY,
       text: "",
     };
     setPins([...pins, newPin]);
   };
 
+  // ピン削除
   const handleDelete = (id: number) => {
     setPins(pins.filter((pin) => pin.id !== id));
     setSelectedPin(null);
   };
 
+  // ピン保存
   const handleSave = () => {
     if (!selectedPin) return;
     setPins(
@@ -46,84 +56,52 @@ export default function PinSystem() {
     setSelectedPin({ ...selectedPin, text: draftText });
   };
 
-  return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "80vh",
-        background:
-          "url(https://res.cloudinary.com/dkmhcpr7i/image/upload/v1758176187/tsukubamap_id01.jpg)",
-        backgroundSize: "cover",
-      }}
-      onClick={handleClick}
-    >
-      {/* ピン表示 */}
-      {pins.map((pin) => (
-        <div
-          key={pin.id}
-          style={{
-            position: "absolute",
-            left: pin.x - 12,
-            top: pin.y - 12,
-            width: "24px",
-            height: "24px",
-            background: "red",
-            borderRadius: "50%",
-            cursor: "pointer",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedPin(pin);
-            setDraftText(pin.text || "");
-          }}
-        />
-      ))}
+  )}
+      </div>
 
-      {/* 詳細画面 */}
+      {/* 詳細画面（ズームの影響を受けないように fixed にする） */}
       {selectedPin && (
         <div
           style={{
-            position: "absolute",
+            position: "fixed",
             top: 20,
             right: 20,
             background: "white",
             padding: "12px",
-            border: "1px solid #aaa",
+            border: "1px solid #ccc",
             borderRadius: "8px",
             width: "200px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           <p>ピンの詳細</p>
           <p>
-            X: {selectedPin.x}, Y: {selectedPin.y}
+            X: {Math.round(selectedPin.x)}, Y: {Math.round(selectedPin.y)}
           </p>
           <textarea
             style={{ width: "100%", minHeight: "60px" }}
             value={draftText}
             onChange={(e) => setDraftText(e.target.value)}
           />
-          <button
-            style={{ marginTop: "8px", marginRight: "8px" }}
-            onClick={handleSave}
-          >
-            保存
-          </button>
-          <button
-            style={{
-              marginTop: "8px",
-              padding: "4px 8px",
-              background: "red",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-            onClick={() => handleDelete(selectedPin.id)}
-          >
-            削除
-          </button>
+          <div style={{ marginTop: "8px" }}>
+            <button onClick={handleSave} style={{ marginRight: "8px" }}>
+              保存
+            </button>
+            <button
+              style={{
+                padding: "4px 8px",
+                background: "red",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={() => handleDelete(selectedPin.id)}
+            >
+              削除
+            </button>
+          </div>
         </div>
       )}
     </div>

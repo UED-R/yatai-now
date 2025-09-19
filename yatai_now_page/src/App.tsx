@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type {MouseEvent, TouchEvent, FormEvent} from 'react';
 // import { useState, MouseEvent, TouchEvent, FormEvent } from 'react';
 import './App.css'; // App.cssをインポート
+import PinSystem from "./componets/pinsystem";//ピンシステム
 
 // 表示する画面の種類を定義
 type ScreenType = 'home' | 'map' | 'login';
@@ -76,7 +77,13 @@ function App() {
             onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleDragEnd}
             draggable="false"
           />
+
         </div>
+
+        <div style={{ width: "100%", height: "100vh" }}>
+          <PinSystem />
+        </div>
+        
         <div className="zoom-controls">
           <button className="zoom-btn" onClick={handleZoomIn}>+</button>
           <button className="zoom-btn" onClick={handleZoomOut}>-</button>
