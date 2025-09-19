@@ -3,6 +3,19 @@ import { getDatabase, ref, set, child, get } from "firebase/database";
 import React, { useState } from "react";
 
 
+// 呼び出し方
+// 他のファイルの先頭で import { writePinData, readPinData } from './dbaccess';
+
+// 書き込み eventidはString
+// writePinData(eventId, Number(inputPinX), Number(inputPinY), inputPinText)を呼び出す
+
+// 読み込み async関数が必要
+// async function readPinData_handler () {
+//   const pinsData = await readPinData(eventId);
+// }
+
+
+
 // ----- 初期設定
 const firebaseConfig = {
   apiKey: "AIzaSyAxxocdjMi0CkRYSwNlfa2chCE653Cqat8",
@@ -16,91 +29,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const fire_database = getDatabase(app);
 
-
-
-// -----関数
+// 現在時刻の文字列を返す
 function getCurrentTimestamp(): string {
   const now = new Date();
-
   const year   = now.getFullYear();
   const month  = String(now.getMonth() + 1).padStart(2, "0");
   const day    = String(now.getDate()).padStart(2, "0");
   const hour   = String(now.getHours()).padStart(2, "0");
   const minute = String(now.getMinutes()).padStart(2, "0");
   const second = String(now.getSeconds()).padStart(2, "0");
-
   return `${year}${month}${day}_${hour}${minute}${second}`;
 }
 
-const eventId = "0"; // テスト用
-
-
-function writePinData(pinX_data:String, pinY_data:String, text_data:String){
-  const pinId_data = getCurrentTimestamp();
-  // json形式
-  set(ref(fire_database, `${eventId}/${pinId_data}`), {
-    pinX: pinX_data,
-    pinY: pinY_data,
-    text: text_data
-  });
+// データ書き込み
+export function writePinData(eventId: string, pinX: number, pinY: number, text: string) {
+  const pinId = getCurrentTimestamp();
+  return set(ref(fire_database, `${eventId}/${pinId}`), { pinX, pinY, text });
 }
 
-function readPinData(){
-    get(child(ref(fire_database), `${eventId}/`)).then((snapshot) => {
-    if (snapshot.exists()) {
-        console.log(snapshot.val());
-    } else {
-        console.log("No data available");
-    }
-    }).catch((error) => {
-        console.error(error);
-    });
-}
-
-
-// -----メイン
-const Db_header = () => {
-  const [inputPinX, setInputPinX] = useState("");
-  const [inputPinY, setInputPinY] = useState("");
-  const [inputPinText, setInputPinText] = useState("");
-
-  // -----ハンドラ
-  const writePinData_handler = () =>{
-    alert("DBに書き込みます");
-    writePinData(inputPinX, inputPinY, inputPinText);
+// データ読み込み
+export async function readPinData(eventId: string) {
+  const snapshot = await get(child(ref(fire_database), eventId));
+  if (snapshot.exists()) {
+    return Object.values(snapshot.val()); // 配列で返す
+  } else {
+    return [];
   }
-
-  const readPinData_handler = () =>{
-    alert("DBから読み込みます");
-    
-  }
-
-
-
-  // -----HTML要素
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '40px' }}>
-      <h2>データベースアクセス</h2>
-      <p>X座標</p><input
-        type="number"
-        value={inputPinX}
-        onChange={(e) => setInputPinX(e.target.value)}
-      />
-      <p>Y座標</p><input
-        type="number"
-        value={inputPinY}
-        onChange={(e) => setInputPinY(e.target.value)}
-      />
-      <p>テキスト</p><input
-        type="text"
-        value={inputPinText}
-        onChange={(e) => setInputPinText(e.target.value)}
-      />
-
-      <button onClick={writePinData_handler}>データベース書き込み</button>
-      <button onClick={readPinData_handler}>データベース読み込み</button>
-    </div>
-  )
 }
-
-export default Db_header
