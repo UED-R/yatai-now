@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { MouseEvent, TouchEvent } from 'react';
-import { readPinData } from '../../database/dbaccess'; // パスを更新
-import './Main.css'; // 専用CSSをインポート
+// ▼▼ データベースアクセス用の関数をインポート ▼▼
+import { readPinData } from '../../database/dbaccess';
+import './Main.css';
 
+// ▼▼ データベースから返ってくる型に合わせて更新 ▼▼
 type PinData = {
-  pinX: number;
-  pinY: number;
+  pinX: number; // データベースのキーに合わせる
+  pinY: number; // データベースのキーに合わせる
   text: string;
 };
 
@@ -25,7 +27,7 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
 
   useEffect(() => {
     const fetchPins = async () => {
-      const eventId = 'sohosai-2025';
+      const eventId = 'sohosai-2025'; 
       const pinsDataFromDb = await readPinData(eventId) as PinData[];
       if (pinsDataFromDb) {
         setPins(pinsDataFromDb);
@@ -101,7 +103,14 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
         <div className="map-content" style={{ transform: `translate(${viewState.position.x}px, ${viewState.position.y}px) scale(${viewState.scale})` }}>
           <img src="https://res.cloudinary.com/dkmhcpr7i/image/upload/v1758176187/tsukubamap_id01.jpg" alt="会場マップ" className="map-image" draggable="false" />
           {pins.map((pin, index) => (
-            <button key={index} className={`map-pin ${selectedPin === pin ? 'selected' : ''}`} style={{ left: `${pin.pinX}%`, top: `${pin.pinY}%` }} onClick={(e) => handlePinClick(e, pin)} aria-label={`Pin ${pin.text}`} />
+            <button 
+              key={index} // DBにIDがないため、一時的にindexをキーとして使用
+              className={`map-pin ${selectedPin === pin ? 'selected' : ''}`} 
+              // ▼▼ プロパティ名を pinX, pinY に変更 ▼▼
+              style={{ left: `${pin.pinX}%`, top: `${pin.pinY}%` }} 
+              onClick={(e) => handlePinClick(e, pin)} 
+              aria-label={`Pin ${pin.text}`} 
+            />
           ))}
         </div>
       </div>
@@ -111,3 +120,4 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
 }
 
 export default Main;
+
