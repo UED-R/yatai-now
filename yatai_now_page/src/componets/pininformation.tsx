@@ -66,10 +66,11 @@ export default function PinInformation({ pin, onClose, onSave, onDelete }: PinIn
         <p>Y座標: {pin?.y?.toFixed(2) ?? "N/A"}</p>
         
         {/* 説明テキスト欄 */}
+        <p>サークル名称</p>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="サークル説明を入力してください"
+          placeholder="サークルの名前を入力してください"
           style={{
             width: "100%",
             height: "60px",
@@ -80,6 +81,27 @@ export default function PinInformation({ pin, onClose, onSave, onDelete }: PinIn
             resize: "none",
           }}
         />
+
+        <p>サークル概要</p>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="サークルの説明を入力してください"
+          style={{
+            width: "100%",
+            height: "60px",
+            marginTop: "10px",
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            resize: "none",
+          }}
+        />
+        
+        {/* ボタン：ない・残りわずか・ある */}
+        
+        <p>ない</p> <p>残りわずか</p> <p>ある</p>
+        <p>混雑情報</p>
 
         {/* ボタン：消去・閉じる・保存 */}
         <div style={{ marginTop: "12px", display: "flex", justifyContent: "space-between" }}>
