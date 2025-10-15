@@ -1,40 +1,41 @@
 import { useState } from 'react';
-import './App.css';
-import Map1Screen from './components/map1';
-import OrganizerLoginScreen from './components/OrganizerLogin';
-import MapUploadScreen from './components/MapUpload';
-import VendorLoginScreen from './components/VendorLogin';
-// ▼▼ 新しく作成したイベント選択ページをインポート ▼▼
-import EventSelectScreen from './components/EventselectScreen';
+import './App.css'; // グローバルCSSをインポート
 
-// ▼▼ 管理する画面の種類に 'event_select' を追加 ▼▼
-type ScreenType = 'event_select' | 'map1' | 'organizer_login' | 'map_upload' | 'vendor_login';
+// 新しいフォルダ構成に合わせてコンポーネントをインポート
+import EventSelect from './components/EventSelect/EventSelect';
+import Main from './components/Main/Main';
+import OrganizerLogin from './components/OrganizerLogin/OrganizerLogin';
+import VenderLogin from './components/VenderLogin/VenderLogin';
+// import MapUpload from './components/MapUpload/MapUpload';
+
+
+// 表示する画面の種類を管理する型
+type ScreenType = 'event_select' | 'main' | 'organizer_login' | 'vender_login' | 'map_upload';
 
 function App() {
-  // ▼▼ 初期画面を 'event_select' に変更 ▼▼
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('event_select');
 
+  // 各画面への遷移を実行する関数
   const showEventSelect = () => setCurrentScreen('event_select');
-  const showMap1 = () => setCurrentScreen('map1');
+  const showMain = () => setCurrentScreen('main');
   const showOrganizerLogin = () => setCurrentScreen('organizer_login');
+  const showVendorLogin = () => setCurrentScreen('vender_login');
   const showMapUpload = () => setCurrentScreen('map_upload');
-  const showVendorLogin = () => setCurrentScreen('vendor_login');
-
+  
+  // `currentScreen` の状態に応じて表示するコンポーネントを切り替える
   const renderScreen = () => {
     switch (currentScreen) {
-      case 'map_upload':
-        return <MapUploadScreen onBack={showOrganizerLogin} />;
+      case 'main':
+        return <Main onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
       case 'organizer_login':
-        return <OrganizerLoginScreen onBack={showMap1} onLoginSuccess={showMapUpload} />;
-      case 'vendor_login':
-        return <VendorLoginScreen onBack={showMap1} onLoginSuccess={showMap1} />;
-      case 'map1':
-        // ▼▼ 戻るボタンの遷移先をイベント選択画面に変更 ▼▼
-        return <Map1Screen onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} onBack={showEventSelect} />;
+        return <OrganizerLogin onBack={showMain} onLoginSuccess={showMapUpload} />;
+      case 'vender_login':
+        return <VenderLogin onBack={showMain} onLoginSuccess={showMain} />;
+      // case 'map_upload':
+      //   return <MapUpload onBack={showOrganizerLogin} />;
       case 'event_select':
       default:
-        // ▼▼ イベント選択画面を表示し、ボタン用にmap1への遷移関数を渡す ▼▼
-        return <EventSelectScreen onNavigateToMap={showMap1} />;
+        return <EventSelect onNavigateToMap={showMain} />;
     }
   };
 

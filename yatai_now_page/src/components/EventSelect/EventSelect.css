@@ -1,0 +1,31 @@
+.event-select-screen {
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+.title-container h1 {
+  font-size: 4em;
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  margin: 0 0 30px 0;
+  text-align: center;
+}
+
+.event-button {
+  padding: 20px 60px;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #e58c6a;
+  background-color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.event-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.25);
+}

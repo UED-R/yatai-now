@@ -7,7 +7,6 @@ type MapUploadScreenProps = {
 };
 
 function MapUploadScreen({ onBack }: MapUploadScreenProps) {
-  const [title, setTitle] = useState("");
   const [fileName, setFileName] = useState("選択されていません");
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +35,6 @@ function MapUploadScreen({ onBack }: MapUploadScreenProps) {
   }
 
   function onReset() {
-    setTitle("");
     setFileName("選択されていません");
     setPreviewSrc(null);
     setError(null);
@@ -51,15 +49,8 @@ function MapUploadScreen({ onBack }: MapUploadScreenProps) {
       </header>
 
       <div className="upload-container">
-        <h2>マップアップロード</h2>
         <div className="upload-card">
-          <label className="upload-label">タイトル</label>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="例: 2025 雙峰祭 メイン会場"
-            className="upload-input"
-          />
+
 
           <label className="upload-label">SVGファイル</label>
           <input type="file" accept=".svg,image/svg+xml" onChange={onFileChange} />
