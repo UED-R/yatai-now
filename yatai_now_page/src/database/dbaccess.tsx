@@ -1,10 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get } from "firebase/database";
-// import React, { useState } from "react";
-
 
 // 呼び出し方
-// 他のファイルの先頭で import { writePinData, readPinData } from './dbaccess';
+// 他のファイルの先頭で import { writePinData, readPinData } from '../../database/dbaccess';
 
 // 書き込み eventidはString
 // writePinData(eventId, Number(inputPinX), Number(inputPinY), inputPinText)を呼び出す
@@ -29,7 +27,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const fire_database = getDatabase(app);
 
-// 現在時刻の文字列を返す
+// 現在時刻の文字列を返す(ID用)
 function getCurrentTimestamp(): string {
   const now = new Date();
   const year   = now.getFullYear();
