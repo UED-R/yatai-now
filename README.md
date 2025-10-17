@@ -9,18 +9,21 @@
 これはイベントや屋台の出店者が各自で情報更新ができ、  
 従来のWebマップとは違って、  
 各出店者が任意で情報を更新できる機能が備わっている。
+
 ### 用語
 参加者：学園祭にお客さんとして来た人  
 出店者：店や出し物を提供する人  
 主催者：イベント全体を運営・管理する人  
 
 ### 環境
-- 言語：javaScript
-- フロントエンドフレームワーク：React
+- 言語：TypeScript
+- フロントエンドフレームワーク：Node.js + React
 - Webホスティング：最初はGithub Pages、その後Vercelに移行
     - Vercelはデータ量に制限があるらしいので...
+- DB
+    - firebase
 
-## チーム名：**ぽいっとサーチ**
+## チーム名：**屋台なう**
 - 船越 : https://github.com/Takafumi122
 - 並木 : https://github.com/namiki254
 - 上田 : https://github.com/UED-R
@@ -28,10 +31,11 @@
 - 幸春 : https://github.com/Lumi1127
 
 
-## 管理者向け
+## 管理者向け_操作手順
 1. ファイルを編集する
     - vscodeとかで編集
-    - > ブランチきってやる？mainでやる？
+    - 基本はブランチきってやる
+    - 小さな変更点はチームメンバの確認を取ってからmainでやってもよい
 1. ローカルでチェックする場合
     - cd <プロジェクトのディレクトリ>
     - npm run dev
@@ -39,8 +43,9 @@
     - 終了はCtrl+C
 1. githubにアップロード
     - vscodeでcommit & push
-    - ブランチ切ってる場合はプルリク
-1. Webページとして公開
+    - (任意)Githubでプルリク
+1. Webページとして公開(ブランチ：gh-pages)
+    - チームメンバの了解を得ること
     - npm run deploy
     - 1分くらいで https://ued-r.github.io/yatai-now/ に出るはず
 
