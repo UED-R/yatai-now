@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import './VenderLogin.css';
 
@@ -7,11 +8,22 @@ type VendorLoginProps = {
 };
 
 function VendorLogin({ onBack, onLoginSuccess }: VendorLoginProps) {
+  // --- State for inputs and error message ---
+  const [loginId, setLoginId] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
   const handleLoginSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log('Vendor login attempt');
-    alert('出店者としてログインしました（現在はダミー機能です）');
-    onLoginSuccess();
+    
+    // --- Login validation logic ---
+    if (loginId === 'yatai' && password === 'now') {
+      console.log('Vendor login successful');
+      setError(''); // Clear any previous errors
+      onLoginSuccess(); // Navigate to the next screen (LeafMap)
+    } else {
+      setError('ログインIDまたはパスワードが違います');
+    }
   };
 
   return (
@@ -22,8 +34,23 @@ function VendorLogin({ onBack, onLoginSuccess }: VendorLoginProps) {
       <div className="login-container">
         <h2>出店者ログインページ</h2>
         <form className="login-form" onSubmit={handleLoginSubmit}>
-          <input className="login-input" type="text" placeholder="ログインID" />
-          <input className="login-input" type="password" placeholder="パスワード" />
+          <input 
+            className="login-input" 
+            type="text" 
+            placeholder="ログインID"
+            value={loginId}
+            onChange={(e) => setLoginId(e.target.value)}
+          />
+          <input 
+            className="login-input" 
+            type="password" 
+            placeholder="パスワード" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {/* --- Error message display --- */}
+          {error && <p className="login-error">{error}</p>}
+          
           <button className="btn" type="submit">ログイン</button>
         </form>
       </div>
