@@ -17,11 +17,11 @@ function App() {
 
   // 各画面への遷移を実行する関数
   const showEventSelect = () => setCurrentScreen('event_select');
-  const showMain = () => setCurrentScreen('main');
+  // const showMain = () => setCurrentScreen('main');
   const showLeafMap = () => setCurrentScreen('leafmap');
   const showOrganizerLogin = () => setCurrentScreen('organizer_login');
   const showVendorLogin = () => setCurrentScreen('vender_login');
-  const showMapUpload = () => setCurrentScreen('map_upload');
+  // const showMapUpload = () => setCurrentScreen('map_upload');
   
   // `currentScreen` の状態に応じて表示するコンポーネントを切り替える
   const renderScreen = () => {

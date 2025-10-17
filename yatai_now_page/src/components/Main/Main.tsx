@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { MouseEvent, TouchEvent } from 'react';
+import type { MouseEvent } from 'react';
 // ▼▼ データベースアクセス用の関数をインポート ▼▼
 import { readPinData } from '../../database/dbaccess';
 import './Main.css';
