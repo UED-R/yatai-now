@@ -1,18 +1,12 @@
 import { useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents,} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L, { LatLng } from "leaflet";
+
 
 // --- Leafletデフォルトアイコン設定（ビルド時に消える対策） ---
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
 const defaultIcon = L.icon({
   iconUrl,
   shadowUrl: iconShadow,
@@ -24,61 +18,52 @@ type LeafMapProps = {
   onBack: () => void;
 };
 
-// --- クリックでマーカー追加するコンポーネント ---
-interface AddMarkerProps {
-  onAdd: (latlng: LatLng) => void;
-}
-
-function AddMarker({ onAdd }: AddMarkerProps) {
-  useMapEvents({
-    click(e) {
-      onAdd(e.latlng);
-    },
-  });
-  return null;
-}
-
-// --- メイン ---
-interface MarkerData {
-  id: number;
-  lat: number;
-  lng: number;
-}
+const pinData = [
+  {
+    id: 1,
+    name: "メインステージ",
+    lat: 35.681236,
+    lng: 139.767125,
+    description: "ここでライブやパフォーマンスが行われます。",
+  },
+  {
+    id: 2,
+    name: "フードエリア",
+    lat: 35.682,
+    lng: 139.768,
+    description: "出店やキッチンカーが集まります。",
+  },
+  {
+    id: 3,
+    name: "展示スペース",
+    lat: 35.6805,
+    lng: 139.7665,
+    description: "学生作品や研究展示はこちら。",
+  },
+];
 
 export default function App({ onBack }: LeafMapProps) {
-  const [markers, setMarkers] = useState<MarkerData[]>([]);
-
-  const handleAddMarker = (latlng: LatLng) => {
-    setMarkers((prev) => [
-      ...prev,
-      { id: Date.now(), lat: latlng.lat, lng: latlng.lng },
-    ]);
-  };
-
   return (
-    <div style={{ height: "70vh", width: "50vw"}}>
+    <div>
       <MapContainer
-        center={[36.11025766423207, 140.1023890804813]}//初期位置の緯度経度
-        zoom={16}
-        style={{ height: "100%", width: "100%" }}
+        center={[35.681236, 139.767125]} // 東京駅付近
+        zoom={17}
+        style={{ height: "100vh", width: "100%" }}
+        scrollWheelZoom={true}
       >
+        {/* === ② 背景タイル（OpenStreetMap） === */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
-        <AddMarker onAdd={handleAddMarker} />
 
-        {markers.map((m) => (
-          <Marker
-            key={m.id}
-            position={[m.lat, m.lng]}
-            icon={defaultIcon}
-          >
+        {/* === ③ JSONデータからピン生成 === */}
+        {pinData.map((pin) => (
+          <Marker key={pin.id} position={[pin.lat, pin.lng]}>
             <Popup>
-              <b>ピンID:</b> {m.id} <br />
-              緯度: {m.lat.toFixed(5)} <br />
-              経度: {m.lng.toFixed(5)}
+              <strong>{pin.name}</strong>
+              <br />
+              {pin.description}
             </Popup>
           </Marker>
         ))}
