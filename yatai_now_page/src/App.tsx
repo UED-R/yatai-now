@@ -10,7 +10,7 @@ import VenderLogin from './components/VenderLogin/VenderLogin';
 import LeafMap from './components/LeafMap/LeafMap';
 
 // 表示する画面の種類を管理する型
-type ScreenType = 'event_select' | 'main' | 'organizer_login' | 'leafmap' | 'vender_login' | 'map_upload';
+type ScreenType = 'event_select' | 'main' | 'organizer_login' | 'leafmap' | 'vender_login' | 'vender_upload' | 'map_upload';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('event_select');
@@ -21,6 +21,7 @@ function App() {
   const showLeafMap = () => setCurrentScreen('leafmap');
   const showOrganizerLogin = () => setCurrentScreen('organizer_login');
   const showVendorLogin = () => setCurrentScreen('vender_login');
+  const showVenderUpload = () => setCurrentScreen('vender_upload');
   // const showMapUpload = () => setCurrentScreen('map_upload');
   
   // `currentScreen` の状態に応じて表示するコンポーネントを切り替える
@@ -31,10 +32,11 @@ function App() {
       case 'organizer_login':
         return <OrganizerLogin onBack={showLeafMap} onLoginSuccess={showLeafMap} />;
       case 'vender_login':
-        return <VenderLogin onBack={showLeafMap} onLoginSuccess={showLeafMap} />;
+        return <VenderLogin onBack={showLeafMap} onLoginSuccess={showVenderUpload} />;
       case 'leafmap':
         return <LeafMap onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
-      // case 'map_upload':
+    
+        // case 'map_upload':
       //   return <MapUpload onBack={showOrganizerLogin} />;
       case 'event_select':
       default:
