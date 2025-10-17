@@ -29,11 +29,11 @@ function App() {
       case 'main':
         return <Main onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
       case 'organizer_login':
-        return <OrganizerLogin onBack={showMain} onLoginSuccess={showMapUpload} />;
+        return <OrganizerLogin onBack={showLeafMap} onLoginSuccess={showLeafMap} />;
       case 'vender_login':
-        return <VenderLogin onBack={showMain} onLoginSuccess={showMain} />;
+        return <VenderLogin onBack={showLeafMap} onLoginSuccess={showLeafMap} />;
       case 'leafmap':
-        return <LeafMap onBack={showEventSelect} />;
+        return <LeafMap onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
       // case 'map_upload':
       //   return <MapUpload onBack={showOrganizerLogin} />;
       case 'event_select':
