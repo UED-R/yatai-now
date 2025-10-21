@@ -32,6 +32,7 @@ export default function LeafMap({ onBack }: LeafMapProps) {
     async function fetchData() {
       pinData = await readPinData("0");
       setPins(pinData);
+      console.log(pinData);
     }
     fetchData();
   }, []);
@@ -39,7 +40,9 @@ export default function LeafMap({ onBack }: LeafMapProps) {
   return (
     <div>
       <MapContainer
-        center={[36.11025766423207, 140.1023890804813]}//初期位置の緯度経度
+        center={[36.110251, 140.102381]}//初期位置の緯度経度(小数点以下6桁)
+        // 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
+        // 1mあたり経度 : 0.000010966382364 ≒ 0.000011
         zoom={17}
         style={{ height: "100vh", width: "100%" }}
         scrollWheelZoom={true}
@@ -50,7 +53,7 @@ export default function LeafMap({ onBack }: LeafMapProps) {
         />
 
         {pinData.map((pin) => (
-          <Marker key={pin.id} position={[pin.lat, pin.lng]}>
+          <Marker key={pin.name} position={[pin.lat, pin.lng]}>
             <Popup>
               <strong>{pin.name}</strong>
               <br />
