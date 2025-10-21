@@ -21,7 +21,10 @@ type LeafMapProps = {
 
 
 let pinData: any[] = [];
-export default function App({ onBack }: LeafMapProps) {
+
+
+
+export default function LeafMap({ onBack }: LeafMapProps) {
   
   // リロード時実行
   const [pins, setPins] = useState<any[]>([]);
