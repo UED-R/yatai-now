@@ -39,7 +39,7 @@ export default function LeafMap({ onBack }: LeafMapProps) {
   return (
     <div>
       <MapContainer
-        center={[35.681236, 139.767125]}
+        center={[36.11025766423207, 140.1023890804813]}//初期位置の緯度経度
         zoom={17}
         style={{ height: "100vh", width: "100%" }}
         scrollWheelZoom={true}
