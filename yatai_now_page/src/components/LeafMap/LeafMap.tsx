@@ -1,19 +1,13 @@
-import { useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents,} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./LeafMap.css"; // スタイルシートをインポート
 import L, { LatLng } from "leaflet";
+import { writePinData, readPinData } from '../../database/dbaccess';
 
-// --- Leafletデフォルトアイコン設定（ビルド時に消える対策） ---
+// アイコン設定
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
 const defaultIcon = L.icon({
   iconUrl,
   shadowUrl: iconShadow,
@@ -28,37 +22,22 @@ type LeafMapProps = {
   onShowVendorLogin: () => void;
 };
 
-// --- クリックでマーカー追加するコンポーネント ---
-interface AddMarkerProps {
-  onAdd: (latlng: LatLng) => void;
-}
 
-function AddMarker({ onAdd }: AddMarkerProps) {
-  useMapEvents({
-    click(e) {
-      onAdd(e.latlng);
-    },
-  });
-  return null;
-}
-
-// --- メインコンポーネント ---
-interface MarkerData {
-  id: number;
-  lat: number;
-  lng: number;
-}
+let pinData: any[] = [];
 
 // コンポーネント名をファイル名に合わせて変更し、新しいPropsを受け取る
 export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogin }: LeafMapProps) {
-  const [markers, setMarkers] = useState<MarkerData[]>([]);
-
-  const handleAddMarker = (latlng: LatLng) => {
-    setMarkers((prev) => [
-      ...prev,
-      { id: Date.now(), lat: latlng.lat, lng: latlng.lng },
-    ]);
-  };
+  
+  // リロード時実行
+  const [pins, setPins] = useState<any[]>([]);
+  useEffect(() => {
+    async function fetchData() {
+      pinData = await readPinData("0");
+      setPins(pinData);
+      console.log(pinData);
+    }
+    fetchData();
+  }, []);
 
   return (
     // --- 全画面を覆う親要素に変更 ---
@@ -74,27 +53,24 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
       </header>
 
       <MapContainer
-        center={[36.11025766423207, 140.1023890804813]}//初期位置の緯度経度
+        center={[36.110251, 140.102381]}//初期位置の緯度経度(小数点以下6桁)
+        // 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
+        // 1mあたり経度 : 0.000010966382364 ≒ 0.000011
         zoom={16}
         style={{ height: "100%", width: "100%" }} // 親要素いっぱいに広げる
+        scrollWheelZoom={true}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
-        <AddMarker onAdd={handleAddMarker} />
 
-        {markers.map((m) => (
-          <Marker
-            key={m.id}
-            position={[m.lat, m.lng]}
-            icon={defaultIcon}
-          >
+        {pinData.map((pin) => (
+          <Marker key={pin.name} position={[pin.lat, pin.lng]}>
             <Popup>
-              <b>ピンID:</b> {m.id} <br />
-              緯度: {m.lat.toFixed(5)} <br />
-              経度: {m.lng.toFixed(5)}
+              <strong>{pin.name}</strong>
+              <br />
+              {pin.description}
             </Popup>
           </Marker>
         ))}
