@@ -6,6 +6,7 @@ import EventSelect from './components/EventSelect/EventSelect';
 import Main from './components/Main/Main';
 import OrganizerLogin from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin from './components/VenderLogin/VenderLogin';
+import VenderUpload from './components/VenderUpload/VenderUpload';
 // import MapUpload from './components/MapUpload/MapUpload';
 import LeafMap from './components/LeafMap/LeafMap';
 
@@ -33,6 +34,8 @@ function App() {
         return <OrganizerLogin onBack={showLeafMap} onLoginSuccess={showLeafMap} />;
       case 'vender_login':
         return <VenderLogin onBack={showLeafMap} onLoginSuccess={showVenderUpload} />;
+      case 'vender_upload':
+        return <VenderUpload />;
       case 'leafmap':
         return <LeafMap onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
     
@@ -40,7 +43,12 @@ function App() {
       //   return <MapUpload onBack={showOrganizerLogin} />;
       case 'event_select':
       default:
-        return <EventSelect onNavigateToMap={showLeafMap} />;
+        return (
+          <EventSelect
+            onNavigateToMap={showLeafMap}
+            onNavigateToVenderUpload={showVenderUpload}
+          />
+        );
     }
   };
 

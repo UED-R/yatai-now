@@ -2,9 +2,10 @@ import './EventSelect.css'; // 専用CSSをインポート
 
 type EventSelectProps = {
   onNavigateToMap: () => void;
+  onNavigateToVenderUpload: () => void;
 };
 
-function EventSelect({ onNavigateToMap }: EventSelectProps) {
+function EventSelect({ onNavigateToMap, onNavigateToVenderUpload  }: EventSelectProps) {
   return (
     <div className="screen event-select-screen">
       <div className="title-container">
@@ -16,7 +17,7 @@ function EventSelect({ onNavigateToMap }: EventSelectProps) {
       </button>
 
       {/* 2つ目：Debugページに遷移 */}
-      <button className="btn event-button" onClick={() => navigate("/venderUPLOAD")}>
+      <button className="btn event-button" onClick={onNavigateToVenderUpload}>
         Debug
       </button>
     </div>

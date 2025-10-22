@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./PinInput.css";
+//import "./PinInput.css";
 
 type PinInputProps = {
   eventId: string | number;
