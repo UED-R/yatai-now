@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents,} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./LeafMap.css"; // スタイルシートをインポート
-import L, { LatLng } from "leaflet";
-import { writePinData, readPinData } from '../../database/dbaccess';
+import L from "leaflet";
+import { readPinData } from '../../database/dbaccess';
 
 // アイコン設定
 import iconUrl from "leaflet/dist/images/marker-icon.png";
@@ -14,6 +14,8 @@ const defaultIcon = L.icon({
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
+L.Marker.prototype.options.icon = defaultIcon;
+
 
 // --- Propsの型定義を更新 ---
 type LeafMapProps = {
@@ -25,11 +27,10 @@ type LeafMapProps = {
 
 let pinData: any[] = [];
 
-// コンポーネント名をファイル名に合わせて変更し、新しいPropsを受け取る
 export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogin }: LeafMapProps) {
   
   // リロード時実行
-  const [pins, setPins] = useState<any[]>([]);
+  const [_pins, setPins] = useState<any[]>([]);
   useEffect(() => {
     async function fetchData() {
       pinData = await readPinData("0");
