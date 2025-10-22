@@ -35,7 +35,6 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
     async function fetchData() {
       pinData = await readPinData("0");
       setPins(pinData);
-      console.log(pinData);
     }
     fetchData();
   }, []);
