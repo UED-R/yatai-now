@@ -16,9 +16,9 @@ function EventSelect({ onNavigateToMap }: EventSelectProps) {
       </button>
 
       {/* 2つ目：Debugページに遷移 */}
-      <button className="btn event-button" onClick={() => navigate("/venderUPLOAD")}>
+      {/* <button className="btn event-button" onClick={() => navigate("/venderUPLOAD")}>
         Debug
-      </button>
+      </button> */}
     </div>
   );
 }
