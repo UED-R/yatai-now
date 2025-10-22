@@ -1,71 +1,117 @@
-.pin-input-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #f8f8f8;
-  border-radius: 15px;
-  padding: 30px;
-  width: 320px;
-  margin: 20px auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* --- Screen and Map Container --- */
+.map-screen {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
 }
 
-.pin-input-container h2 {
-  margin-bottom: 20px;
-  color: #333;
+#map-container {
+    height: 100%;
+    width: 100%;
+    cursor: default;
+    z-index: 1; /* Ensure map is behind controls */
 }
 
-.input-group {
-  width: 100%;
-  margin-bottom: 15px;
+/* Change cursor to a crosshair when in pinning mode */
+#map-container.pinning-mode {
+    cursor: crosshair !important;
 }
 
-.input-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #555;
+
+/* --- Header --- */
+.map-header {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none; /* Let clicks go through to the map */
 }
 
-.input-group input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
+.map-header > * {
+    pointer-events: auto; /* Re-enable clicks for buttons inside */
 }
 
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 15px;
+.btn-back {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.btn {
-  flex: 1;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
+.btn-back:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
-.btn.submit {
-  background-color: #0078d7;
-  margin-right: 10px;
+
+/* --- Control Panel --- */
+.upload-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Ensure panel is above the map */
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 300px;
+    box-sizing: border-box;
 }
 
-.btn.submit:hover {
-  background-color: #005fa3;
+.upload-panel p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #333;
 }
 
-.btn.delete {
-  background-color: #d9534f;
+.upload-panel input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
 }
 
-.btn.delete:hover {
-  background-color: #b52b27;
+.upload-panel .btn-panel {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1em;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.upload-panel .btn-primary {
+    background-color: #007bff;
+}
+.upload-panel .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.upload-panel .btn-secondary {
+    background-color: #6c757d;
+}
+.upload-panel .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.upload-panel .btn-success {
+    background-color: #28a745;
+}
+.upload-panel .btn-success:hover {
+    background-color: #218838;
 }

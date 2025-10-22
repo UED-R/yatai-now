@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { writePinData } from './database/dbaccess';
 import './App.css'; // グローバルCSSをインポート
 
 // 新しいフォルダ構成に合わせてコンポーネントをインポート
@@ -6,6 +7,7 @@ import EventSelect from './components/EventSelect/EventSelect';
 import Main from './components/Main/Main';
 import OrganizerLogin from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin from './components/VenderLogin/VenderLogin';
+import VenderUpload from './components/VenderUpload/VenderUpload';
 // import MapUpload from './components/MapUpload/MapUpload';
 import LeafMap from './components/LeafMap/LeafMap';
 
@@ -35,6 +37,12 @@ function App() {
         return <VenderLogin onBack={showLeafMap} onLoginSuccess={showVenderUpload} />;
       case 'leafmap':
         return <LeafMap onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
+      case 'vender_upload':
+        return <VenderUpload 
+                  onBack={showLeafMap} 
+                  eventId="0" // イベントIDを渡す (将来的には動的に)
+                  writePinData={writePinData} // DB書き込み関数を渡す
+               />;
     
         // case 'map_upload':
       //   return <MapUpload onBack={showOrganizerLogin} />;

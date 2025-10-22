@@ -40,9 +40,10 @@ function getCurrentTimestamp(): string {
 }
 
 // データ書き込み
-export function writePinData(eventId: string, pinX: number, pinY: number, text: string) {
+export function writePinData(eventId: string, lat: number, lng: number, name: string, description: string) {
   const pinId = getCurrentTimestamp();
-  return set(ref(fire_database, `${eventId}/${pinId}`), { pinX, pinY, text });
+  // 保存するオブジェクトをデータベースのキーに合わせる
+  return set(ref(fire_database, `${eventId}/${pinId}`), { lat, lng, name, description });
 }
 
 // データ読み込み
