@@ -19,7 +19,7 @@ let pinData: any[] = [];
 export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogin }: LeafMapProps) {
   
   // リロード時実行
-  const [pins, setPins] = useState<any[]>([]);
+  const [_pins, setPins] = useState<any[]>([]);
   useEffect(() => {
     async function fetchData() {
       pinData = await readPinData("0");
