@@ -1,5 +1,6 @@
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { ReactComponent as TsukubaMap } from '../../image/map_test.svg';
+// import { ReactComponent as TsukubaMap } from '../../image/map_test.svg';
+import ICON from '../../image/map_test.svg';
 import './Main.css';
 
 // Propsの型定義
@@ -33,7 +34,8 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
             contentStyle={{ width: "100%", height: "100%" }}
           >
             <div className="map-content-vector">
-              <TsukubaMap className="map-svg" />
+              {/* <TsukubaMap className="map-svg" /> */}
+              <img src={ICON} alt="icon" width={1200} height={1200} />
             </div>
           </TransformComponent>
         </TransformWrapper>
