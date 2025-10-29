@@ -1,5 +1,6 @@
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 // import { ReactComponent as TsukubaMap } from '../../image/map_test.svg';
+// import TsukubaMap from '../../image/map_test2.svg?react';
 import ICON from '../../image/map_test.svg';
 import './Main.css';
 
