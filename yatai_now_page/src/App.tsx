@@ -19,7 +19,7 @@ function App() {
 
   // 各画面への遷移を実行する関数
   const showEventSelect = () => setCurrentScreen('event_select');
-  // const showMain = () => setCurrentScreen('main');
+  const showMain = () => setCurrentScreen('main');
   const showLeafMap = () => setCurrentScreen('leafmap');
   const showOrganizerLogin = () => setCurrentScreen('organizer_login');
   const showVendorLogin = () => setCurrentScreen('vender_login');
@@ -48,7 +48,7 @@ function App() {
       //   return <MapUpload onBack={showOrganizerLogin} />;
       case 'event_select':
       default:
-        return <EventSelect onNavigateToMap={showLeafMap} />;
+        return <EventSelect onNavigateToMap={showMain} />;
     }
   };
 

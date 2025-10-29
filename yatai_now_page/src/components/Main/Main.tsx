@@ -1,16 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import type { MouseEvent } from 'react';
-// ▼▼ データベースアクセス用の関数をインポート ▼▼
-import { readPinData } from '../../database/dbaccess';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { ReactComponent as TsukubaMap } from '../../image/map_test.svg';
 import './Main.css';
 
-// ▼▼ データベースから返ってくる型に合わせて更新 ▼▼
-type PinData = {
-  pinX: number; // データベースのキーに合わせる
-  pinY: number; // データベースのキーに合わせる
-  text: string;
-};
-
+// Propsの型定義
 type MainProps = {
   onShowOrganizerLogin: () => void;
   onShowVendorLogin: () => void;
@@ -18,67 +10,6 @@ type MainProps = {
 };
 
 function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
-  const [pins, setPins] = useState<PinData[]>([]);
-  const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
-  const [viewState, setViewState] = useState({ scale: 1, position: { x: 0, y: 0 } });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartPos = useRef({ x: 0, y: 0 });
-  const mapAreaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchPins = async () => {
-      const eventId = 'sohosai-2025'; 
-      const pinsDataFromDb = await readPinData(eventId) as PinData[];
-      if (pinsDataFromDb) {
-        setPins(pinsDataFromDb);
-      }
-    };
-    fetchPins();
-  }, []);
-
-  const handleWheel = useCallback((e: globalThis.WheelEvent) => {
-    e.preventDefault();
-    const rect = mapAreaRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const zoomFactor = 1 - e.deltaY * 0.01;
-    setViewState(prev => {
-      const newScale = Math.max(1, Math.min(prev.scale * zoomFactor, 5));
-      const pointX = (mouseX - prev.position.x) / prev.scale;
-      const pointY = (mouseY - prev.position.y) / prev.scale;
-      const newX = mouseX - pointX * newScale;
-      const newY = mouseY - pointY * newScale;
-      return { scale: newScale, position: { x: newX, y: newY } };
-    });
-  }, []);
-
-  useEffect(() => {
-    const mapArea = mapAreaRef.current;
-    mapArea?.addEventListener('wheel', handleWheel, { passive: false });
-    return () => {
-      mapArea?.removeEventListener('wheel', handleWheel);
-    };
-  }, [handleWheel]);
-
-  const handlePinClick = (e: MouseEvent, pin: PinData) => {
-    e.stopPropagation();
-    setSelectedPin(pin);
-  };
-
-  const handleDragStart = (clientX: number, clientY: number) => {
-    setIsDragging(true);
-    dragStartPos.current = { x: clientX - viewState.position.x, y: clientY - viewState.position.y };
-    setSelectedPin(null);
-  };
-  const handleDragMove = (clientX: number, clientY: number) => {
-    if (!isDragging) return;
-    const newX = clientX - dragStartPos.current.x;
-    const newY = clientY - dragStartPos.current.y;
-    setViewState(prev => ({ ...prev, position: { x: newX, y: newY } }));
-  };
-  const handleDragEnd = () => setIsDragging(false);
-
   return (
     <div className="screen main-screen">
       <header className="main-header">
@@ -88,36 +19,27 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
           <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
         </div>
       </header>
-      <div
-        ref={mapAreaRef}
-        className="map-area"
-        onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
-        onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
-        onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchEnd={handleDragEnd}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-      >
-        <div className="map-content" style={{ transform: `translate(${viewState.position.x}px, ${viewState.position.y}px) scale(${viewState.scale})` }}>
-          <img src="https://res.cloudinary.com/dkmhcpr7i/image/upload/v1758176187/tsukubamap_id01.jpg" alt="会場マップ" className="map-image" draggable="false" />
-          {pins.map((pin, index) => (
-            <button 
-              key={index} // DBにIDがないため、一時的にindexをキーとして使用
-              className={`map-pin ${selectedPin === pin ? 'selected' : ''}`} 
-              // ▼▼ プロパティ名を pinX, pinY に変更 ▼▼
-              style={{ left: `${pin.pinX}%`, top: `${pin.pinY}%` }} 
-              onClick={(e) => handlePinClick(e, pin)} 
-              aria-label={`Pin ${pin.text}`} 
-            />
-          ))}
-        </div>
+      
+      <div className="map-area">
+        <TransformWrapper
+          initialScale={1}
+          minScale={1}
+          maxScale={5}
+          limitToBounds={true}
+          doubleClick={{ disabled: true }}
+        >
+          <TransformComponent
+            wrapperStyle={{ width: "100%", height: "100%" }}
+            contentStyle={{ width: "100%", height: "100%" }}
+          >
+            <div className="map-content-vector">
+              <TsukubaMap className="map-svg" />
+            </div>
+          </TransformComponent>
+        </TransformWrapper>
       </div>
-      {selectedPin && (<footer className="info-footer"><p>{selectedPin.text}</p></footer>)}
     </div>
   );
 }
 
 export default Main;
-

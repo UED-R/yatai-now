@@ -1,8 +1,15 @@
+/* =================================== */
+/* Main.css (修正後)         */
+/* =================================== */
+
+/* --- スクリーンとヘッダー (変更なし) --- */
 .main-screen {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
   position: relative;
-  background-color: #d1e7dd;
-  justify-content: center;
-  align-items: center;
+  background-color: #f0f2f5;
 }
 
 .main-header {
@@ -10,10 +17,15 @@
   top: 15px;
   left: 15px;
   right: 15px;
-  z-index: 10;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  pointer-events: none;
+}
+
+.main-header > * {
+  pointer-events: auto;
 }
 
 .header-right-buttons {
@@ -21,84 +33,90 @@
   gap: 10px;
 }
 
-.btn-header, .btn-back {
-  padding: 8px 16px;
-  font-size: 0.9em;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.6);
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.btn-header:hover, .btn-back:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
+/* --- マップ表示エリア (更新) --- */
 .map-area {
-  width: 60%;
-  height: 100%;
-  max-width: 1200px;
-  position: relative;
-  overflow: hidden;
-  touch-action: none;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  flex-grow: 1; /* ヘッダー以外の残りの高さをすべて使用する */
+  width: 100%;
+  overflow: hidden; /* はみ出した部分は表示しない */
+  background-color: #e9e9e9;
+  cursor: grab; /* マウスカーソルを「掴む」アイコンに */
 }
 
-.map-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform-origin: 0 0;
+.map-area:active {
+  cursor: grabbing; /* ドラッグ中は「掴んでいる」アイコンに */
 }
 
-.map-image {
+/* --- ▼▼ SVGとピンを配置するコンテナ (新規) ▼▼ --- */
+/* TransformComponentの直下に配置され、SVGとピンの親となる */
+.map-content-vector {
+  position: relative; /* ピンを絶対位置で配置するための基準点 */
   width: 100%;
   height: 100%;
-  object-fit: contain;
+}
+
+/* --- ▼▼ SVGマップ自体のスタイル (新規) ▼▼ --- */
+.map-svg {
+  width: 100%;
+  height: 100%;
+  /* SVG上の図形やテキストがクリックやドラッグの邪魔をしないようにする */
   pointer-events: none;
+  /* テキスト選択などを無効化 */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
+/* --- ピンのスタイル (変更なし・確認用) --- */
+/* ピンの下端中央が指定した座標に来るように調整 */
 .map-pin {
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: #ff3b30;
+  background-color: #ff4757; /* 目立つ赤色 */
   border: 2px solid white;
   border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); /* ピンの中心が座標点になるように */
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  padding: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .map-pin:hover {
-  transform: translate(-50%, -50%) scale(1.3);
+  transform: translate(-50%, -50%) scale(1.2); /* ホバー時に少し大きく */
 }
 
+/* 選択されたピンのスタイル */
 .map-pin.selected {
-  background-color: #007bff;
-  transform: translate(-50%, -50%) scale(1.5);
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
+  background-color: #487eb0; /* 青色に変更 */
+  z-index: 10; /* 他のピンより手前に表示 */
+  transform: translate(-50%, -50%) scale(1.4);
 }
 
+/* --- 情報フッター (更新) --- */
+/* nameとdescriptionを表示するためにスタイルを調整 */
 .info-footer {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 15px;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 15px 20px;
   text-align: center;
-  font-size: 1.1em;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1001; /* ヘッダーより手前、マップよりさらに手前 */
+  transition: transform 0.3s ease-in-out;
+  border-top: 1px solid #ddd;
+}
+
+/* フッター内の見出し (屋台名など) */
+.info-footer h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2em;
   color: #333;
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-  z-index: 10;
-  box-sizing: border-box;
+}
+
+/* フッター内の説明文 */
+.info-footer p {
+  margin: 0;
+  font-size: 1em;
+  color: #555;
 }
