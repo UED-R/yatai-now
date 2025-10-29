@@ -1,5 +1,6 @@
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { ReactComponent as TsukubaMap } from '../../image/map_test.svg';
+// ▼▼▼ この行を修正しました ▼▼▼
+import TsukubaMap from '../../image/map_test2.svg?react';
 import './Main.css';
 
 // Propsの型定義
@@ -33,6 +34,7 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
             contentStyle={{ width: "100%", height: "100%" }}
           >
             <div className="map-content-vector">
+              {/* ▼▼▼ SVGコンポーネントをそのまま使います ▼▼▼ */}
               <TsukubaMap className="map-svg" />
             </div>
           </TransformComponent>
