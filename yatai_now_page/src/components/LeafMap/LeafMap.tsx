@@ -33,7 +33,7 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
   const [_pins, setPins] = useState<any[]>([]);
   useEffect(() => {
     async function fetchData() {
-      pinData = await readPinData("0");
+      pinData = await readPinData("1");
       setPins(pinData);
     }
     fetchData();
@@ -66,11 +66,16 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
         />
 
         {pinData.map((pin) => (
-          <Marker key={pin.name} position={[pin.lat, pin.lng]}>
+          <Marker key={pin.shopID} position={[pin.x_pos, pin.y_pos]}>
             <Popup>
-              <strong>{pin.name}</strong>
-              <br />
-              {pin.description}
+              <h4>{pin.shopname}</h4>
+              <br/>
+              <p>出店団体：{pin.teamname}</p>
+              <p>概要：{pin.description}</p>
+              <p>場所：{pin.place}</p>
+              <p>種別：{pin.type}</p>
+              <p>時間：{pin.starttime}~{pin.endtime}</p>
+              <p>おおよその在庫数：{pin.storage}</p>
             </Popup>
           </Marker>
         ))}
