@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { writePinData } from './database/dbaccess';
 import './App.css'; // グローバルCSSをインポート
 
 // 新しいフォルダ構成に合わせてコンポーネントをインポート
@@ -7,7 +6,6 @@ import EventSelect from './components/EventSelect/EventSelect';
 import Main from './components/Main/Main';
 import OrganizerLogin from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin from './components/VenderLogin/VenderLogin';
-import VenderUpload from './components/VenderUpload/VenderUpload';
 // import MapUpload from './components/MapUpload/MapUpload';
 import LeafMap from './components/LeafMap/LeafMap';
 
