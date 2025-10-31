@@ -81,6 +81,12 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
                   <br />
                   <p>{pin.description}</p>
                   <p>店舗ID: {pin.shopID}</p>
+                  <p>出店団体：{pin.teamname}</p>
+                  <p>概要：{pin.description}</p>
+                  <p>場所：{pin.place}</p>
+                  <p>種別：{pin.type}</p>
+                  <p>時間：{pin.starttime}~{pin.endtime}</p>
+                  <p>おおよその在庫数：{pin.storage}</p>
                 </div>
               ) : (
                 // --- shopIDがない場合 ---
