@@ -71,6 +71,12 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
               <strong>{pin.name}</strong>
               <br />
               {pin.description}
+              {pin.place && (
+              <div>
+                <br />
+                <p>場所: {pin.place}</p>
+              </div>
+            )}
             </Popup>
           </Marker>
         ))}

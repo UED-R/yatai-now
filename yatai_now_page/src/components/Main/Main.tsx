@@ -1,5 +1,6 @@
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import ICON from '../../image/map_test.svg';
+import ICON from '../../image/map_test2.svg';
+import PIN from '../../image/pin400x300.png';
 import './Main.css';
 
 // Propsの型定義
@@ -19,28 +20,23 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
           <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
         </div>
       </header>
-      
-      <div className="map-area">
-        <TransformWrapper
-          initialScale={1}
-          minScale={1}
-          maxScale={5}
-          limitToBounds={true}
-          centerOnInit={true}
-          doubleClick={{ disabled: true }}
-          wheel={{ step: 0.1 }}
-          panning={{ disabled: false }}
-        >
-          <TransformComponent
-            wrapperStyle={{ width: "100%", height: "100%" }}
-            contentStyle={{ width: "100%", height: "100%" }}
-          >
-            <div className="map-content-vector">
-              <img src={ICON} alt="icon" style={{ maxWidth: "100%", maxHeight: "100%" }} />
-            </div>
-          </TransformComponent>
-        </TransformWrapper>
-      </div>
+      <TransformWrapper
+        initialScale={0.5}
+        minScale={0.5}
+        maxScale={8}
+        wheel={{ step: 0.2 }}
+        limitToBounds={true}
+        doubleClick={{ disabled: true }}
+        // centerZoomedOut={true}
+        centerOnInit={true}
+      >
+        <TransformComponent
+          wrapperClass='map-area'
+          contentClass='map-content-vector'>
+            <img src={ICON} alt="map" className='map-svg'/>
+            <img src={PIN} className='map-pin'/>
+        </TransformComponent>
+      </TransformWrapper>
     </div>
   );
 }

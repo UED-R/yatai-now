@@ -53,32 +53,26 @@
   position: relative; /* ピンを絶対位置で配置するための基準点 */
   width: 100%;
   height: 100%;
+  border: solid red;
+  vertical-align: middle;
 }
 
 /* --- ▼▼ SVGマップ自体のスタイル (新規) ▼▼ --- */
 .map-svg {
   width: 100%;
   height: 100%;
-  /* SVG上の図形やテキストがクリックやドラッグの邪魔をしないようにする */
-  pointer-events: none;
-  /* テキスト選択などを無効化 */
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 /* --- ピンのスタイル (変更なし・確認用) --- */
 /* ピンの下端中央が指定した座標に来るように調整 */
 .map-pin {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #ff4757; /* 目立つ赤色 */
-  border: 2px solid white;
-  border-radius: 50%;
+  top: 500px;
+  left: 500px;
+  width: 10%;
+  height: auto;
   transform: translate(-50%, -50%); /* ピンの中心が座標点になるように */
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .map-pin:hover {
