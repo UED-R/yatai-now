@@ -47,8 +47,21 @@ function App() {
         // case 'map_upload':
       //   return <MapUpload onBack={showOrganizerLogin} />;
       case 'event_select':
+        return <EventSelect onNavigate={(target) =>{
+          if(target === "map"){
+            showLeafMap();
+          }else if(target === "debug"){
+            showMain();
+          }
+        }} />;
       default:
-        return <EventSelect onNavigateToMap={showMain} />;
+        return <EventSelect onNavigate={(target) =>{
+          if(target === "map"){
+            showLeafMap();
+          }else if(target === "debug"){
+            showMain();
+          }
+        }} />;
     }
   };
 

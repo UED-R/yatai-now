@@ -1,6 +1,4 @@
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-// import { ReactComponent as TsukubaMap } from '../../image/map_test.svg';
-// import TsukubaMap from '../../image/map_test2.svg?react';
 import ICON from '../../image/map_test.svg';
 import './Main.css';
 
@@ -28,15 +26,17 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
           minScale={1}
           maxScale={5}
           limitToBounds={true}
+          centerOnInit={true}
           doubleClick={{ disabled: true }}
+          wheel={{ step: 0.1 }}
+          panning={{ disabled: false }}
         >
           <TransformComponent
             wrapperStyle={{ width: "100%", height: "100%" }}
             contentStyle={{ width: "100%", height: "100%" }}
           >
             <div className="map-content-vector">
-              {/* <TsukubaMap className="map-svg" /> */}
-              <img src={ICON} alt="icon" width={1200} height={1200} />
+              <img src={ICON} alt="icon" style={{ maxWidth: "100%", maxHeight: "100%" }} />
             </div>
           </TransformComponent>
         </TransformWrapper>
