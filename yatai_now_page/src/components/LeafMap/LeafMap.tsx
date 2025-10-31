@@ -22,22 +22,23 @@ type LeafMapProps = {
   onBack: () => void;
   onShowOrganizerLogin: () => void;
   onShowVendorLogin: () => void;
+  eventid: string;
 };
 
 
 let pinData: any[] = [];
 
-export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogin }: LeafMapProps) {
+export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogin, eventid }: LeafMapProps) {
   
   // リロード時実行
   const [_pins, setPins] = useState<any[]>([]);
   useEffect(() => {
     async function fetchData() {
-      pinData = await readPinData("1");
+      pinData = await readPinData(eventid);
       setPins(pinData);
     }
     fetchData();
-  }, []);
+  }, [eventid]);
 
   return (
     // --- 全画面を覆う親要素に変更 ---
@@ -64,21 +65,41 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+      {pinData.map((pin) => {
+        // shopIDの有無でプロパティ名を切り替え
+        const name = pin.shopID ? pin.shopname : pin.name;
+        const lat = pin.shopID ? pin.x_pos : pin.lat;
+        const lng = pin.shopID ? pin.y_pos : pin.lng;
 
-        {pinData.map((pin) => (
-          <Marker key={pin.shopID} position={[pin.x_pos, pin.y_pos]}>
+        return (
+          <Marker key={name} position={[lat, lng]}>
             <Popup>
-              <h4>{pin.shopname}</h4>
-              <br/>
-              <p>出店団体：{pin.teamname}</p>
-              <p>概要：{pin.description}</p>
-              <p>場所：{pin.place}</p>
-              <p>種別：{pin.type}</p>
-              <p>時間：{pin.starttime}~{pin.endtime}</p>
-              <p>おおよその在庫数：{pin.storage}</p>
+              {pin.shopID ? (
+                // --- shopIDがある場合 ---
+                <div>
+                  <strong>{name}</strong>
+                  <br />
+                  <p>{pin.description}</p>
+                  <p>店舗ID: {pin.shopID}</p>
+                  <p>出店団体：{pin.teamname}</p>
+                  <p>概要：{pin.description}</p>
+                  <p>場所：{pin.place}</p>
+                  <p>種別：{pin.type}</p>
+                  <p>時間：{pin.starttime}~{pin.endtime}</p>
+                  <p>おおよその在庫数：{pin.storage}</p>
+                </div>
+              ) : (
+                // --- shopIDがない場合 ---
+                <div>
+                  <strong>{name}</strong>
+                  <br />
+                  <p>{pin.description}</p>
+                </div>
+              )}
             </Popup>
           </Marker>
-        ))}
+        );
+      })}
       </MapContainer>
     </div>
   );

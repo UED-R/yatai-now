@@ -1,84 +1,31 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import type { MouseEvent } from 'react';
-// ▼▼ データベースアクセス用の関数をインポート ▼▼
-import { readPinData } from '../../database/dbaccess';
+import { useState } from "react";
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import ICON from '../../image/map_test2.svg';
+import PIN from '../../image/pin400x300.png';
 import './Main.css';
 
-// ▼▼ データベースから返ってくる型に合わせて更新 ▼▼
-type PinData = {
-  pinX: number; // データベースのキーに合わせる
-  pinY: number; // データベースのキーに合わせる
-  text: string;
-};
-
+// Propsの型定義
 type MainProps = {
   onShowOrganizerLogin: () => void;
   onShowVendorLogin: () => void;
   onBack: () => void;
 };
 
+type PinData = {
+  id: number;
+  x: number; // マップ上での位置（%指定をおすすめ）
+  y: number;
+  name: string;
+  description: string;
+};
+
+const pinList: PinData[] = [
+  { id: 1, x: 600, y: 600, name: "たこ焼き屋", description: "新作！イカ入りたこ焼き！" },
+  { id: 2, x: 700, y: 800, name: "クレープ屋", description: "チョトバカナクレープ" },
+];
+
 function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
-  const [pins, setPins] = useState<PinData[]>([]);
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
-  const [viewState, setViewState] = useState({ scale: 1, position: { x: 0, y: 0 } });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartPos = useRef({ x: 0, y: 0 });
-  const mapAreaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchPins = async () => {
-      const eventId = 'sohosai-2025'; 
-      const pinsDataFromDb = await readPinData(eventId) as PinData[];
-      if (pinsDataFromDb) {
-        setPins(pinsDataFromDb);
-      }
-    };
-    fetchPins();
-  }, []);
-
-  const handleWheel = useCallback((e: globalThis.WheelEvent) => {
-    e.preventDefault();
-    const rect = mapAreaRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const zoomFactor = 1 - e.deltaY * 0.01;
-    setViewState(prev => {
-      const newScale = Math.max(1, Math.min(prev.scale * zoomFactor, 5));
-      const pointX = (mouseX - prev.position.x) / prev.scale;
-      const pointY = (mouseY - prev.position.y) / prev.scale;
-      const newX = mouseX - pointX * newScale;
-      const newY = mouseY - pointY * newScale;
-      return { scale: newScale, position: { x: newX, y: newY } };
-    });
-  }, []);
-
-  useEffect(() => {
-    const mapArea = mapAreaRef.current;
-    mapArea?.addEventListener('wheel', handleWheel, { passive: false });
-    return () => {
-      mapArea?.removeEventListener('wheel', handleWheel);
-    };
-  }, [handleWheel]);
-
-  const handlePinClick = (e: MouseEvent, pin: PinData) => {
-    e.stopPropagation();
-    setSelectedPin(pin);
-  };
-
-  const handleDragStart = (clientX: number, clientY: number) => {
-    setIsDragging(true);
-    dragStartPos.current = { x: clientX - viewState.position.x, y: clientY - viewState.position.y };
-    setSelectedPin(null);
-  };
-  const handleDragMove = (clientX: number, clientY: number) => {
-    if (!isDragging) return;
-    const newX = clientX - dragStartPos.current.x;
-    const newY = clientY - dragStartPos.current.y;
-    setViewState(prev => ({ ...prev, position: { x: newX, y: newY } }));
-  };
-  const handleDragEnd = () => setIsDragging(false);
-
   return (
     <div className="screen main-screen">
       <header className="main-header">
@@ -88,36 +35,52 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
           <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
         </div>
       </header>
-      <div
-        ref={mapAreaRef}
-        className="map-area"
-        onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
-        onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
-        onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchEnd={handleDragEnd}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      <TransformWrapper
+        initialScale={0.5}
+        minScale={0.5}
+        maxScale={8}
+        wheel={{ step: 0.5 }}
+        limitToBounds={true}
+        doubleClick={{ disabled: true }}
+        centerOnInit={true}
       >
-        <div className="map-content" style={{ transform: `translate(${viewState.position.x}px, ${viewState.position.y}px) scale(${viewState.scale})` }}>
-          <img src="https://res.cloudinary.com/dkmhcpr7i/image/upload/v1758176187/tsukubamap_id01.jpg" alt="会場マップ" className="map-image" draggable="false" />
-          {pins.map((pin, index) => (
-            <button 
-              key={index} // DBにIDがないため、一時的にindexをキーとして使用
-              className={`map-pin ${selectedPin === pin ? 'selected' : ''}`} 
-              // ▼▼ プロパティ名を pinX, pinY に変更 ▼▼
-              style={{ left: `${pin.pinX}%`, top: `${pin.pinY}%` }} 
-              onClick={(e) => handlePinClick(e, pin)} 
-              aria-label={`Pin ${pin.text}`} 
-            />
+        <TransformComponent
+          wrapperClass='map-area'
+          contentClass='map-content-vector'>
+          <div  onClick={() => setSelectedPin(null)}>
+            <img src={ICON} alt="map" className='map-svg'/>
+          </div>
+          {pinList.map((pin) => (
+            <div
+              key={pin.id}
+              className={`pin-box`}
+              style={{
+                left: `${pin.x}px`,
+                top: `${pin.y}px`
+              }}
+              onClick={() => setSelectedPin(pin)}
+            >
+              <img src={PIN} alt="pin" className="map-pin"/>
+            </div>
           ))}
-        </div>
-      </div>
-      {selectedPin && (<footer className="info-footer"><p>{selectedPin.text}</p></footer>)}
+          {selectedPin && (
+            <div
+              style={{
+                position: "absolute",
+                left: `${selectedPin.x+40}px`,
+                top: `${selectedPin.y+40}px`,
+                backgroundColor: 'white'
+              }}
+              onClick={() => setSelectedPin(null)}
+            >
+              <h3>{selectedPin.name}</h3>
+              <p>{selectedPin.description}</p>
+            </div>
+          )}
+        </TransformComponent>
+      </TransformWrapper>
     </div>
   );
 }
 
 export default Main;
-
