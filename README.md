@@ -18,8 +18,7 @@
 ### 環境
 - 言語：TypeScript
 - フロントエンドフレームワーク：Node.js + React
-- Webホスティング：最初はGithub Pages、その後Vercelに移行
-    - Vercelはデータ量に制限があるらしいので...
+- Webホスティング：最初はGithub Pages、その後Vercelに移行?
 - DB
     - firebase
 
@@ -36,7 +35,7 @@
     - vscodeとかで編集
     - 基本はブランチきってやる
     - 小さな変更点はチームメンバの確認を取ってからmainでやってもよい
-1. ローカルでチェックする場合
+1. ローカルで動作チェックする場合
     - cd <プロジェクトのディレクトリ>
     - npm run dev
     - https\://localhost... のリンクをブラウザで見る
