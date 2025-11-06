@@ -1,19 +1,14 @@
+import './Main.css';
 import { useState } from "react";
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { PAGES, page_navigate } from '../../Pages';
 import ICON from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
-import './Main.css';
 
-// Propsの型定義
-type MainProps = {
-  onShowOrganizerLogin: () => void;
-  onShowVendorLogin: () => void;
-  onBack: () => void;
-};
 
 type PinData = {
   id: number;
-  x: number; // マップ上での位置（%指定をおすすめ）
+  x: number;
   y: number;
   name: string;
   description: string;
@@ -24,15 +19,16 @@ const pinList: PinData[] = [
   { id: 2, x: 700, y: 800, name: "クレープ屋", description: "チョトバカナクレープ" },
 ];
 
-function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
+export default function Main() {
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
+
   return (
     <div className="screen main-screen">
       <header className="main-header">
-        <button className="btn-back" onClick={onBack}>&lt; 戻る</button>
+        <button className="btn-back" onClick={() => page_navigate(PAGES.EVENT_SELECT)}>&lt; 戻る</button>
         <div className="header-right-buttons">
-          <button className="btn-header" onClick={onShowOrganizerLogin}>主催者はこちら</button>
-          <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
+          <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
+          <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
         </div>
       </header>
       <TransformWrapper
@@ -82,5 +78,3 @@ function Main({ onShowOrganizerLogin, onShowVendorLogin, onBack }: MainProps) {
     </div>
   );
 }
-
-export default Main;

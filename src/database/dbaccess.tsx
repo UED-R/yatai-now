@@ -8,8 +8,8 @@ import { getDatabase, ref, set, child, get } from "firebase/database";
 // writePinData(eventId, Number(inputPinX), Number(inputPinY), inputPinText)を呼び出す
 
 // 読み込み async関数が必要
-// async function readPinData_handler () {
-//   const pinsData = await readPinData(eventId);
+// async function <関数名> () {
+//   const data = await readPinData(eventId);
 // }
 
 

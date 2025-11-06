@@ -1,73 +1,36 @@
-import { useState } from 'react';
-import { writePinData } from './database/dbaccess';
-import './App.css'; // グローバルCSSをインポート
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { setGlobalNavigate } from "./Pages"
+import './App.css';
+import "./Pages";
 
-// 新しいフォルダ構成に合わせてコンポーネントをインポート
 import EventSelect from './components/EventSelect/EventSelect';
 import Main from './components/Main/Main';
 import OrganizerLogin from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin from './components/VenderLogin/VenderLogin';
 import VenderUpload from './components/VenderUpload/VenderUpload';
-// import MapUpload from './components/MapUpload/MapUpload';
 import LeafMap from './components/LeafMap/LeafMap';
+import { PAGES } from './Pages';
 
-// 表示する画面の種類を管理する型
-type ScreenType = 'event_select' | 'main' | 'organizer_login' | 'leafmap1' |'leafmap0' | 'vender_login' | 'vender_upload' | 'map_upload';
-
-function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenType>('event_select');
-
-  // 各画面への遷移を実行する関数
-  const showEventSelect = () => setCurrentScreen('event_select');
-  const showMain = () => setCurrentScreen('main');
-  const showLeafMap0 = () => setCurrentScreen('leafmap0');
-  const showLeafMap1 = () => setCurrentScreen('leafmap1');
-  const showOrganizerLogin = () => setCurrentScreen('organizer_login');
-  const showVendorLogin = () => setCurrentScreen('vender_login');
-  const showVenderUpload = () => setCurrentScreen('vender_upload');
-  
-  // `currentScreen` の状態に応じて表示するコンポーネントを切り替える
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'main':
-        return <Main onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} onShowVendorLogin={showVendorLogin} />;
-      case 'organizer_login':
-        return <OrganizerLogin onBack={showLeafMap0} onLoginSuccess={showLeafMap0} />;
-      case 'vender_login':
-        return <VenderLogin onBack={showLeafMap0} onLoginSuccess={showVenderUpload} />;
-      case 'leafmap0':
-        return <LeafMap onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} 
-        onShowVendorLogin={showVendorLogin} eventid="0"/>;
-      case 'leafmap1':
-        return <LeafMap onBack={showEventSelect} onShowOrganizerLogin={showOrganizerLogin} 
-        onShowVendorLogin={showVendorLogin} eventid="1"/>;
-      case 'vender_upload':
-        return <VenderUpload 
-                  onBack={showLeafMap0} 
-                  eventId="0" // イベントIDを渡す (将来的には動的に)
-                  writePinData={writePinData} // DB書き込み関数を渡す
-               />;
-      case 'event_select':
-        return <EventSelect onNavigate={(target) =>{
-          if(target === "map0"){
-            showLeafMap0();
-          }else if(target === "map1"){
-            showLeafMap1();
-          }else if(target === "debug"){
-            showMain();
-          }
-        }} />;
-      default:
-        return showEventSelect
-    }
-  };
-
-  return (
-    <>
-      {renderScreen()}
-    </>
-  );
+function NavigatorInitializer() {
+  const navigate = useNavigate();
+  setGlobalNavigate(navigate);
+  return null;
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <NavigatorInitializer />
+      <Routes>
+        <Route path={PAGES.EVENT_SELECT} element={<EventSelect />} />
+        <Route path={PAGES.MAIN} element={<Main />} />
+        <Route path={PAGES.ORG_LOGIN} element={<OrganizerLogin />} />
+        <Route path={PAGES.VEND_LOGIN} element={<VenderLogin />} />
+        <Route path={PAGES.VEND_UPLOAD} element={<VenderUpload />} />
+        <Route path={PAGES.LEAF_MAP} element={<LeafMap />} />
+      </Routes>
+    </Router>
+  );
+}
 

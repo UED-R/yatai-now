@@ -1,55 +1,44 @@
+import "leaflet/dist/leaflet.css";
+import "./LeafMap.css";
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import "./LeafMap.css"; // スタイルシートをインポート
 import L from "leaflet";
 import { readPinData } from '../../database/dbaccess';
+import { page_navigate, PAGES } from "../../Pages"
+import { useLocation } from "react-router-dom";
 
 // アイコン設定
-import iconUrl from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
 const defaultIcon = L.icon({
-  iconUrl,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]
 });
-L.Marker.prototype.options.icon = defaultIcon;
 
+export default function LeafMap() {
+  const location = useLocation();
+  const eventid = location.state as string;
 
-// --- Propsの型定義を更新 ---
-type LeafMapProps = {
-  onBack: () => void;
-  onShowOrganizerLogin: () => void;
-  onShowVendorLogin: () => void;
-  eventid: string;
-};
-
-
-let pinData: any[] = [];
-
-export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogin, eventid }: LeafMapProps) {
-  
   // リロード時実行
-  const [_pins, setPins] = useState<any[]>([]);
+  const [pinData, setPins] = useState<any[]>([]);
   useEffect(() => {
     async function fetchData() {
-      pinData = await readPinData(eventid);
-      setPins(pinData);
+      const data = await readPinData(eventid);
+      setPins(data);
     }
     fetchData();
   }, [eventid]);
 
   return (
-    // --- 全画面を覆う親要素に変更 ---
     <div className="leafmap-screen">
       
       {/* --- ヘッダーとボタンを追加 --- */}
       <header className="leafmap-header">
-        <button className="btn-back" onClick={onBack}>&lt; 戻る</button>
+        <button className="btn-back" onClick={() => page_navigate(PAGES.EVENT_SELECT)}>&lt; 戻る</button>
         <div className="header-right-buttons">
-          <button className="btn-header" onClick={onShowOrganizerLogin}>主催者はこちら</button>
-          <button className="btn-header" onClick={onShowVendorLogin}>出店者はこちら</button>
+          <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
+          <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
         </div>
       </header>
 
@@ -65,14 +54,14 @@ export default function LeafMap({ onBack, onShowOrganizerLogin, onShowVendorLogi
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-      {pinData.map((pin) => {
-        // shopIDの有無でプロパティ名を切り替え
+        
+      {pinData && pinData.length > 0 && pinData.map((pin) => {
         const name = pin.shopID ? pin.shopname : pin.name;
         const lat = pin.shopID ? pin.x_pos : pin.lat;
         const lng = pin.shopID ? pin.y_pos : pin.lng;
 
         return (
-          <Marker key={name} position={[lat, lng]}>
+          <Marker key={name} position={[lat, lng]} icon={defaultIcon}>
             <Popup>
               {pin.shopID ? (
                 // --- shopIDがある場合 ---

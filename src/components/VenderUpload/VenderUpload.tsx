@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import type { FC } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import './VenderUpload.css';
+import { useState, useEffect, useRef } from 'react';
+import L from 'leaflet';
+import { writePinData } from "../../database/dbaccess"
+import { page_navigate, PAGES } from '../../Pages';
 
 // --- Leaflet Icon Fix ---
 const defaultIcon = L.icon({
@@ -13,15 +13,8 @@ const defaultIcon = L.icon({
     popupAnchor: [1, -34]
 });
 
-// --- Props Type Definition ---
-type VenderUploadProps = {
-    eventId: string;
-    onBack: () => void;
-    writePinData: (eventId: string, lat: number, lng: number, name: string, description: string) => Promise<void>;
-};
-
 // --- VenderUpload Component ---
-const VenderUpload: FC<VenderUploadProps> = ({ eventId, onBack, writePinData }) => {
+export default function VenderUpload(){
     const mapRef = useRef<L.Map | null>(null);
     const markerRef = useRef<L.Marker | null>(null);
     const [isPinningMode, setIsPinningMode] = useState(false);
@@ -89,7 +82,7 @@ const VenderUpload: FC<VenderUploadProps> = ({ eventId, onBack, writePinData }) 
             return;
         }
         // In Leaflet, Lat is Y, Lng is X.
-        writePinData(eventId, pinLocation.lat, pinLocation.lng, pinName, pinDescription)
+        writePinData("0", pinLocation.lat, pinLocation.lng, pinName, pinDescription)
             .then(() => {
                 alert("ピンを保存しました！");
                 // Reset form state but keep the saved marker on map (or remove it)
@@ -110,7 +103,7 @@ const VenderUpload: FC<VenderUploadProps> = ({ eventId, onBack, writePinData }) 
     return (
         <div className="screen map-screen">
             <header className="map-header">
-                <button className="btn-back" onClick={onBack}>&lt; 地図に戻る</button>
+                <button className="btn-back" onClick={() => page_navigate(PAGES.LEAF_MAP, "0")}>&lt; 地図に戻る</button>
             </header>
             
             <div id="map-container" className={isPinningMode ? 'pinning-mode' : ''}></div>
@@ -148,5 +141,3 @@ const VenderUpload: FC<VenderUploadProps> = ({ eventId, onBack, writePinData }) 
         </div>
     );
 };
-
-export default VenderUpload;

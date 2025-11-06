@@ -1,13 +1,9 @@
+import './VenderLogin.css';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import './VenderLogin.css';
+import { PAGES, page_navigate } from '../../Pages';
 
-type VendorLoginProps = {
-  onBack: () => void;
-  onLoginSuccess: () => void;
-};
-
-function VendorLogin({ onBack, onLoginSuccess }: VendorLoginProps) {
+export default function VendorLogin() {
   // --- State for inputs and error message ---
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +16,7 @@ function VendorLogin({ onBack, onLoginSuccess }: VendorLoginProps) {
     if (loginId === 'yatai' && password === 'now') {
       console.log('Vendor login successful');
       setError(''); // Clear any previous errors
-      onLoginSuccess(); // Navigate to the next screen (LeafMap)
+      page_navigate(PAGES.VEND_UPLOAD)
     } else {
       setError('ログインIDまたはパスワードが違います');
     }
@@ -29,7 +25,7 @@ function VendorLogin({ onBack, onLoginSuccess }: VendorLoginProps) {
   return (
     <div className="screen login-screen">
       <header className="login-header">
-        <button className="btn-back" onClick={onBack}>&lt; 戻る</button>
+        <button className="btn-back" onClick={() => page_navigate(PAGES.LEAF_MAP)}>&lt; 戻る</button>
       </header>
       <div className="login-container">
         <h2>出店者ログインページ</h2>
@@ -57,5 +53,3 @@ function VendorLogin({ onBack, onLoginSuccess }: VendorLoginProps) {
     </div>
   );
 }
-
-export default VendorLogin;
