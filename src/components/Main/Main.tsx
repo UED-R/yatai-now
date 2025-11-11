@@ -2,7 +2,7 @@ import './Main.css';
 import { useState } from "react";
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { PAGES, page_navigate } from '../../Pages';
-import ICON from '../../image/map_test2.svg';
+import MAP_SVG from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
 
 
@@ -44,7 +44,7 @@ export default function Main() {
           wrapperClass='map-area'
           contentClass='map-content-vector'>
           <div  onClick={() => setSelectedPin(null)}>
-            <img src={ICON} alt="map" className='map-svg'/>
+            <img src={MAP_SVG} alt="map" className='map-svg'/>
           </div>
           {pinList.map((pin) => (
             <div

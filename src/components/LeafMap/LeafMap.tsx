@@ -56,20 +56,19 @@ export default function LeafMap() {
         />
         
       {pinData && pinData.length > 0 && pinData.map((pin) => {
-        const name = pin.shopID ? pin.shopname : pin.name;
-        const lat = pin.shopID ? pin.x_pos : pin.lat;
-        const lng = pin.shopID ? pin.y_pos : pin.lng;
+        const lat = pin.id ? pin.y_ido : pin.lat;
+        const lng = pin.id ? pin.x_keido : pin.lng;
 
         return (
-          <Marker key={name} position={[lat, lng]} icon={defaultIcon}>
+          <Marker key={pin.name} position={[lat, lng]} icon={defaultIcon}>
             <Popup>
-              {pin.shopID ? (
+              {pin.id ? (
                 // --- shopIDがある場合 ---
                 <div>
-                  <strong>{name}</strong>
+                  <strong>{pin.name}</strong>
                   <br />
                   <p>{pin.description}</p>
-                  <p>店舗ID: {pin.shopID}</p>
+                  <p>店舗ID: {pin.id}</p>
                   <p>出店団体：{pin.teamname}</p>
                   <p>概要：{pin.description}</p>
                   <p>場所：{pin.place}</p>
@@ -80,7 +79,7 @@ export default function LeafMap() {
               ) : (
                 // --- shopIDがない場合 ---
                 <div>
-                  <strong>{name}</strong>
+                  <strong>{pin.name}</strong>
                   <br />
                   <p>{pin.description}</p>
                 </div>

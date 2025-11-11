@@ -40,10 +40,15 @@ function getCurrentTimestamp(): string {
 }
 
 // データ書き込み
-export function writePinData(eventId: string, lat: number, lng: number, name: string, description: string) {
-  const pinId = getCurrentTimestamp();
-  // 保存するオブジェクトをデータベースのキーに合わせる
-  return set(ref(fire_database, `${eventId}/${pinId}`), { lat, lng, name, description });
+export function writePinData(eventId: string, y_ido: number, x_keido: number, name: string, description: string) {
+  const timeid = getCurrentTimestamp();
+  if (eventId === "0"){
+    return set(ref(fire_database, `${eventId}/${timeid}`), { "lat":y_ido, "lng":x_keido, name, description});
+  }else if(eventId === "1"){
+    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "areagroupid":"area01" });
+  }else{
+    return Promise.reject(new Error("Unsupported eventId"));
+  }
 }
 
 // データ読み込み

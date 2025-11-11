@@ -13,11 +13,11 @@
 }
 
 .event-button {
-  padding: 20px 60px;
+  padding: 20px 50px;
   font-size: 1.8em;
   font-weight: bold;
-  color: #e58c6a;
-  background-color: white;
+  color: white;
+  background-color: lightsalmon;
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -28,4 +28,16 @@
 .event-button:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 25px rgba(0,0,0,0.25);
+}
+
+.debug-button {
+  padding: 10px 20px;
+  font-size: 0.5em;
+  color: #e58c6a;
+  background-color: gray;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
 }
