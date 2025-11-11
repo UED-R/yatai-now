@@ -42,7 +42,7 @@ export default function LeafMap() {
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
-  const defaultZoom = 16;
+  const defaultZoom = 18;
   const [zoomLevel, setZoomLevel] = useState(defaultZoom); //型指定なしのuseState、初期値は初期拡大率
   const visibleGroup = (zoomLevel >= 19) ? "shop" : "area"; // グループ切替
   const bounds: [[number, number], [number, number]] = [
