@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get } from "firebase/database";
+import { getAuth, signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
 
 // 呼び出し方
 // 他のファイルの先頭で import { writePinData, readPinData } from '../../database/dbaccess';
@@ -45,7 +46,7 @@ export function writePinData(eventId: string, y_ido: number, x_keido: number, na
   if (eventId === "0"){
     return set(ref(fire_database, `${eventId}/${timeid}`), { "lat":y_ido, "lng":x_keido, name, description});
   }else if(eventId === "1"){
-    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "areagroupid":"area01" });
+    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "owner":"", "areagroupid":"area01" });
   }else{
     return Promise.reject(new Error("Unsupported eventId"));
   }
@@ -58,5 +59,33 @@ export async function readPinData(eventId: string) {
     return Object.values(snapshot.val()); // 配列で返す
   } else {
     return [];
+  }
+}
+
+// 匿名ユーザのログイン
+export async function anonymousLogin(): Promise<string|null>{
+  const auth = getAuth();
+  try{
+    const userCredential = 
+    await signInAnonymously(auth)
+    const user = userCredential.user;
+    return user.uid; // 成功時：uidを返す
+  }catch (error: any) {
+    console.error("ログイン失敗:", error.code, error.message);
+    return null; // 失敗時：nullを返す
+  }
+}
+
+// 通常ログイン関数
+export async function userLogin(userID: string, userPwd: string): Promise<string|null>{
+  const auth = getAuth();
+  try{
+    const userCredential = 
+    await signInWithEmailAndPassword(auth, userID+"@u.tsukuba.example.test.ac.jp", userPwd)
+    const user = userCredential.user;
+    return user.uid; // 成功時：uidを返す
+  }catch (error: any) {
+    console.error("ログイン失敗:", error.code, error.message);
+    return null; // 失敗時：nullを返す
   }
 }

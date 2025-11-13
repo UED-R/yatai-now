@@ -2,6 +2,7 @@ import './VenderLogin.css';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { PAGES, page_navigate } from '../../Pages';
+import { userLogin } from "../../database/dbaccess";
 
 export default function VendorLogin() {
   // --- State for inputs and error message ---
@@ -9,16 +10,20 @@ export default function VendorLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLoginSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleLoginSubmit = async (e: FormEvent) => {
+    e.preventDefault(); // デフォルトのページ遷移機能を制限
     
-    // --- Login validation logic ---
-    if (loginId === 'yatai' && password === 'now') {
-      console.log('Vendor login successful');
-      setError(''); // Clear any previous errors
-      page_navigate(PAGES.VEND_UPLOAD)
+    if (loginId==="" || password===""){
+      setError("ユーザ名とパスワードを入力してください");
+      return;
+    }
+
+    const uid = await userLogin(loginId, password);
+    if (uid) {
+      console.log("ログイン成功: UID =", uid);
+      page_navigate(PAGES.VEND_UPLOAD);
     } else {
-      setError('ログインIDまたはパスワードが違います');
+      setError("ログインに失敗しました。");
     }
   };
 

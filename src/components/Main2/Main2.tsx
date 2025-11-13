@@ -5,7 +5,7 @@ import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-l
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
-import { readPinData } from '../../database/dbaccess';
+import { readPinData, anonymousLogin } from '../../database/dbaccess';
 import MAP_SVG from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
 
@@ -44,6 +44,7 @@ export default function LeafMap() {
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
   const defaultZoom = 18;
   const [zoomLevel, setZoomLevel] = useState(defaultZoom); //型指定なしのuseState、初期値は初期拡大率
+  const [uid, setUid] = useState<String|null>(null);
   const visibleGroup = (zoomLevel >= 19) ? "shop" : "area"; // グループ切替
   const bounds: [[number, number], [number, number]] = [
     // bounds: [[南西緯度, 南西経度], [北東緯度, 北東経度]]
@@ -53,13 +54,18 @@ export default function LeafMap() {
 
 
   // useEffect：画面のレンダリング完了後に自動実行
-  // firebaseDBからピンを取得
+  
   useEffect(() => {
-    async function fetchData() {
+    async function autoLogin(){
+      const tempuid = await anonymousLogin();
+      setUid(tempuid);
+    }
+    async function fetchData() {// firebaseDBからピンを取得
       const data = await readPinData(eventid);
       setPins(data);
     }
-    fetchData();
+    autoLogin(); // 匿名ユーザでログイン
+    fetchData(); // ピンをread
   }, []);
 
   
