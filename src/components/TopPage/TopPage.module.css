@@ -12,6 +12,15 @@
   text-align: center;
 }
 
+.subtitle {
+  font-size: 1.1em;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  margin-bottom: 20px;
+  padding: 0 20px;
+  max-width: 600px;
+}
+
 .event-button {
   padding: 20px 50px;
   font-size: 1.8em;

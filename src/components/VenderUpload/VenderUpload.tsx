@@ -1,4 +1,4 @@
-import './VenderUpload.css';
+import styles from './VenderUpload.module.css';
 import { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { writePinData } from "../../database/dbaccess"
@@ -101,21 +101,21 @@ export default function VenderUpload(){
     };
 
     return (
-        <div className="screen map-screen">
-            <header className="map-header">
-                <button className="btn-back" onClick={() => page_navigate(PAGES.LEAF_MAP, "0")}>&lt; 地図に戻る</button>
+        <div className={`screen-general ${styles["map-screen"]}`}>
+            <header className={styles["map-header"]}>
+                <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
             </header>
             
             <div id="map-container" className={isPinningMode ? 'pinning-mode' : ''}></div>
             
-            <div className="upload-panel">
+            <div className={styles["upload-panel"]}>
                 {!pinLocation && !isPinningMode && (
                     <button className="btn-panel btn-primary" onClick={handleStartPinning}>ピンを新規作成</button>
                 )}
                 {isPinningMode && (
                     <>
                         <p>地図上をクリックしてピンを設置してください</p>
-                        <button className="btn-panel btn-secondary" onClick={() => setIsPinningMode(false)}>キャンセル</button>
+                        <button className={`${styles["btn-panel"]} ${styles["btn-secondary"]}`} onClick={() => setIsPinningMode(false)}>キャンセル</button>
                     </>
                 )}
                 {pinLocation && (
@@ -133,8 +133,8 @@ export default function VenderUpload(){
                             onChange={(e) => setPinDescription(e.target.value)}
                             placeholder="ピンの説明（例：ソースの味がたまらない！）"
                         />
-                        <button className="btn-panel btn-success" onClick={handleSavePin}>この場所に保存</button>
-                        <button className="btn-panel btn-secondary" onClick={handleCancelPinning}>やり直す</button>
+                        <button className={`${styles["btn-panel"]} ${styles["btn-success"]}`} onClick={handleSavePin}>この場所に保存</button>
+                        <button className={`${styles["btn-panel"]} ${styles["btn-secondary"]}`} onClick={handleCancelPinning}>やり直す</button>
                     </>
                 )}
             </div>

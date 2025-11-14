@@ -9,7 +9,7 @@ body {
 /* 各画面コンポーネントのルート要素に適用される基本クラス。
   画面全体に広がり、中身を中央に配置するFLEXBOXの基本設定。
 */
-.screen {
+.screen-general {
   display: flex;
   flex-direction: column;
   width: 100vw;
