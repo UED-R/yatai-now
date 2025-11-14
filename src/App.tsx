@@ -8,7 +8,7 @@ import "./Pages";
 // 追加したいページのプロジェクト上でのファイルパス
 import EventSelect      from './components/TopPage/TopPage';
 // import Main             from './components/Main/Main';
-import Main2            from './components/MainMap/MaimMap';
+import Main2            from './components/MainMap/MainMap';
 import OrganizerLogin   from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin      from './components/VenderLogin/VenderLogin';
 import VenderUpload     from './components/VenderUpload/VenderUpload';
