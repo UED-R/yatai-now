@@ -38,7 +38,7 @@ function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
   return null;
 }
 
-export default function LeafMap() {
+export default function MainMap() {
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
@@ -53,7 +53,6 @@ export default function LeafMap() {
 
 
   // useEffect：画面のレンダリング完了後に自動実行
-  
   useEffect(() => {
     anonymousLogin(); // 匿名ユーザでログイン
     async function fetchData() {// firebaseDBからピンを取得

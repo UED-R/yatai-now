@@ -115,3 +115,24 @@
 .upload-panel .btn-success:hover {
     background-color: #218838;
 }
+
+.leafmap-footer {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 9999;
+}
+
+.btn-create {
+  background: #ffcc66;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+}
+
+
+.cursor-pin {
+  cursor: url('https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png') 12 41, pointer;
+}

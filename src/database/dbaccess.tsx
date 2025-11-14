@@ -41,12 +41,12 @@ function getCurrentTimestamp(): string {
 }
 
 // データ書き込み
-export function writePinData(eventId: string, y_ido: number, x_keido: number, name: string, description: string) {
+export function writePinData(eventId: string, y_ido: number, x_keido: number, name: string, description: string, owneruid: string) {
   const timeid = getCurrentTimestamp();
   if (eventId === "0"){
     return set(ref(fire_database, `${eventId}/${timeid}`), { "lat":y_ido, "lng":x_keido, name, description});
   }else if(eventId === "1"){
-    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "owner":"", "areagroupid":"area01" });
+    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "owner":owneruid, "areagroupid":"area01" });
   }else{
     return Promise.reject(new Error("Unsupported eventId"));
   }
