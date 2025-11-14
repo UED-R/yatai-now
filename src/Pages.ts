@@ -5,8 +5,8 @@ import type { NavigateFunction } from "react-router-dom";
 export const PAGES = {
   LEAF_MAP:       "/yatai-now/LeafMap",
   MAIN:           "/yatai-now/Main",
-  MAIN2:          "/yatai-now/Main2",
-  EVENT_SELECT:   "/yatai-now/",
+  MainMap:          "/yatai-now/MainMap",
+  TopPage:   "/yatai-now/",
   VEND_LOGIN:     "/yatai-now/VendorLogin",
   ORG_LOGIN:      "/yatai-now/OrganizerLogin",
   VEND_UPLOAD:    "/yatai-now/VendorUpload",

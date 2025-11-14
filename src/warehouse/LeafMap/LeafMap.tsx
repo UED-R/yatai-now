@@ -1,5 +1,5 @@
 import "leaflet/dist/leaflet.css";
-import "./LeafMap.css";
+import "./LeafMap.module.css";
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
