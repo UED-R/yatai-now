@@ -5,7 +5,7 @@ import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-l
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
-import { readPinData, writePinData } from '../../database/dbaccess';
+import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 import MAP_SVG from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
 import { getAuth } from "firebase/auth";
@@ -55,15 +55,28 @@ export default function VenderUpload() {
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
     const [newPinName, setNewPinName] = useState("");
     const [newPinDesc, setNewPinDesc] = useState("");
+    const [myPin, setMyPin] = useState<any | null>(null);
 
-    // 仮：DB保存関数
-    function saveNewPinToDB(lat: number, lng: number, name: string, desc: string) {
-        console.log("Saving to DB...", { lat, lng, name, desc });
-        const auth = getAuth();
-        const user = auth.currentUser;
-        writePinData("1", lat, lng, name, desc, user?.uid as string );
-        window.location.reload();
+
+    async function saveNewPinToDB(y_ido: number, x_keido: number, name: string, description: string) {
+    const auth = getAuth();
+    const uid = auth.currentUser?.uid as string;
+
+    if (!myPin) {
+        // ✧ 新規作成
+        await writePinData(eventid, y_ido, x_keido, name, description, uid);
+        console.log("新規作成しました");
+    } else {
+        // ✧ 更新処理（updatePinData を作る）
+        await updatePinData(eventid, myPin.id, {
+            y_ido, x_keido, name, description
+        });
+        console.log("更新しました");
     }
+
+    window.location.reload();
+}
+
 
     // ピン作成モードで地図クリックしたとき
     function handleCreateClick(pos: [number, number]) {
@@ -73,13 +86,24 @@ export default function VenderUpload() {
 
     // useEffect：画面のレンダリング完了後に自動実行
     useEffect(() => {
-        // すでにログインしているはず
-        async function fetchData() {// firebaseDBからピンを取得
+        async function fetchData() {
+            const auth = getAuth();
+            const user = auth.currentUser;
+            const uid = user?.uid;
+
             const data = await readPinData(eventid);
             setPins(data);
+
+            // 自分のピンを探す
+            const mine = data.find(p => p.owner === uid);
+            if (mine) {
+                setMyPin(mine);  // 既存の自分のピン
+            }
         }
-        fetchData(); // ピンをread
+
+        fetchData();
     }, []);
+
 
   
   function renderPinMarker(pin: any) {
@@ -250,7 +274,7 @@ export default function VenderUpload() {
             setNewPinDesc("");
             }}
         >
-            ピンを新規作成
+            {myPin ? "ピンを更新" : "ピンを新規作成"}
         </button>
         </div>
     </div>

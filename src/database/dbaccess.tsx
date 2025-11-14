@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, child, get } from "firebase/database";
+import { getDatabase, ref, set, child, get, update } from "firebase/database";
 import { getAuth, signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
 
 // 呼び出し方
@@ -46,7 +46,7 @@ export function writePinData(eventId: string, y_ido: number, x_keido: number, na
   if (eventId === "0"){
     return set(ref(fire_database, `${eventId}/${timeid}`), { "lat":y_ido, "lng":x_keido, name, description});
   }else if(eventId === "1"){
-    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "owner":owneruid, "areagroupid":"area01" });
+    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`${timeid}`, "class":"shop", y_ido, x_keido, name, description, "owner":owneruid, "areagroupid":"area01" });
   }else{
     return Promise.reject(new Error("Unsupported eventId"));
   }
@@ -61,6 +61,12 @@ export async function readPinData(eventId: string) {
     return [];
   }
 }
+
+export async function updatePinData(eventid: string, pinId: string, newValues: any) {
+    const pinRef = ref(fire_database, `${eventid}/${pinId}`);
+    return update(pinRef, newValues);
+}
+
 
 // 匿名ユーザのログイン
 export async function anonymousLogin(): Promise<string|null>{
