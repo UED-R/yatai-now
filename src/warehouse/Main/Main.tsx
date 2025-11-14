@@ -25,7 +25,7 @@ export default function Main() {
   return (
     <div className="screen-general main-screen">
       <header className="main-header">
-        <button className="btn-back" onClick={() => page_navigate(PAGES.EVENT_SELECT)}>&lt; 戻る</button>
+        <button className="btn-back" onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
         <div className="header-right-buttons">
           <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
           <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
