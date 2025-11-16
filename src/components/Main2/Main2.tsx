@@ -5,7 +5,7 @@ import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-l
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
-import { readPinData, anonymousLogin } from '../../database/dbaccess';
+import { readPinData } from '../../database/dbaccess';
 import MAP_SVG from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
 
@@ -54,7 +54,6 @@ export default function MainMap() {
 
   // useEffect：画面のレンダリング完了後に自動実行
   useEffect(() => {
-    anonymousLogin(); // 匿名ユーザでログイン
     async function fetchData() {// firebaseDBからピンを取得
       const data = await readPinData(eventid);
       setPins(data);

@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get, update } from "firebase/database";
-import { getAuth, signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 // 呼び出し方
 // 他のファイルの先頭で import { writePinData, readPinData } from '../../database/dbaccess';
@@ -28,25 +28,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const fire_database = getDatabase(app);
 
-// 現在時刻の文字列を返す(ID用)
-function getCurrentTimestamp(): string {
-  const now = new Date();
-  const year   = now.getFullYear();
-  const month  = String(now.getMonth() + 1).padStart(2, "0");
-  const day    = String(now.getDate()).padStart(2, "0");
-  const hour   = String(now.getHours()).padStart(2, "0");
-  const minute = String(now.getMinutes()).padStart(2, "0");
-  const second = String(now.getSeconds()).padStart(2, "0");
-  return `${year}${month}${day}_${hour}${minute}${second}`;
-}
-
 // データ書き込み
-export function writePinData(eventId: string, y_ido: number, x_keido: number, name: string, description: string, owneruid: string) {
-  const timeid = getCurrentTimestamp();
+export function writePinData(eventId: string, y_ido: number, x_keido: number, name: string, description: string) {
+  const auth = getAuth();
+	const owneruid = auth.currentUser?.uid as string;
   if (eventId === "0"){
-    return set(ref(fire_database, `${eventId}/${timeid}`), { "lat":y_ido, "lng":x_keido, name, description});
+    return set(ref(fire_database, `${eventId}/${owneruid}`), { "lat":y_ido, "lng":x_keido, name, description});
   }else if(eventId === "1"){
-    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`${timeid}`, "class":"shop", y_ido, x_keido, name, description, "owner":owneruid, "areagroupid":"area01" });
+    return set(ref(fire_database, `${eventId}/${owneruid}`), { "class":"shop", y_ido, x_keido, name, description, "areagroupid":"area01" });
   }else{
     return Promise.reject(new Error("Unsupported eventId"));
   }
@@ -55,31 +44,17 @@ export function writePinData(eventId: string, y_ido: number, x_keido: number, na
 // データ読み込み
 export async function readPinData(eventId: string) {
   const snapshot = await get(child(ref(fire_database), eventId));
-  if (snapshot.exists()) {
-    return Object.values(snapshot.val()); // 配列で返す
+  if (snapshot.exists()) { //jsonのkeyがuidなので、それをidにしてvalueに含める
+    return Object.entries(snapshot.val()).map(([key, value]) => ({ id: key, ...(value as Record<string, any>) }));
   } else {
     return [];
   }
 }
 
-export async function updatePinData(eventid: string, pinId: string, newValues: any) {
-    const pinRef = ref(fire_database, `${eventid}/${pinId}`);
-    return update(pinRef, newValues);
-}
-
-
-// 匿名ユーザのログイン
-export async function anonymousLogin(): Promise<string|null>{
-  const auth = getAuth();
-  try{
-    const userCredential = 
-    await signInAnonymously(auth)
-    const user = userCredential.user;
-    return user.uid; // 成功時：uidを返す
-  }catch (error: any) {
-    console.error("ログイン失敗:", error.code, error.message);
-    return null; // 失敗時：nullを返す
-  }
+export async function updatePinData(eventid: string, newValues: any) {
+    const auth = getAuth();
+    const owneruid = auth.currentUser?.uid as string;
+    return update(ref(fire_database, `${eventid}/${owneruid}`), newValues);
 }
 
 // 通常ログイン関数

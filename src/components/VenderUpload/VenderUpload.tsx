@@ -3,7 +3,6 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
 import L from "leaflet";
-import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 import MAP_SVG from '../../image/map_test2.svg';
@@ -47,9 +46,9 @@ export default function VenderUpload() {
     const [zoomLevel, setZoomLevel] = useState(defaultZoom); //型指定なしのuseState、初期値は初期拡大率
     const visibleGroup = (zoomLevel >= 19) ? "shop" : "area"; // グループ切替
     const bounds: [[number, number], [number, number]] = [
-    // bounds: [[南西緯度, 南西経度], [北東緯度, 北東経度]]
-    [36.108, 140.098], // 左下y,x
-    [36.112, 140.104]  // 右上y,x
+		// bounds: [[南西緯度, 南西経度], [北東緯度, 北東経度]]
+		[36.108, 140.098], // 左下y,x
+		[36.112, 140.104]  // 右上y,x
     ];
     const [isCreating, setIsCreating] = useState(false);
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
@@ -59,29 +58,25 @@ export default function VenderUpload() {
 
 
     async function saveNewPinToDB(y_ido: number, x_keido: number, name: string, description: string) {
-    const auth = getAuth();
-    const uid = auth.currentUser?.uid as string;
-
-    if (!myPin) {
-        // ✧ 新規作成
-        await writePinData(eventid, y_ido, x_keido, name, description, uid);
-        console.log("新規作成しました");
-    } else {
-        // ✧ 更新処理（updatePinData を作る）
-        await updatePinData(eventid, myPin.id, {
-            y_ido, x_keido, name, description
-        });
-        console.log("更新しました");
-    }
-
-    window.location.reload();
-}
+		if (!myPin) {
+			// 新規作成
+			console.log("新規作成します：");
+			await writePinData(eventid, y_ido, x_keido, name, description);
+		} else {
+			// 更新処理（updatePinData を作る）
+			console.log("更新します："+myPin.id);
+			await updatePinData(eventid, {
+				y_ido, x_keido, name, description
+			});
+		}
+		window.location.reload();
+	}
 
 
     // ピン作成モードで地図クリックしたとき
     function handleCreateClick(pos: [number, number]) {
         setNewPinPos(pos);
-        setZoomLevel(20);  // 指定のズームへ
+        // setZoomLevel(20);  // 指定のズームへ
     }
 
     // useEffect：画面のレンダリング完了後に自動実行
@@ -95,12 +90,11 @@ export default function VenderUpload() {
             setPins(data);
 
             // 自分のピンを探す
-            const mine = data.find(p => p.owner === uid);
+            const mine = data.find((p: any) => p.owner === uid);
             if (mine) {
                 setMyPin(mine);  // 既存の自分のピン
             }
         }
-
         fetchData();
     }, []);
 
@@ -189,93 +183,74 @@ export default function VenderUpload() {
 
   return (
     <div className="leafmap-screen">
-      {/* --- ヘッダーとボタン --- */}
-      <header className="leafmap-header">
-        <button className="btn-back" onClick={() => page_navigate(PAGES.MAIN2,"1")}>&lt; 戻る</button>
-      </header>
+		<header className="leafmap-header">
+		<button className="btn-back" onClick={() => page_navigate(PAGES.MAIN2,"1")}>&lt; 戻る</button>
+		</header>
 
-      <MapContainer
-        center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
-        // 緯度が上下、経度が左右、つまり [y, x]
-        // 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
-        // 1mあたり経度 : 0.000010966382364 ≒ 0.000011
-        zoom={defaultZoom}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom={true}
-        crs={L.CRS.Simple}
-        className={isCreating ? "cursor-pin" : ""}
-      >
+		<MapContainer
+			center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
+			// 緯度が上下、経度が左右、つまり [y, x]
+			// 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
+			// 1mあたり経度 : 0.000010966382364 ≒ 0.000011
+			zoom={defaultZoom}
+			style={{ height: "100%", width: "100%" }}
+			scrollWheelZoom={true}
+			crs={L.CRS.Simple}
+			className={isCreating ? "cursor-pin" : ""}
+		>
         <ImageOverlay url={MAP_SVG} bounds={bounds} />
-
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
-        
-        {pinData.map((pin) => renderPinMarker(pin))}
+		<CreatePinHandler isCreating={isCreating} onCreate={handleCreateClick}/>
 
-        <CreatePinHandler 
-            isCreating={isCreating}
-            onCreate={handleCreateClick}
-        />
+        {pinData.map((pin) => renderPinMarker(pin))}       
 
         {newPinPos && (
             <Marker position={newPinPos} icon={myIcon}>
             <Popup>
                 <div style={{ width: "200px" }}>
-                <strong>新しいピン</strong>
-                <div>
-                    <label>名前：</label>
-                    <input 
-                    type="text"
-                    value={newPinName}
-                    onChange={(e) => setNewPinName(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>説明：</label>
-                    <textarea
-                    value={newPinDesc}
-                    onChange={(e) => setNewPinDesc(e.target.value)}
-                    />
-                </div>
+					<strong>新しいピン</strong>
+					<div>
+						<label>名前：</label>
+						<input 
+						type="text"
+						value={newPinName}
+						onChange={(e) => setNewPinName(e.target.value)}
+						/>
+					</div>
+					<div>
+						<label>説明：</label>
+						<textarea
+						value={newPinDesc}
+						onChange={(e) => setNewPinDesc(e.target.value)}
+						/>
+					</div>
 
-                <button
-                    onClick={() => {
-                    saveNewPinToDB(newPinPos[0], newPinPos[1], newPinName, newPinDesc);
-                    setIsCreating(false);
-                    setNewPinPos(null);
-                    setNewPinName("");
-                    setNewPinDesc("");
-                    }}
-                >
-                    OK
-                </button>
+					<button onClick={() => {
+						saveNewPinToDB(newPinPos[0], newPinPos[1], newPinName, newPinDesc);
+						setIsCreating(false);
+						setNewPinPos(null);
+						setNewPinName("");
+						setNewPinDesc("");
+					}}>OK</button>
 
-                <button
-                    onClick={() => {
-                    setIsCreating(false);
-                    setNewPinPos(null);
-                    setNewPinName("");
-                    setNewPinDesc("");
-                    }}
-                >
-                    キャンセル
-                </button>
+					<button	onClick={() => {
+						setIsCreating(false);
+						setNewPinPos(null);
+						setNewPinName("");
+						setNewPinDesc("");
+					}}>キャンセル</button>
                 </div>
             </Popup>
             </Marker>
         )}
-      </MapContainer>
-      <div className="leafmap-footer">
-        <button
-            className="btn-create"
-            onClick={() => {
-            setIsCreating(true);
-            setNewPinPos(null);
-            setNewPinName("");
-            setNewPinDesc("");
-            }}
-        >
-            {myPin ? "ピンを更新" : "ピンを新規作成"}
-        </button>
+		</MapContainer>
+		<div className="leafmap-footer">
+			<button className="btn-create" onClick={() => {
+				setIsCreating(true);
+				setNewPinPos(null);
+				setNewPinName("");
+				setNewPinDesc("");
+			}}>{myPin ? "ピンを更新" : "ピンを新規作成"}</button>
         </div>
     </div>
   );
