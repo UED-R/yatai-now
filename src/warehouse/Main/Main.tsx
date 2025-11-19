@@ -1,4 +1,4 @@
-import './Main.css';
+import './Main.module.css';
 import { useState } from "react";
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { PAGES, page_navigate } from '../../Pages';
@@ -23,9 +23,9 @@ export default function Main() {
   const [selectedPin, setSelectedPin] = useState<PinData | null>(null);
 
   return (
-    <div className="screen main-screen">
+    <div className="screen-general main-screen">
       <header className="main-header">
-        <button className="btn-back" onClick={() => page_navigate(PAGES.EVENT_SELECT)}>&lt; 戻る</button>
+        <button className="btn-back" onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
         <div className="header-right-buttons">
           <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
           <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>

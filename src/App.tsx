@@ -6,13 +6,13 @@ import "./Pages";
 
 
 // 追加したいページのプロジェクト上でのファイルパス
-import EventSelect      from './components/EventSelect/EventSelect';
-import Main             from './components/Main/Main';
-import Main2            from './components/Main2/Main2';
+import EventSelect      from './components/TopPage/TopPage';
+// import Main             from './components/Main/Main';
+import Main2            from './components/MainMap/MainMap';
 import OrganizerLogin   from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin      from './components/VenderLogin/VenderLogin';
 import VenderUpload     from './components/VenderUpload/VenderUpload';
-import LeafMap          from './components/LeafMap/LeafMap';
+// import LeafMap          from './components/LeafMap/LeafMap';
 import { PAGES }        from './Pages';
 
 
@@ -29,13 +29,13 @@ export default function App() {
     <Router>
       <NavigatorInitializer />
       <Routes>
-        <Route path={PAGES.EVENT_SELECT}  element={<EventSelect />} />
-        <Route path={PAGES.MAIN}          element={<Main />} />
-        <Route path={PAGES.MAIN2}         element={<Main2 />} />
+        <Route path={PAGES.TopPage}  element={<EventSelect />} />
+        {/* <Route path={PAGES.MAIN}          element={<Main />} /> */}
+        <Route path={PAGES.MainMap}         element={<Main2 />} />
         <Route path={PAGES.ORG_LOGIN}     element={<OrganizerLogin />} />
         <Route path={PAGES.VEND_LOGIN}    element={<VenderLogin />} />
         <Route path={PAGES.VEND_UPLOAD}   element={<VenderUpload />} />
-        <Route path={PAGES.LEAF_MAP}      element={<LeafMap />} />
+        {/* <Route path={PAGES.LEAF_MAP}      element={<LeafMap />} /> */}
       </Routes>
     </Router>
   );

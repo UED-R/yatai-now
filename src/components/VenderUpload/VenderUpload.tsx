@@ -1,4 +1,4 @@
-import './VenderUpload.css';
+import styles from './VenderUpload.module.css';
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useRef } from "react";
 import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
@@ -8,6 +8,7 @@ import { readPinData, writePinData, updatePinData } from '../../database/dbacces
 import MAP_SVG from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 
 
 // アイコン設定
@@ -201,7 +202,7 @@ export default function VenderUpload() {
   return (
     <div className="leafmap-screen">
 		<header className="leafmap-header">
-		<button className="btn-back" onClick={() => page_navigate(PAGES.MAIN2,"1")}>&lt; 戻る</button>
+		<button className="btn-back" onClick={() => page_navigate(PAGES.MainMap,"1")}>&lt; 戻る</button>
 		</header>
 
 		<MapContainer

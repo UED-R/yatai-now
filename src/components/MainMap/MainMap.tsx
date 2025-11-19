@@ -1,4 +1,4 @@
-import "./Main2.css";
+import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
@@ -131,13 +131,13 @@ export default function MainMap() {
   }  
 
   return (
-    <div className="leafmap-screen">
+    <div className={styles["leafmap-screen"]}>
       {/* --- ヘッダーとボタン --- */}
-      <header className="leafmap-header">
-        <button className="btn-back" onClick={() => page_navigate(PAGES.EVENT_SELECT)}>&lt; 戻る</button>
-        <div className="header-right-buttons">
-          <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
-          <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
+      <header className={styles["leafmap-header"]}>
+        <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
+        <div className={styles["header-right-buttons"]}>
+          <button className={styles["btn-header"]} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
+          <button className={styles["btn-header"]} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
         </div>
       </header>
 
