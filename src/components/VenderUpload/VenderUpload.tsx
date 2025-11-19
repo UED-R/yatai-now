@@ -82,9 +82,6 @@ export default function VenderUpload() {
 			console.log("更新します："+myPin.id);
 			await updatePinData(eventid, {y_ido, x_keido, name, description});
 		}
-		function sleep(ms: number) {
-			return new Promise(resolve => setTimeout(resolve, ms));
-		}
     }
 
 
