@@ -134,11 +134,11 @@ export default function LeafMap() {
   return (
     <div className={styles["leafmap-screen"]}>
       {/* --- ヘッダーとボタン --- */}
-      <header className={styles["leafmap-header"]}>
-        <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
+      <header className={"common-header"}>
+        <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
         <div className={styles["header-right-buttons"]}>
-          <button className={styles["btn-header"]} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
-          <button className={styles["btn-header"]} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
+          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
+          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
         </div>
       </header>
 

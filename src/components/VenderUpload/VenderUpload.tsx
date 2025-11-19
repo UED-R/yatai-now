@@ -102,8 +102,8 @@ export default function VenderUpload(){
 
     return (
         <div className={`screen-general ${styles["map-screen"]}`}>
-            <header className={styles["map-header"]}>
-                <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
+            <header className={"common-header"}>
+                <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
             </header>
             
             <div id="map-container" className={isPinningMode ? 'pinning-mode' : ''}></div>

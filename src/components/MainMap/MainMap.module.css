@@ -6,7 +6,7 @@
   position: relative;
 }
 
-.leafmap-header {
+/* .leafmap-header {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -17,7 +17,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   
-  z-index: 1000; /* LeafletのUIより手前に表示 */
+  z-index: 1000; 
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,12 +25,12 @@
   padding-right: 20px;
   box-sizing: border-box;
 
-  pointer-events: none; /* ヘッダー部分はクリックできないようにし、地図の操作を妨げない */
+  pointer-events: none;
 }
 
 .leafmap-header > * {
-  pointer-events: auto; /* ボタン自体はクリックできるようにする */
-}
+  pointer-events: auto;
+} */
 
 
 .header-right-buttons {
@@ -38,7 +38,7 @@
   gap: 10px;
 }
 
-.btn-header {
+/* .btn-header {
   padding: 8px 16px;
   font-size: 0.9em;
   color: white;
@@ -66,7 +66,7 @@
 
 .btn-header:hover, .btn-back:hover {
   background-color: rgba(0, 0, 0, 0.8);
-}
+} */
 
 /* Leafletのコンテナが正しく表示されるように */
 .leaflet-container {
