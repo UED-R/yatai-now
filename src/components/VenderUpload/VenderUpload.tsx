@@ -83,7 +83,11 @@ export default function VenderUpload() {
 			await updatePinData(eventid, {y_ido, x_keido, name, description});
 		}
 
+		function sleep(ms: number) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
 
+		sleep(1000);
 		const data = await readPinData(eventid);
 		const auth = getAuth();
 		const uid = auth.currentUser?.uid || null;
