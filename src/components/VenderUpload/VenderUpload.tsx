@@ -79,7 +79,7 @@ export default function VenderUpload() {
 			await writePinData(eventid, y_ido, x_keido, name, description);
 		} else {
 			// 更新処理（updatePinData を作る）
-			console.log("更新します："+myPin.id);
+			console.log("更新します："+myPin.ownerid);
 			await updatePinData(eventid, {y_ido, x_keido, name, description});
 		}
 
