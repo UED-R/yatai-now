@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -87,6 +87,9 @@ export default function MainMap() {
           });
         return (
           <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
+            <Tooltip direction="top" offset={[0, -40]} permanent>
+              <strong>{pin.name}</strong>
+            </Tooltip>
             <Popup>
               <div>
                 <strong>{pin.name}</strong>
@@ -111,6 +114,9 @@ export default function MainMap() {
       }else if(pin.class === "shop"){
         return (
           <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+            <Tooltip direction="top" offset={[0, -40]} permanent>
+              <strong>{pin.name}</strong>
+            </Tooltip>
             <Popup>
               <div>
                 <strong>{pin.name}</strong>

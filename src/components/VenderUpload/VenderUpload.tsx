@@ -1,12 +1,13 @@
 import styles from './VenderUpload.module.css';
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useRef } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 import MAP_SVG from '../../image/map_test2.svg';
-import PIN from '../../image/pin400x300.png';
+import PIN_RED from '/images/pin400x300.png';
+import PIN_GREEN from '/images/pin256_green.png';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
@@ -20,11 +21,18 @@ const defaultIcon = L.icon({
     popupAnchor: [1, -34]
 });
 
-const myIcon = L.icon({
-    iconUrl: PIN,
+const otherIcon = L.icon({
+    iconUrl: PIN_RED,
     iconSize: [60, 45],
     iconAnchor: [30, 45],
     popupAnchor: [1, -34]
+});
+
+const myIcon = L.icon({
+    iconUrl: PIN_GREEN,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [10, -10]
 });
 
 // 関数コンポーネント：呼び出すというよりHTMLのなかにインライン展開する感じ
@@ -118,10 +126,10 @@ export default function VenderUpload() {
 	}
 	}, [isCreating]);
   
-    function renderPinMarker(pin: any) {
+    function renderPinMarker(pin: any, useIcon: L.Icon) {
 		if (eventid === "0"){
 			return (
-			<Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={defaultIcon}>
+			<Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={useIcon}>
 				<Popup>
 				<div>
 					<strong>{pin.name}</strong>
@@ -143,6 +151,9 @@ export default function VenderUpload() {
 				});
 			return (
 				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
+				<Tooltip direction="top" offset={[0, -40]} permanent>
+					<strong>{pin.name}</strong>
+				</Tooltip>
 				<Popup>
 					<div>
 					<strong>{pin.name}</strong>
@@ -166,7 +177,10 @@ export default function VenderUpload() {
 			);
 			}else if(pin.class === "shop"){
 			return (
-				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={useIcon}>
+				<Tooltip direction="top" offset={[0, -40]} permanent>
+					<strong>{pin.name}</strong>
+				</Tooltip>
 				<Popup>
 					<div>
 					<strong>{pin.name}</strong>
@@ -221,10 +235,10 @@ export default function VenderUpload() {
 		<CreatePinHandler isCreating={isCreating} onCreate={handleCreateClick}/>
 
 		{/* 自分以外のピン */}
-        {pinData.map((pin: any) => renderPinMarker(pin))} 
+        {pinData.map((pin: any) => renderPinMarker(pin, otherIcon))} 
 
 		{/* 自分の既存ピン(編集中は非表示) */}
-		{!isCreating && myPin && renderPinMarker(myPin)} 
+		{!isCreating && myPin && renderPinMarker(myPin, myIcon)} 
 
         {newPinPos && ( 
 			// 新しいピン
