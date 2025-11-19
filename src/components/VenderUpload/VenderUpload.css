@@ -132,7 +132,8 @@
   font-size: 16px;
 }
 
-
-.cursor-pin {
-  cursor: url('https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png') 12 41, pointer;
+.pin-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

@@ -1,13 +1,13 @@
 import './VenderUpload.css';
 import "leaflet/dist/leaflet.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
 import L from "leaflet";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 import MAP_SVG from '../../image/map_test2.svg';
 import PIN from '../../image/pin400x300.png';
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
 // アイコン設定
@@ -52,8 +52,14 @@ export default function VenderUpload() {
     ];
     const [isCreating, setIsCreating] = useState(false);
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
-    const [newPinName, setNewPinName] = useState("");
-    const [newPinDesc, setNewPinDesc] = useState("");
+	const [newPinData, setNewPinData] = useState({
+		name: "",
+		descr: ""
+	});
+	function resetNewPinData(){
+        setNewPinPos(null);
+		setNewPinData({name:"",descr:""});
+	}
     const [myPin, setMyPin] = useState<any | null>(null);
 
 
@@ -65,120 +71,131 @@ export default function VenderUpload() {
 		} else {
 			// 更新処理（updatePinData を作る）
 			console.log("更新します："+myPin.id);
-			await updatePinData(eventid, {
-				y_ido, x_keido, name, description
-			});
+			await updatePinData(eventid, {y_ido, x_keido, name, description});
 		}
-		window.location.reload();
-	}
+		function sleep(ms: number) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
+		console.log("リロード1");
+		sleep(3000);
+		console.log("リロード2");
+      	window.location.reload();
+    }
 
 
     // ピン作成モードで地図クリックしたとき
     function handleCreateClick(pos: [number, number]) {
         setNewPinPos(pos);
-        // setZoomLevel(20);  // 指定のズームへ
     }
 
     // useEffect：画面のレンダリング完了後に自動実行
-    useEffect(() => {
-        async function fetchData() {
-            const auth = getAuth();
-            const user = auth.currentUser;
-            const uid = user?.uid;
+	useEffect(() => {
+	const auth = getAuth();
+	const unsubscribe = onAuthStateChanged(auth, async (user) => {
+		// 認証情報が更新されたときに実行
+		const data = await readPinData(eventid);
+		const uid = user?.uid || null;
 
-            const data = await readPinData(eventid);
-            setPins(data);
+		const mine = data.find((p: any) => p.ownerid === uid); //自分のピン
+		if (mine) setMyPin(mine);
 
-            // 自分のピンを探す
-            const mine = data.find((p: any) => p.owner === uid);
-            if (mine) {
-                setMyPin(mine);  // 既存の自分のピン
-            }
-        }
-        fetchData();
-    }, []);
+		const others = data.filter((p: any) => p.ownerid !== uid); //自分以外のピン
+		setPins(others);
+	});
+
+	return () => unsubscribe(); // クリーンアップ
+	}, []);
 
 
+	const mapRef = useRef<L.Map>(null);
+
+	// マウスカーソル切替
+	useEffect(() => { //初回含め、isCreatingが更新されたときに実行
+	if (mapRef.current) {
+		const container = mapRef.current.getContainer();
+		container.style.cursor = isCreating ? "crosshair" : "auto";
+	}
+	}, [isCreating]);
   
-  function renderPinMarker(pin: any) {
-    if (eventid === "0"){
-      return (
-        <Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={defaultIcon}>
-          <Popup>
-            <div>
-              <strong>{pin.name}</strong>
-              <br />
-              <p>概要：{pin.description}</p>
-            </div>
-          </Popup>
-        </Marker>
-      );
-    } else if(eventid === "1"){
-      if(pin.class !== visibleGroup) return null;
-      if(pin.class === "area"){
-        const shoplist = pinData
-          .filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
-            return temp_pindata.class === "shop" && temp_pindata.areagroupid === pin.id;
-          })
-          .map(function(shop) {
-            return shop.name;
-          });
-        return (
-          <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
-            <Popup>
-              <div>
-                <strong>{pin.name}</strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
-                <p>管理団体：{pin.teamname}</p>
-                {shoplist.length > 0 && (
-                  <div>
-                    <p>このエリアのお店：</p>
-                    <ul>
-                      {shoplist.map(function(shopName) {
-                        return <li key={shopName}>{shopName}</li>;
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        );
-      }else if(pin.class === "shop"){
-        return (
-          <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
-            <Popup>
-              <div>
-                <strong>{pin.name}</strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
-                <p>出店団体：{pin.teamname}</p>
-                <p>場所：{pin.place}</p>
-                <p>種別：{pin.type}</p>
-                <p>時間：{pin.starttime}~{pin.endtime}</p>
-                <p>おおよその在庫数：{pin.storage}</p>
-              </div>
-            </Popup>
-          </Marker>
-        );
-      }
-    }
-  }  
+    function renderPinMarker(pin: any) {
+		if (eventid === "0"){
+			return (
+			<Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={defaultIcon}>
+				<Popup>
+				<div>
+					<strong>{pin.name}</strong>
+					<br />
+					<p>概要：{pin.description}</p>
+				</div>
+				</Popup>
+			</Marker>
+			);
+		} else if(eventid === "1"){
+			if(pin.class !== visibleGroup) return null;
+			if(pin.class === "area"){
+			const shoplist = pinData
+				.filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
+				return temp_pindata.class === "shop" && temp_pindata.areagroupid === pin.id;
+				})
+				.map(function(shop) {
+				return shop.name;
+				});
+			return (
+				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
+				<Popup>
+					<div>
+					<strong>{pin.name}</strong>
+					<br />
+					<p>概要：{pin.description}</p>
+					<img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
+					<p>管理団体：{pin.teamname}</p>
+					{shoplist.length > 0 && (
+						<div>
+						<p>このエリアのお店：</p>
+						<ul>
+							{shoplist.map(function(shopName) {
+							return <li key={shopName}>{shopName}</li>;
+							})}
+						</ul>
+						</div>
+					)}
+					</div>
+				</Popup>
+				</Marker>
+			);
+			}else if(pin.class === "shop"){
+			return (
+				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+				<Popup>
+					<div>
+					<strong>{pin.name}</strong>
+					<br />
+					<p>概要：{pin.description}</p>
+					<img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
+					<p>出店団体：{pin.teamname}</p>
+					<p>場所：{pin.place}</p>
+					<p>種別：{pin.type}</p>
+					<p>時間：{pin.starttime}~{pin.endtime}</p>
+					<p>おおよその在庫数：{pin.storage}</p>
+					</div>
+				</Popup>
+				</Marker>
+			);
+			}
+		}
+    }  
 
-  function CreatePinHandler(props: { 
-    isCreating: boolean, 
-    onCreate: (latlng: [number, number]) => void 
-    }) {
-        useMapEvents({
-            click(e) {
-                if (!props.isCreating) return;
-                props.onCreate([e.latlng.lat, e.latlng.lng]);
-            }
-        });
-    return null;
+  	function CreatePinHandler(props: { 
+		isCreating: boolean, 
+		onCreate: (latlng: [number, number]) => void 
+		}) {
+			useMapEvents({
+				click(e) {
+					if (!props.isCreating) return;
+					props.onCreate([e.latlng.lat, e.latlng.lng]);
+				}
+			});
+		return null;
     }
 
   return (
@@ -188,6 +205,7 @@ export default function VenderUpload() {
 		</header>
 
 		<MapContainer
+  			ref={mapRef}
 			center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
 			// 緯度が上下、経度が左右、つまり [y, x]
 			// 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
@@ -196,49 +214,47 @@ export default function VenderUpload() {
 			style={{ height: "100%", width: "100%" }}
 			scrollWheelZoom={true}
 			crs={L.CRS.Simple}
-			className={isCreating ? "cursor-pin" : ""}
 		>
         <ImageOverlay url={MAP_SVG} bounds={bounds} />
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
 		<CreatePinHandler isCreating={isCreating} onCreate={handleCreateClick}/>
 
-        {pinData.map((pin) => renderPinMarker(pin))}       
+        {pinData.map((pin: any) => renderPinMarker(pin))} {/* 自分以外のピン */}
+		{!isCreating && myPin && renderPinMarker(myPin)} {/* 自分の既存ピン(編集中は非表示) */}
 
-        {newPinPos && (
+
+        {newPinPos && ( 
+			// 自分のピン
             <Marker position={newPinPos} icon={myIcon}>
             <Popup>
-                <div style={{ width: "200px" }}>
-					<strong>新しいピン</strong>
-					<div>
-						<label>名前：</label>
-						<input 
-						type="text"
-						value={newPinName}
-						onChange={(e) => setNewPinName(e.target.value)}
-						/>
-					</div>
-					<div>
-						<label>説明：</label>
-						<textarea
-						value={newPinDesc}
-						onChange={(e) => setNewPinDesc(e.target.value)}
-						/>
-					</div>
+                <div style={{ width: "240px" }}>
+                  <strong>新しいピン</strong>
+                  <div className="pin-input-row">
+                    <label>名前：</label>
+                    <input 
+                    type="text"
+                    value={newPinData.name}
+                    onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="pin-input-row">
+                    <label>説明：</label>
+                    <textarea
+                    value={newPinData.descr}
+                    onChange={(e) => setNewPinData({ ...newPinData, descr: e.target.value })}
+                    />
+                  </div>
 
-					<button onClick={() => {
-						saveNewPinToDB(newPinPos[0], newPinPos[1], newPinName, newPinDesc);
-						setIsCreating(false);
-						setNewPinPos(null);
-						setNewPinName("");
-						setNewPinDesc("");
-					}}>OK</button>
+                  <button onClick={() => {
+                    saveNewPinToDB(newPinPos[0], newPinPos[1], newPinData.name, newPinData.descr);
+                    setIsCreating(false);
+                    resetNewPinData();
+                  }}>保存して更新</button>
 
-					<button	onClick={() => {
-						setIsCreating(false);
-						setNewPinPos(null);
-						setNewPinName("");
-						setNewPinDesc("");
-					}}>キャンセル</button>
+                  <button onClick={() => {
+                    setIsCreating(false);
+                    resetNewPinData();
+                  }}>キャンセル</button>
                 </div>
             </Popup>
             </Marker>
@@ -246,11 +262,13 @@ export default function VenderUpload() {
 		</MapContainer>
 		<div className="leafmap-footer">
 			<button className="btn-create" onClick={() => {
-				setIsCreating(true);
-				setNewPinPos(null);
-				setNewPinName("");
-				setNewPinDesc("");
-			}}>{myPin ? "ピンを更新" : "ピンを新規作成"}</button>
+				if(isCreating){
+					setIsCreating(false);
+				}else{
+					setIsCreating(true);
+				}
+				resetNewPinData();
+			}}>{isCreating ? "キャンセル" : (myPin ? "ピンを更新" : "ピンを新規作成")}</button>
         </div>
     </div>
   );

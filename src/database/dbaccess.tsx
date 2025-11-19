@@ -45,7 +45,7 @@ export function writePinData(eventId: string, y_ido: number, x_keido: number, na
 export async function readPinData(eventId: string) {
   const snapshot = await get(child(ref(fire_database), eventId));
   if (snapshot.exists()) { //jsonのkeyがuidなので、それをidにしてvalueに含める
-    return Object.entries(snapshot.val()).map(([key, value]) => ({ id: key, ...(value as Record<string, any>) }));
+    return Object.entries(snapshot.val()).map(([key, value]) => ({ ownerid: key, ...(value as Record<string, any>) }));
   } else {
     return [];
   }
