@@ -200,9 +200,9 @@ export default function VenderUpload() {
     }
 
   return (
-    <div className="leafmap-screen">
-		<header className="leafmap-header">
-		<button className="btn-back" onClick={() => page_navigate(PAGES.MainMap,"1")}>&lt; 戻る</button>
+    <div className={styles["leafmap-screen"]}>
+		<header className={styles["leafmap-header"]}>
+			<button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap,"1")}>&lt; 戻る</button>
 		</header>
 
 		<MapContainer
@@ -220,17 +220,19 @@ export default function VenderUpload() {
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
 		<CreatePinHandler isCreating={isCreating} onCreate={handleCreateClick}/>
 
-        {pinData.map((pin: any) => renderPinMarker(pin))} {/* 自分以外のピン */}
-		{!isCreating && myPin && renderPinMarker(myPin)} {/* 自分の既存ピン(編集中は非表示) */}
+		{/* 自分以外のピン */}
+        {pinData.map((pin: any) => renderPinMarker(pin))} 
 
+		{/* 自分の既存ピン(編集中は非表示) */}
+		{!isCreating && myPin && renderPinMarker(myPin)} 
 
         {newPinPos && ( 
-			// 自分のピン
+			// 新しいピン
             <Marker position={newPinPos} icon={myIcon}>
             <Popup>
                 <div style={{ width: "240px" }}>
                   <strong>新しいピン</strong>
-                  <div className="pin-input-row">
+                  <div className={styles["pin-input-row"]}>
                     <label>名前：</label>
                     <input 
                     type="text"
@@ -238,7 +240,7 @@ export default function VenderUpload() {
                     onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
                     />
                   </div>
-                  <div className="pin-input-row">
+                  <div className={styles["pin-input-row"]}>
                     <label>説明：</label>
                     <textarea
                     value={newPinData.descr}
@@ -261,8 +263,8 @@ export default function VenderUpload() {
             </Marker>
         )}
 		</MapContainer>
-		<div className="leafmap-footer">
-			<button className="btn-create" onClick={() => {
+		<div className={styles["leafmap-footer"]}>
+			<button className={styles["btn-create"]} onClick={() => {
 				if(isCreating){
 					setIsCreating(false);
 				}else{

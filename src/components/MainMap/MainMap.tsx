@@ -110,7 +110,7 @@ export default function MainMap() {
         );
       }else if(pin.class === "shop"){
         return (
-          <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+          <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
             <Popup>
               <div>
                 <strong>{pin.name}</strong>
