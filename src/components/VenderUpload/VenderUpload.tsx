@@ -85,10 +85,6 @@ export default function VenderUpload() {
 		function sleep(ms: number) {
 			return new Promise(resolve => setTimeout(resolve, ms));
 		}
-		console.log("リロード1");
-		sleep(3000);
-		console.log("リロード2");
-      	window.location.reload();
     }
 
 
