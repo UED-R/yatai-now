@@ -82,6 +82,17 @@ export default function VenderUpload() {
 			console.log("更新します："+myPin.id);
 			await updatePinData(eventid, {y_ido, x_keido, name, description});
 		}
+
+
+		const data = await readPinData(eventid);
+		const auth = getAuth();
+		const uid = auth.currentUser?.uid || null;
+
+		const mine = data.find((p: any) => p.ownerid === uid); //自分のピン
+		if (mine) setMyPin(mine);
+
+		const others = data.filter((p: any) => p.ownerid !== uid); //自分以外のピン
+		setPins(others);
     }
 
 
@@ -92,19 +103,18 @@ export default function VenderUpload() {
 
     // useEffect：画面のレンダリング完了後に自動実行
 	useEffect(() => {
-	const auth = getAuth();
-	const unsubscribe = onAuthStateChanged(auth, async (user) => {
-		// 認証情報が更新されたときに実行
-		const data = await readPinData(eventid);
-		const uid = user?.uid || null;
+		const auth = getAuth();
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+			// 認証情報が更新されたときに実行
+			const data = await readPinData(eventid);
+			const uid = user?.uid || null;
 
-		const mine = data.find((p: any) => p.ownerid === uid); //自分のピン
-		if (mine) setMyPin(mine);
+			const mine = data.find((p: any) => p.ownerid === uid); //自分のピン
+			if (mine) setMyPin(mine);
 
-		const others = data.filter((p: any) => p.ownerid !== uid); //自分以外のピン
-		setPins(others);
-	});
-
+			const others = data.filter((p: any) => p.ownerid !== uid); //自分以外のピン
+			setPins(others);
+		});
 	return () => unsubscribe(); // クリーンアップ
 	}, []);
 
