@@ -104,13 +104,14 @@ export default function VenderUpload() {
 	}
 
 	//ピン保存か更新の関数
-    async function saveNewPinToDB(y_ido: number, x_keido: number, name: string, description: string) {
+    async function saveNewPinToDB(dataarr: any[]) {
+		console.log("save");
 		if (!myPin) {
 			// 新規作成
-			await writePinData(eventid, y_ido, x_keido, name, description);
+			// await writePinData(eventid, y_ido, x_keido, name, description);
 		} else {
 			// 更新処理
-			await updatePinData(eventid, {y_ido, x_keido, name, description});
+			await updatePinData(eventid, dataarr);
 		}
 
 		function sleep(ms: number) {
@@ -342,9 +343,10 @@ export default function VenderUpload() {
 						/>
 					</div>
 					<button onClick={() => {
-						saveNewPinToDB(myPin.y_ido, myPin.x_keido, myPin.name, myPin.description);
+						saveNewPinToDB(myPin);
 						setIsCreating(false);
 						clearNewPinData();
+						page_navigate(PAGES.MainMap, "1");
 					}}>保存して更新</button>
                 </div>
             	</Popup>
@@ -430,7 +432,7 @@ export default function VenderUpload() {
 					</div>
 
 					<button onClick={() => {
-						saveNewPinToDB(newPinPos[0], newPinPos[1], newPinData.name, newPinData.descr);
+						// saveNewPinToDB(newPinPos[0], newPinPos[1], newPinData.name, newPinData.descr);
 						setIsCreating(false);
 						clearNewPinData();
 					}}>保存して更新</button>
