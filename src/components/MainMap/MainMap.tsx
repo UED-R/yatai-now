@@ -6,7 +6,7 @@ import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData } from '../../database/dbaccess';
-import MAP_SVG from '../../image/map_test2.svg';
+import MAP_SVG from '../../image/2025_11_19.svg';
 import PIN from '../../image/pin400x300.png';
 
 // アイコン設定

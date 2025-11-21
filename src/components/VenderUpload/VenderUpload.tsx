@@ -9,7 +9,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 
-import MAP_SVG from '../../image/map_test2.svg';
+import MAP_SVG from '../../image/2025_11_19.svg';
 // 画像パスはプロジェクト構成に合わせて確認してください
 import PIN_RED from '../../image/pin400x300.png'; 
 import PIN_GREEN from '../../image/pin256_green.png';
