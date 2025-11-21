@@ -59,11 +59,25 @@ export default function VenderUpload() {
 		name: "",
 		descr: "",
 		teamname: "",
+		place: "",
+		type: "",
+		starttime: "",
+		endtime: "",
+		storage: ""
 	});
 	
 	function clearNewPinData(){
         setNewPinPos(null);
-		setNewPinData({name:"",descr:""});
+		setNewPinData({
+			name: "",
+			descr: "",
+			teamname: "",
+			place: "",
+			type: "",
+			starttime: "",
+			endtime: "",
+			storage: ""
+		});
 	}
 
 		
