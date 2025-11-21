@@ -113,7 +113,7 @@ export default function VenderUpload() {
 			// 認証情報が更新されたときに実行
 			allPinFetch(user);
 		});
-		return () => unsubscribe(); // クリーンアップ
+		return () => unsubscribe();
 	}, []);
 
 
