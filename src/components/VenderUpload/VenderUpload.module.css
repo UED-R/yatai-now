@@ -115,3 +115,91 @@
 .upload-panel .btn-success:hover {
     background-color: #218838;
 }
+
+.leafmap-footer {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 9999;
+}
+
+.btn-create {
+  background: #66DD66;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+}
+
+.pin-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- LeafMapコンポーネント用のスタイル --- */
+
+.leafmap-screen {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.leafmap-header {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  z-index: 1000; /* LeafletのUIより手前に表示 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none; /* ヘッダー部分はクリックできないようにし、地図の操作を妨げない */
+}
+
+.leafmap-header > * {
+  pointer-events: auto; /* ボタン自体はクリックできるようにする */
+}
+
+
+.header-right-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-header {
+  padding: 8px 16px;
+  font-size: 0.9em;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-back {
+  position: relative;
+  left: 3%;
+  padding: 8px 16px;
+  font-size: 0.9em;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-header:hover, .btn-back:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Leafletのコンテナが正しく表示されるように */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}

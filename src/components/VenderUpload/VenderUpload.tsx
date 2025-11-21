@@ -1,10 +1,20 @@
 import styles from './VenderUpload.module.css';
-import { useState, useEffect, useRef } from 'react';
-import L from 'leaflet';
-import { writePinData } from "../../database/dbaccess"
-import { page_navigate, PAGES } from '../../Pages';
+import "leaflet/dist/leaflet.css";
 
-// --- Leaflet Icon Fix ---
+import { useEffect, useState, useRef } from "react";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
+import L from "leaflet";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+import { page_navigate, PAGES } from "../../Pages"
+import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
+
+import MAP_SVG from '../../image/map_test2.svg';
+// 画像パスはプロジェクト構成に合わせて確認してください
+import PIN_RED from '../../image/pin400x300.png'; 
+import PIN_GREEN from '../../image/pin256_green.png';
+
+// アイコン設定
 const defaultIcon = L.icon({
     iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
     shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
@@ -13,131 +23,234 @@ const defaultIcon = L.icon({
     popupAnchor: [1, -34]
 });
 
-// --- VenderUpload Component ---
-export default function VenderUpload(){
-    const mapRef = useRef<L.Map | null>(null);
-    const markerRef = useRef<L.Marker | null>(null);
-    const [isPinningMode, setIsPinningMode] = useState(false);
-    const [pinLocation, setPinLocation] = useState<{ lat: number, lng: number } | null>(null);
-    const [pinName, setPinName] = useState("");
-    const [pinDescription, setPinDescription] = useState("");
+const otherIcon = L.icon({
+    iconUrl: PIN_RED,
+    iconSize: [60, 45],
+    iconAnchor: [30, 45],
+    popupAnchor: [1, -34]
+});
 
-    useEffect(() => {
-        // Initialize map
-        if (!mapRef.current) {
-            const map = L.map('map-container').setView([36.110257, 140.102389], 16);
-            mapRef.current = map;
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-            }).addTo(map);
-        }
+const myIcon = L.icon({
+    iconUrl: PIN_GREEN,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [10, -10]
+});
 
-        const map = mapRef.current;
-        
-        // Define click handler based on the mode
-        const handleMapClick = (e: L.LeafletMouseEvent) => {
-            if (isPinningMode) {
-                const { lat, lng } = e.latlng;
-                setPinLocation({ lat, lng });
+export default function VenderUpload() {
+    const eventid = "1" as string;
+    const defaultZoom = 18;
+    const [_zoomLevel, setZoomLevel] = useState(defaultZoom); // _zoomLevelとして使用しない変数を明示
+    const visibleGroup = (_zoomLevel >= 19) ? "shop" : "area"; // グループ切替
+    const bounds: [[number, number], [number, number]] = [
+        // bounds: [[南西緯度, 南西経度], [北東緯度, 北東経度]]
+        [36.108, 140.098], // 左下y,x
+        [36.112, 140.104]  // 右上y,x
+    ];
+    const [otherPins, setOtherPins] = useState<any[]>([]);
+    const [myPin, setMyPin] = useState<any | null>(null);
 
-                if (markerRef.current) {
-                    markerRef.current.setLatLng(e.latlng);
-                } else {
-                    markerRef.current = L.marker(e.latlng, { icon: defaultIcon, draggable: true }).addTo(map);
-                    // Add drag event to update location
-                    markerRef.current.on('dragend', (event) => {
-                        setPinLocation(event.target.getLatLng());
-                    });
-                }
-                setIsPinningMode(false); // Exit pinning mode after placing a pin
+    const [isCreating, setIsCreating] = useState(false);
+    const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
+    const [newPinData, setNewPinData] = useState({
+        name: "",
+        descr: ""
+    });
+    
+    function clearNewPinData(){
+        setNewPinPos(null);
+        setNewPinData({name:"",descr:""});
+    }
+
+    // ズームイベントの処理
+    function ZoomWatcher() {
+        useMapEvents({
+            zoomend: (e) => {
+                setZoomLevel(e.target.getZoom());
             }
-        };
-        
-        map.on('click', handleMapClick);
+        });
+        return null;
+    }
 
-        // Cleanup function
-        return () => {
-            map.off('click', handleMapClick);
-        };
-    }, [isPinningMode]); // Rerun effect when isPinningMode changes to update click handler context
+    async function allPinFetch(user: any){
+        const data = await readPinData(eventid);
+        const uid = user?.uid || null;
 
-    const handleStartPinning = () => {
-        setIsPinningMode(true);
-    };
+        const mine = data.find((p: any) => p.ownerid === uid); //自分のピン
+        if (mine) setMyPin(mine);
 
-    const handleCancelPinning = () => {
-        setIsPinningMode(false);
-        setPinLocation(null);
-        setPinName("");
-        setPinDescription("");
-        if (markerRef.current) {
-            markerRef.current.remove();
-            markerRef.current = null;
+        const others = data.filter((p: any) => p.ownerid !== uid); //自分以外のピン
+        setOtherPins(others);
+    }
+
+    //ピン保存か更新の関数
+    async function saveNewPinToDB(y_ido: number, x_keido: number, name: string, description: string) {
+        if (!myPin) {
+            // 新規作成
+            await writePinData(eventid, y_ido, x_keido, name, description);
+        } else {
+            // 更新処理
+            await updatePinData(eventid, {y_ido, x_keido, name, description});
         }
-    };
 
-    const handleSavePin = () => {
-        if (!pinLocation || !pinName.trim() || !pinDescription.trim()) {
-            alert("ピンを設置し、屋台名と説明を入力してください。");
-            return;
+        function sleep(ms: number) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
-        // In Leaflet, Lat is Y, Lng is X.
-        writePinData("0", pinLocation.lat, pinLocation.lng, pinName, pinDescription)
-            .then(() => {
-                alert("ピンを保存しました！");
-                // Reset form state but keep the saved marker on map (or remove it)
-                if(markerRef.current) {
-                    markerRef.current.dragging?.disable();
-                    markerRef.current.bindPopup(`<strong>${pinName}</strong><br>${pinDescription}`).openPopup();
-                }
-                markerRef.current = null;
-                setPinLocation(null);
-                setPinName("");
-                setPinDescription("");
-            })
-            .catch(err => {
-                alert("保存に失敗しました: " + (err.message || 'Unknown error'));
-            });
-    };
+
+        // DB反映待ちのための簡易的なWait（本来は書き込み完了をawaitすべき）
+        await sleep(1000);
+        const auth = getAuth();
+        await allPinFetch(auth.currentUser);
+    }
+
+    // useEffect：画面のレンダリング完了後に自動実行
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            // 認証情報が更新されたときに実行
+            allPinFetch(user);
+        });
+        return () => unsubscribe(); // クリーンアップ
+    }, []);
+
+    // マウスカーソル切替
+    const mapRef = useRef<L.Map>(null);
+    useEffect(() => { //初回含め、isCreatingが更新されたときに実行
+        if (mapRef.current) {
+            const container = mapRef.current.getContainer();
+            container.style.cursor = isCreating ? "crosshair" : "auto";
+        }
+    }, [isCreating]);
+  
+    // ピン表示の汎用関数
+    function renderPinMarker(pin: any, useIcon: L.Icon) {
+        if (eventid === "0"){
+            return (
+                <Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={useIcon}>
+                    <Popup>
+                        <div>
+                            <strong>{pin.name}</strong>
+                            <br />
+                            <p>概要：{pin.description}</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            );
+        } else if(eventid === "1"){
+            // visibleGroupによるフィルタリングは、必要に応じて有効化してください
+            // if(pin.class !== visibleGroup) return null;
+
+            // 簡略化のため、全てのピンを表示するロジックにしています
+            // 必要に応じてMainMap同様のフィルタリングを追加してください
+            return (
+                <Marker key={pin.ownerid || Math.random()} position={[pin.y_ido, pin.x_keido]} icon={useIcon}>
+                    <Tooltip direction="top" offset={[0, -40]} permanent>
+                        <strong>{pin.name}</strong>
+                    </Tooltip>
+                    <Popup>
+                        <div>
+                            <strong>{pin.name}</strong>
+                            <br />
+                            <p>概要：{pin.description}</p>
+                            {pin.imageURL && <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }} alt="shop" />}
+                            <p>出店団体：{pin.teamname}</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            );
+        }
+    }  
+
+    // ピン作成モードで地図クリックしたとき
+    function CreatePinHandler({ isCreating }: { isCreating: boolean }) {
+        useMapEvents({
+            click(e) {
+                if (!isCreating) return;
+                setNewPinPos([e.latlng.lat, e.latlng.lng]);
+            }
+        });
+        return null;
+    }
 
     return (
-        <div className={`screen-general ${styles["map-screen"]}`}>
-            <header className={"common-header"}>
-                <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
+        <div className={`screen-general ${styles["leafmap-screen"]}`}>
+            
+            {/* ▼▼▼ ヘッダー部分：App.cssの共通クラスを使用 ▼▼▼ */}
+            <header className="common-header">
+                <button className="common-btn-back" onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
             </header>
-            
-            <div id="map-container" className={isPinningMode ? 'pinning-mode' : ''}></div>
-            
-            <div className={styles["upload-panel"]}>
-                {!pinLocation && !isPinningMode && (
-                    <button className="btn-panel btn-primary" onClick={handleStartPinning}>ピンを新規作成</button>
+            {/* ▲▲▲ ヘッダー部分終了 ▲▲▲ */}
+
+            <MapContainer
+                ref={mapRef}
+                center={[36.110251, 140.100381]} 
+                zoom={defaultZoom}
+                style={{ height: "100%", width: "100%" }}
+                scrollWheelZoom={true}
+                crs={L.CRS.Simple}
+            >
+                <ImageOverlay url={MAP_SVG} bounds={bounds} />
+                <ZoomWatcher />
+                <CreatePinHandler isCreating={isCreating}/>
+
+                {/* 自分以外のピン */}
+                {otherPins.map((pin: any) => renderPinMarker(pin, otherIcon))} 
+
+                {/* 自分の既存ピン (新しいピンの編集中は非表示) */}
+                {!isCreating && myPin && renderPinMarker(myPin, myIcon)} 
+
+                {/* 自分の新しいピン */}
+                {newPinPos && ( 
+                    <Marker position={newPinPos} icon={myIcon}>
+                        <Popup>
+                            <div style={{ width: "240px" }}>
+                                <strong>新しいピン</strong>
+                                <div className={styles["pin-input-row"]}>
+                                    <label>名前：</label>
+                                    <input 
+                                        type="text"
+                                        value={newPinData.name}
+                                        onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className={styles["pin-input-row"]}>
+                                    <label>説明：</label>
+                                    <input 
+                                        type="text"
+                                        value={newPinData.descr}
+                                        onChange={(e) => setNewPinData({ ...newPinData, descr: e.target.value })}
+                                    />
+                                </div>
+
+                                <button onClick={() => {
+                                    saveNewPinToDB(newPinPos[0], newPinPos[1], newPinData.name, newPinData.descr);
+                                    setIsCreating(false);
+                                    clearNewPinData();
+                                }}>保存して更新</button>
+
+                                <button onClick={() => {
+                                    setIsCreating(false);
+                                    clearNewPinData();
+                                }}>キャンセル</button>
+                            </div>
+                        </Popup>
+                    </Marker>
                 )}
-                {isPinningMode && (
-                    <>
-                        <p>地図上をクリックしてピンを設置してください</p>
-                        <button className={`${styles["btn-panel"]} ${styles["btn-secondary"]}`} onClick={() => setIsPinningMode(false)}>キャンセル</button>
-                    </>
-                )}
-                {pinLocation && (
-                    <>
-                        <p>ピンの位置: {pinLocation.lat.toFixed(4)}, {pinLocation.lng.toFixed(4)}</p>
-                        <input
-                            type="text"
-                            value={pinName}
-                            onChange={(e) => setPinName(e.target.value)}
-                            placeholder="ピンの説明（例：焼きそば屋台）"
-                        />
-                        <input
-                            type="text"
-                            value={pinDescription}
-                            onChange={(e) => setPinDescription(e.target.value)}
-                            placeholder="ピンの説明（例：ソースの味がたまらない！）"
-                        />
-                        <button className={`${styles["btn-panel"]} ${styles["btn-success"]}`} onClick={handleSavePin}>この場所に保存</button>
-                        <button className={`${styles["btn-panel"]} ${styles["btn-secondary"]}`} onClick={handleCancelPinning}>やり直す</button>
-                    </>
-                )}
+            </MapContainer>
+
+            {/* フッター部分（ピン作成ボタン） */}
+            <div className={styles["leafmap-footer"]}>
+                <button className={styles["btn-create"]} onClick={() => {
+                    if(isCreating){
+                        setIsCreating(false);
+                    }else{
+                        setIsCreating(true);
+                    }
+                    clearNewPinData();
+                }}>
+                    {isCreating ? "キャンセル" : (myPin ? "ピンを更新" : "ピンを新規作成")}
+                </button>
             </div>
         </div>
     );
-};
+}

@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay } from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -38,7 +38,7 @@ function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
   return null;
 }
 
-export default function LeafMap() {
+export default function MainMap() {
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
@@ -53,13 +53,12 @@ export default function LeafMap() {
 
 
   // useEffect：画面のレンダリング完了後に自動実行
-  // firebaseDBからピンを取得
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData() {// firebaseDBからピンを取得
       const data = await readPinData(eventid);
       setPins(data);
     }
-    fetchData();
+    fetchData(); // ピンをread
   }, []);
 
   
@@ -88,6 +87,9 @@ export default function LeafMap() {
           });
         return (
           <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
+            <Tooltip direction="top" offset={[0, -40]} permanent>
+              <strong>{pin.name}</strong>
+            </Tooltip>
             <Popup>
               <div>
                 <strong>{pin.name}</strong>
@@ -111,7 +113,10 @@ export default function LeafMap() {
         );
       }else if(pin.class === "shop"){
         return (
-          <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+          <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+            <Tooltip direction="top" offset={[0, -40]} permanent>
+              <strong>{pin.name}</strong>
+            </Tooltip>
             <Popup>
               <div>
                 <strong>{pin.name}</strong>
