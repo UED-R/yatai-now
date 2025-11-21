@@ -19,7 +19,7 @@
 
 
 /* --- Header --- */
-.map-header {
+/* .map-header {
     position: absolute;
     top: 15px;
     left: 15px;
@@ -28,11 +28,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    pointer-events: none; /* Let clicks go through to the map */
+    pointer-events: none;
 }
 
 .map-header > * {
-    pointer-events: auto; /* Re-enable clicks for buttons inside */
+    pointer-events: auto;
 }
 
 .btn-back {
@@ -48,7 +48,7 @@
 
 .btn-back:hover {
     background-color: rgba(0, 0, 0, 0.8);
-}
+} */
 
 
 /* --- Control Panel --- */
