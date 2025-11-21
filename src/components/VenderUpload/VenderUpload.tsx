@@ -9,7 +9,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 
-import MAP_SVG from '../../image/map_test2.svg';
+import MAP_SVG from '../../image/2025_11_19.svg';
 import PIN_RED from '/images/pin400x300.png';
 import PIN_GREEN from '/images/pin256_green.png';
 
@@ -275,7 +275,7 @@ export default function VenderUpload() {
 					<strong>編集中のピン</strong>
 				</Tooltip>
 				<Popup>
-                <div style={{ width: "240px" }}>
+                <div style={{ width: "250px" }}>
 					<div className={styles["pin-input-row"]}>
 						<label>名前：</label>
 						<input 
@@ -317,7 +317,7 @@ export default function VenderUpload() {
 						/>
 					</div>
 					<div className={styles["pin-input-row"]}>
-						<label>時間</label>
+						<label>時間：</label>
 						<input 
 						type="text"
 						value={myPin.starttime}
