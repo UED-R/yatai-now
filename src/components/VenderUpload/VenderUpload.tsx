@@ -51,6 +51,7 @@ export default function VenderUpload() {
     ];
     const [otherPins, setOtherPins] = useState<any[]>([]);
     const [myPin, setMyPin] = useState<any | null>(null);
+    const [myNewPin, setMyNewPin] = useState<any | null>(null);
 
     const [isCreating, setIsCreating] = useState(false);
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
@@ -126,6 +127,19 @@ export default function VenderUpload() {
 			container.style.cursor = isCreating ? "crosshair" : "auto";
 		}
 	}, [isCreating]);
+
+
+	// ピン作成モードで地図クリックしたとき
+	function CreatePinHandler({ isCreating }: { isCreating: boolean }) {
+		useMapEvents({
+			click(e) {
+			if (!isCreating) return;
+				setNewPinPos([e.latlng.lat, e.latlng.lng]);
+				setMyNewPin
+			}
+		});
+		return null;
+	}
   
 	// ピン表示の汎用関数
     function renderPinMarker(pin: any, useIcon: L.Icon) {
@@ -203,19 +217,54 @@ export default function VenderUpload() {
     }  
 
 
-	// ピン作成モードで地図クリックしたとき
-	function CreatePinHandler({ isCreating }: { isCreating: boolean }) {
-		useMapEvents({
-			click(e) {
-			if (!isCreating) return;
-			setNewPinPos([e.latlng.lat, e.latlng.lng]);
+	// myPin
+	// myNewPin
+	function renderOwnPinMarker(pin: any) {
+		return(
+		<Marker position={[pin.lat, pin.lng]} icon={myIcon} ref={(marker) => {
+			if (marker) {
+				setTimeout(() => {
+					marker.openPopup();//一瞬待って自動ポップアップ
+				}, 0);
 			}
-		});
-		return null;
+		}}>
+			<Popup>
+                <div style={{ width: "240px" }}>
+					<div className={styles["pin-input-row"]}>
+						<label>名前：</label>
+						<input 
+						type="text"
+						value={pin.name}
+						onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
+						/>
+                  	</div>
+					<div className={styles["pin-input-row"]}>
+						<label>説明：</label>
+						<input 
+						type="text"
+						value={newPinData.descr}
+						onChange={(e) => setNewPinData({ ...newPinData, descr: e.target.value })}
+						/>
+					</div>
+
+					<button onClick={() => {
+						saveNewPinToDB(newPinPos[0], newPinPos[1], newPinData.name, newPinData.descr);
+						setIsCreating(false);
+						clearNewPinData();
+					}}>保存して更新</button>
+
+					<button onClick={() => {
+						setIsCreating(false);
+						clearNewPinData();
+					}}>キャンセル</button>
+                </div>
+            </Popup>
+		</Marker>
+		)
 	}
 
 
-  return (
+  	return (
     <div className={styles["leafmap-screen"]}>
 		<header className={styles["leafmap-header"]}>
 			<button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap,"1")}>&lt; 戻る</button>
@@ -244,7 +293,13 @@ export default function VenderUpload() {
 
 		{/* 自分の新しいピン */}
         {newPinPos && ( 
-            <Marker position={newPinPos} icon={myIcon}>
+            <Marker position={newPinPos} icon={myIcon} ref={(marker) => {
+					if (marker) {
+						setTimeout(() => {
+							marker.openPopup();//一瞬待って自動ポップアップ
+						}, 0);
+					}
+				}}>
             <Popup>
                 <div style={{ width: "240px" }}>
 					<strong>新しいピン</strong>
@@ -291,5 +346,5 @@ export default function VenderUpload() {
 			}}>{isCreating ? "キャンセル" : (myPin ? "ピンを更新" : "ピンを新規作成")}</button>
         </div>
     </div>
-  );
+  	);
 }
