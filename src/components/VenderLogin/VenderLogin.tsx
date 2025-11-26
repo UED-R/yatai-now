@@ -16,7 +16,7 @@ export default function VendorLogin() {
   useEffect(() => {
     const auth = getAuth();
     if (auth.currentUser) { // 認証済みかどうか確認
-      console.log("自動ログイン成功: UID =",auth.currentUser.uid);
+      // console.log("自動ログイン成功: UID =",auth.currentUser.uid);
       const redirect = async () => {
         await new Promise(res => setTimeout(res, 400)); // ミリ秒待つ
         page_navigate(PAGES.VEND_UPLOAD);
@@ -36,7 +36,7 @@ export default function VendorLogin() {
 
     const uid = await userLogin(loginId, password);
     if (uid) {
-      console.log("手動ログイン成功: UID =", uid);
+      // console.log("手動ログイン成功: UID =", uid);
       page_navigate(PAGES.VEND_UPLOAD);
     } else {
       setError("ログインに失敗しました。");
