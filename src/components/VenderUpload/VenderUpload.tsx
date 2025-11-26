@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+import type { User } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 
@@ -35,7 +35,7 @@ const myIcon = L.icon({
     iconUrl: PIN_GREEN,
     iconSize: [30, 30],
     iconAnchor: [15, 15],
-    popupAnchor: [10, -10]
+    popupAnchor: [0, -12]
 });
 
 
@@ -52,12 +52,13 @@ export default function VenderUpload() {
     const [otherPins, setOtherPins] = useState<any[]>([]);
     const [myPin, setMyPin] = useState<any | null>(null);
     // const [myNewPin, setMyNewPin] = useState<any | null>(null);
-
+  	const [user, setUser] = useState<User | null>(null);
+	const [isUpdating, setIsUpdating] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
 	const [newPinData, setNewPinData] = useState({
 		name: "",
-		descr: "",
+		description: "",
 		teamname: "",
 		place: "",
 		type: "",
@@ -70,7 +71,7 @@ export default function VenderUpload() {
         setNewPinPos(null);
 		setNewPinData({
 			name: "",
-			descr: "",
+			description: "",
 			teamname: "",
 			place: "",
 			type: "",
@@ -79,6 +80,21 @@ export default function VenderUpload() {
 			storage: ""
 		});
 	}
+
+	function formatUpdateTime(isoString?: string) {
+		if (!isoString) return "日時不明";
+
+		const date = new Date(isoString);
+		if (isNaN(date.getTime())) return "日時不明";
+
+		return date.toLocaleString("ja-JP", {
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	}
+
 
 		
 	// ズームイベントの処理
@@ -104,11 +120,11 @@ export default function VenderUpload() {
 	}
 
 	//ピン保存か更新の関数
-    async function saveNewPinToDB(dataarr: any[]) {
-		console.log("save");
+    async function saveNewPinToDB(dataarr: any) {
+    	setIsUpdating(true);
 		if (!myPin) {
 			// 新規作成
-			// await writePinData(eventid, y_ido, x_keido, name, description);
+			await writePinData(eventid, dataarr);
 		} else {
 			// 更新処理
 			await updatePinData(eventid, dataarr);
@@ -121,14 +137,16 @@ export default function VenderUpload() {
 		sleep(1000);
 		const auth = getAuth();
 		await allPinFetch(auth.currentUser);
+    	setIsUpdating(false);
     }
 
     // useEffect：画面のレンダリング完了後に自動実行
 	useEffect(() => {
 		const auth = getAuth();
-		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+		const unsubscribe = onAuthStateChanged(auth, async (currentuser) => {
 			// 認証情報が更新されたときに実行
-			allPinFetch(user);
+			allPinFetch(currentuser);
+			setUser(currentuser);
 		});
 		return () => unsubscribe(); // クリーンアップ
 	}, []);
@@ -190,7 +208,7 @@ export default function VenderUpload() {
 					<strong>{pin.name}</strong>
 					<br />
 					<p>概要：{pin.description}</p>
-					<img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
+					{/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 					<p>管理団体：{pin.teamname}</p>
 					{shoplist.length > 0 && (
 						<div>
@@ -217,12 +235,13 @@ export default function VenderUpload() {
 					<strong>{pin.name}</strong>
 					<br />
 					<p>概要：{pin.description}</p>
-					<img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
+					{/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 					<p>出店団体：{pin.teamname}</p>
 					<p>場所：{pin.place}</p>
 					<p>種別：{pin.type}</p>
 					<p>時間：{pin.starttime}~{pin.endtime}</p>
 					<p>おおよその在庫数：{pin.storage}</p>
+					<p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
 					</div>
 				</Popup>
 				</Marker>
@@ -232,230 +251,192 @@ export default function VenderUpload() {
     }  
 
 
-	// myPin myPin.name myPin.x_pos
-	// myNewPin 
-	function renderOwnPinMarker(pin: any) {
-
-	}
+	// 予定
+	// function renderOwnPinMarker(pin: any) {
+	// }
 
 
-  	return (
-    <div className={styles["leafmap-screen"]}>
-		<header className={styles["leafmap-header"]}>
-			<button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap,"1")}>&lt; 戻る</button>
-		</header>
+	// 画面描画部分
+	if (isUpdating) {
+		return (
+		<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+			<h1>updating...</h1>
+		</div>
+		);
+	}else{
+		return (
+		<div className={styles["leafmap-screen"]}>
+			<header className={styles["leafmap-header"]}>
+				<button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap,"1")}>&lt; 戻る</button>
+				<p>ログインユーザ: {user?.email ? user.email.split("@")[0] : "ユーザerr"}</p>
+			</header>
 
-		<MapContainer
-  			ref={mapRef}
-			center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
-			// 緯度が上下、経度が左右、つまり [y, x]
-			// 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
-			// 1mあたり経度 : 0.000010966382364 ≒ 0.000011
-			zoom={defaultZoom}
-			style={{ height: "100%", width: "100%" }}
-			scrollWheelZoom={true}
-			crs={L.CRS.Simple}
-		>
-        <ImageOverlay url={MAP_SVG} bounds={bounds} />
-        <ZoomWatcher />
-		<CreatePinHandler isCreating={isCreating}/>
+			<MapContainer
+				ref={mapRef}
+				center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
+				// 緯度が上下、経度が左右、つまり [y, x]
+				// 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
+				// 1mあたり経度 : 0.000010966382364 ≒ 0.000011
+				zoom={defaultZoom}
+				style={{ height: "100%", width: "100%" }}
+				scrollWheelZoom={true}
+				crs={L.CRS.Simple}
+			>
+			<ImageOverlay url={MAP_SVG} bounds={bounds} />
+			<ZoomWatcher />
+			<CreatePinHandler isCreating={isCreating}/>
 
-		{/* 自分以外のピン */}
-        {otherPins.map((pin: any) => renderPinMarker(pin, otherIcon))} 
+			{/* 自分以外のピン */}
+			{otherPins.map((pin: any) => renderPinMarker(pin, otherIcon))} 
 
-		{/* 自分の既存ピン (新しいピンの編集中は非表示) */}
-		{!isCreating && myPin && (
-			<Marker position={[myPin.y_ido, myPin.x_keido]} icon={myIcon} ref={(marker) => {
-					if (marker) {
-						setTimeout(() => {
-							marker.openPopup();//一瞬待って自動ポップアップ
-						}, 0);
-					}
-				}}>
+			{/* 自分の既存ピン (新しいピンの編集中は非表示)  在庫のみ更新できる*/}
+			{!isCreating && myPin && (
+				<Marker position={[myPin.y_ido, myPin.x_keido]} icon={myIcon} ref={(marker) => {
+						if (marker) {
+							setTimeout(() => {
+								marker.openPopup();//一瞬待って自動ポップアップ
+							}, 0);
+						}
+					}}>
+					<Tooltip direction="top" offset={[0, -30]} permanent>
+						<strong>編集中のピン</strong>
+					</Tooltip>
+					<Popup>
+						<div>
+						<strong>{myPin.name}</strong>
+						<br />
+						<p>概要：{myPin.description}</p>
+						{/* <img src={myPin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
+						<p>出店団体：{myPin.teamname}</p>
+						<p>場所：{myPin.place}</p>
+						<p>種別：{myPin.type}</p>
+						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
+						<div className={styles["pin-input-row"]}>
+							<label>在庫(主観)：</label>
+							<input 
+								type="text"
+								value={myPin.storage}
+								style={{width:"100px"}}
+								onChange={(e) => setMyPin({ ...myPin, storage: e.target.value })}
+							/>
+						</div>
+						<p>更新日時：{formatUpdateTime(myPin.updatetime)}</p>
+						<button onClick={() => {
+							saveNewPinToDB(myPin);
+							setIsCreating(false);
+							clearNewPinData();
+						}}>保存して更新</button>
+					</div>
+					</Popup>
+				</Marker>
+			)}
+
+			{/* 自分の新しいピン 全部更新できる*/}
+			{newPinPos && ( 
+				<Marker position={newPinPos} icon={myIcon} ref={(marker) => {
+						if (marker) {
+							setTimeout(() => {
+								marker.openPopup();//一瞬待って自動ポップアップ
+							}, 0);
+						}
+					}}>
 				<Tooltip direction="top" offset={[0, -30]} permanent>
 					<strong>編集中のピン</strong>
 				</Tooltip>
 				<Popup>
-                <div style={{ width: "250px" }}>
-					<div className={styles["pin-input-row"]}>
-						<label>名前：</label>
-						<input 
-						type="text"
-						value={myPin.name}
-						onChange={(e) => setMyPin({ ...myPin, name: e.target.value })}
-						/>
-                  	</div>
-					<div className={styles["pin-input-row"]}>
-						<label>説明：</label>
-						<input 
-						type="text"
-						value={myPin.description}
-						onChange={(e) => setMyPin({ ...myPin, description: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>出店団体：</label>
-						<input 
-						type="text"
-						value={myPin.teamname}
-						onChange={(e) => setMyPin({ ...myPin, teamname: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>場所：</label>
-						<input 
-						type="text"
-						value={myPin.place}
-						onChange={(e) => setMyPin({ ...myPin, place: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>種別：</label>
-						<input 
-						type="text"
-						value={myPin.type}
-						onChange={(e) => setMyPin({ ...myPin, type: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>時間：</label>
-						<input 
-						type="text"
-						value={myPin.starttime}
-						style={{width:"40px"}}
-						onChange={(e) => setMyPin({ ...myPin, starttime: e.target.value })}
-						/>
-						<label>~</label>
-						<input 
-						type="text"
-						value={myPin.endtime}
-						style={{width:"40px"}}
-						onChange={(e) => setMyPin({ ...myPin, endtime: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>在庫(主観)：</label>
-						<input 
-						type="text"
-						value={myPin.storage}
-						style={{width:"100px"}}
-						onChange={(e) => setMyPin({ ...myPin, storage: e.target.value })}
-						/>
-					</div>
-					<button onClick={() => {
-						saveNewPinToDB(myPin);
-						setIsCreating(false);
-						clearNewPinData();
-						page_navigate(PAGES.MainMap, "1");
-					}}>保存して更新</button>
-                </div>
-            	</Popup>
-            </Marker>
-		)}
+					<div style={{ width: "280px" }}>
+						<div className={styles["pin-input-row"]}>
+							<label>新しいピン名：</label>
+							<input 
+							type="text"
+							value={newPinData.name}
+							onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
+							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>説明：</label>
+							<input 
+							type="text"
+							value={newPinData.description}
+							onChange={(e) => setNewPinData({ ...newPinData, description: e.target.value })}
+							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>出店団体：</label>
+							<input 
+							type="text"
+							value={newPinData.teamname}
+							onChange={(e) => setNewPinData({ ...newPinData, teamname: e.target.value })}
+							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>場所：</label>
+							<input 
+							type="text"
+							value={newPinData.place}
+							onChange={(e) => setNewPinData({ ...newPinData, place: e.target.value })}
+							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>種別：</label>
+							<input 
+							type="text"
+							value={newPinData.type}
+							onChange={(e) => setNewPinData({ ...newPinData, type: e.target.value })}
+							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>時間</label>
+							<input 
+							type="text"
+							value={newPinData.starttime}
+							style={{width:"50px"}}
+							onChange={(e) => setNewPinData({ ...newPinData, starttime: e.target.value })}
+							/>
+							<label>~</label>
+							<input 
+							type="text"
+							value={newPinData.endtime}
+							style={{width:"50px"}}
+							onChange={(e) => setNewPinData({ ...newPinData, endtime: e.target.value })}
+							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>在庫(主観)：</label>
+							<input 
+							type="text"
+							value={newPinData.storage}
+							style={{width:"100px"}}
+							onChange={(e) => setNewPinData({ ...newPinData, storage: e.target.value })}
+							/>
+						</div>
 
-		{/* 自分の新しいピン */}
-        {newPinPos && ( 
-            <Marker position={newPinPos} icon={myIcon} ref={(marker) => {
-					if (marker) {
-						setTimeout(() => {
-							marker.openPopup();//一瞬待って自動ポップアップ
-						}, 0);
+						<button onClick={() => {
+							saveNewPinToDB({y_ido: newPinPos[0], x_keido: newPinPos[1], ...newPinData});
+							setIsCreating(false);
+							clearNewPinData();
+						}}>保存して更新</button>
+
+						<button onClick={() => {
+							setIsCreating(false);
+							clearNewPinData();
+						}}>キャンセル</button>
+					</div>
+				</Popup>
+				</Marker>
+			)}
+			</MapContainer>
+			<div className={styles["leafmap-footer"]}>
+				<button className={styles["btn-create"]} onClick={() => {
+					if(isCreating){
+						setIsCreating(false);
+					}else{
+						setIsCreating(true);
 					}
-				}}>
-            <Popup>
-                <div style={{ width: "240px" }}>
-					<strong>新しいピン</strong>
-					<div className={styles["pin-input-row"]}>
-						<label>名前：</label>
-						<input 
-						type="text"
-						value={newPinData.name}
-						onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
-						/>
-                  	</div>
-					<div className={styles["pin-input-row"]}>
-						<label>説明：</label>
-						<input 
-						type="text"
-						value={newPinData.descr}
-						onChange={(e) => setNewPinData({ ...newPinData, descr: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>出店団体：</label>
-						<input 
-						type="text"
-						value={newPinData.teamname}
-						onChange={(e) => setMyPin({ ...myPin, teamname: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>場所：</label>
-						<input 
-						type="text"
-						value={newPinData.place}
-						onChange={(e) => setMyPin({ ...myPin, place: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>種別：</label>
-						<input 
-						type="text"
-						value={newPinData.type}
-						onChange={(e) => setMyPin({ ...myPin, type: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>時間</label>
-						<input 
-						type="text"
-						value={newPinData.starttime}
-						style={{width:"40px"}}
-						onChange={(e) => setMyPin({ ...myPin, starttime: e.target.value })}
-						/>
-						<label>~</label>
-						<input 
-						type="text"
-						value={newPinData.endtime}
-						style={{width:"40px"}}
-						onChange={(e) => setMyPin({ ...myPin, endtime: e.target.value })}
-						/>
-					</div>
-					<div className={styles["pin-input-row"]}>
-						<label>在庫(主観)：</label>
-						<input 
-						type="text"
-						value={newPinData.storage}
-						style={{width:"100px"}}
-						onChange={(e) => setMyPin({ ...myPin, storage: e.target.value })}
-						/>
-					</div>
-
-					<button onClick={() => {
-						// saveNewPinToDB(newPinPos[0], newPinPos[1], newPinData.name, newPinData.descr);
-						setIsCreating(false);
-						clearNewPinData();
-					}}>保存して更新</button>
-
-					<button onClick={() => {
-						setIsCreating(false);
-						clearNewPinData();
-					}}>キャンセル</button>
-                </div>
-            </Popup>
-            </Marker>
-        )}
-		</MapContainer>
-		<div className={styles["leafmap-footer"]}>
-			<button className={styles["btn-create"]} onClick={() => {
-				if(isCreating){
-					setIsCreating(false);
-				}else{
-					setIsCreating(true);
-				}
-				clearNewPinData();
-			}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置" : "ピンを新規作成")}</button>
-        </div>
-    </div>
-  	);
+					clearNewPinData();
+				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置" : "ピンを新規作成")}</button>
+			</div>
+		</div>
+		);
+	}	
 }

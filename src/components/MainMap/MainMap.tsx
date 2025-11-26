@@ -61,6 +61,20 @@ export default function MainMap() {
     fetchData(); // ピンをread
   }, []);
 
+  function formatUpdateTime(isoString?: string) {
+		if (!isoString) return "日時不明";
+
+		const date = new Date(isoString);
+		if (isNaN(date.getTime())) return "日時不明";
+
+		return date.toLocaleString("ja-JP", {
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	}
+
   
   function renderPinMarker(pin: any) {
     if (eventid === "0"){
@@ -95,7 +109,7 @@ export default function MainMap() {
                 <strong>{pin.name}</strong>
                 <br />
                 <p>概要：{pin.description}</p>
-                <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
+                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
                 <p>管理団体：{pin.teamname}</p>
                 {shoplist.length > 0 && (
                   <div>
@@ -122,12 +136,13 @@ export default function MainMap() {
                 <strong>{pin.name}</strong>
                 <br />
                 <p>概要：{pin.description}</p>
-                <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/>
+                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
                 <p>出店団体：{pin.teamname}</p>
                 <p>場所：{pin.place}</p>
                 <p>種別：{pin.type}</p>
                 <p>時間：{pin.starttime}~{pin.endtime}</p>
                 <p>おおよその在庫数：{pin.storage}</p>
+						    <p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
               </div>
             </Popup>
           </Marker>

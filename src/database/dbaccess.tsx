@@ -28,19 +28,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const fire_database = getDatabase(app);
 
-// データ書き込み
-export function writePinData(eventId: string, y_ido: number, x_keido: number, name: string, description: string) {
-  const auth = getAuth();
-	const owneruid = auth.currentUser?.uid as string;
-  if (eventId === "0"){
-    return set(ref(fire_database, `${eventId}/${owneruid}`), { "lat":y_ido, "lng":x_keido, name, description});
-  }else if(eventId === "1"){
-    return set(ref(fire_database, `${eventId}/${owneruid}`), { "class":"shop", y_ido, x_keido, name, description, "areagroupid":"area01" });
-  }else{
-    return Promise.reject(new Error("Unsupported eventId"));
-  }
-}
-
 // データ読み込み
 export async function readPinData(eventId: string) {
   const snapshot = await get(child(ref(fire_database), eventId));
@@ -51,10 +38,54 @@ export async function readPinData(eventId: string) {
   }
 }
 
-export async function updatePinData(eventid: string, newValues: any) {
+// データ書き込み
+export function writePinData(eventId: string, newValues: any) {
+  const auth = getAuth();
+	const owneruid = auth.currentUser?.uid as string;
+  if(eventId !== "1"){
+    return Promise.reject(new Error("Unsupported eventId"));
+  }
+  // --- 1. 必須項目チェック ---
+  const requiredKeys = ["y_ido", "x_keido", "name"];
+  for (const key of requiredKeys) {
+    if (!(key in newValues)) {
+      return Promise.reject(new Error(`Missing required value: ${key}`));
+    }
+  }
+
+  // --- 2. ownerid が入っていたら除外 ---
+  if ("ownerid" in newValues) {
+    const { ownerid, ...rest } = newValues;
+    newValues = rest;
+  }
+
+  // --- 3. 不足しているkeyを追加 ---
+  if (!("class" in newValues)) newValues.class = "shop";
+  if (!("description" in newValues)) newValues.description = "sample text";
+  if (!("areagroupid" in newValues)) newValues.areagroupid = "area01";
+  if (!("areagroupid" in newValues)) newValues.areagroupid = "area01";
+
+  
+  // --- 4. updatetime を追加（現在時刻） ---
+  newValues.updatetime = new Date().toISOString();
+  // 例: "2025-11-26T12:34:56.789Z"
+
+  return set(ref(fire_database, `${eventId}/${owneruid}`), newValues);
+
+}
+
+export async function updatePinData(eventId: string, newValues: any) {
+    if(eventId !== "1"){
+      return Promise.reject(new Error("Unsupported eventId"));
+    }
     const auth = getAuth();
     const owneruid = auth.currentUser?.uid as string;
-    return update(ref(fire_database, `${eventid}/${owneruid}`), newValues);
+    if ("ownerid" in newValues) {
+      const { ownerid, ...rest } = newValues;
+      newValues = rest;
+    }    
+    newValues.updatetime = new Date().toISOString();
+    return update(ref(fire_database, `${eventId}/${owneruid}`), newValues);
 }
 
 // 通常ログイン関数
