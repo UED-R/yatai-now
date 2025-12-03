@@ -58,6 +58,19 @@ body {
   transition: all 0.2s ease;
 }
 
+/* 共通：リロードボタンのデザイン（枠線スタイル） */
+.common-btn-reload {
+  padding: 8px 16px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #333;
+  background-color: rgba(240, 100, 100, 0.8);
+  border: 2px solid #333;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 /* .common-btn-header {
   padding: 8px 16px;
   font-size: 0.9em;

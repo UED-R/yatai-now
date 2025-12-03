@@ -51,13 +51,13 @@ export default function MainMap() {
     [36.112, 140.104]  // 右上y,x
   ];
 
+  async function fetchData() {// firebaseDBからピンを取得
+    const data = await readPinData(eventid);
+    setPins(data);
+  }
 
   // useEffect：画面のレンダリング完了後に自動実行
   useEffect(() => {
-    async function fetchData() {// firebaseDBからピンを取得
-      const data = await readPinData(eventid);
-      setPins(data);
-    }
     fetchData(); // ピンをread
   }, []);
 
@@ -155,8 +155,11 @@ export default function MainMap() {
     <div className={styles["leafmap-screen"]}>
       {/* --- ヘッダーとボタン --- */}
       <header className={"common-header"}>
-        <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
-        <div className={styles["header-right-buttons"]}>
+        <div className={styles["header-button-group"]}>
+          <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
+          <button className={"common-btn-reload"} onClick={() => fetchData()}>リロード</button>
+        </div>
+        <div className={styles["header-button-group"]}>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
         </div>

@@ -279,7 +279,10 @@ export default function VenderUpload() {
 		return (
 		<div className={`screen-general ${styles["leafmap-screen"]}`}>
             <header className="common-header">
-                <button className="common-btn-back" onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
+				<div className={styles["header-button-group"]}>
+                	<button className="common-btn-back" onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
+					<button className={"common-btn-reload"} onClick={() => allPinFetch(user)}>リロード</button>
+				</div>
 				<p>ログインユーザ: {user?.email ? user.email.split("@")[0] : "ユーザerr"}</p>
 			</header>
 

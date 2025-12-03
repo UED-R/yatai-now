@@ -33,7 +33,7 @@
 } */
 
 
-.header-right-buttons {
+.header-button-group {
   display: flex;
   gap: 10px;
 }
