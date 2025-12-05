@@ -182,6 +182,14 @@ export default function MainMap() {
         {pinData.map((pin) => renderPinMarker(pin))}
 
       </MapContainer>
+
+      <div className={styles["floor-selector"]}>
+        <button className={styles["floor-btn"]}>4F</button>
+        <button className={`${styles["floor-btn"]} ${styles["active"]}`}>3F</button>
+        <button className={styles["floor-btn"]}>2F</button>
+        <button className={styles["floor-btn"]}>1F</button>
+      </div>
+
     </div>
   );
 }
