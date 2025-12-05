@@ -329,12 +329,16 @@ export default function VenderUpload() {
 						<p>現状の在庫数：{myPin.storage}</p>
 						<p>更新日時：{formatUpdateTime(myPin.updatetime)}</p>
 						<div className={styles["pin-input-row"]}>
-							<strong>⇒在庫の更新：</strong>
-							<input 
-								type="text"
-								style={{width:"100px"}}
-								onChange={(e) => setEditStorage(e.target.value)}
-							/>
+						<strong>⇒在庫の更新：</strong>
+						<select
+							style={{ width: "100px" }}
+							value={editStorage}
+							onChange={(e) => setEditStorage(e.target.value)}
+						>
+							<option value="〇">〇(十分)</option>
+							<option value="△">△(少ない)</option>
+							<option value="×">×(なし)</option>
+						</select>
 						</div>
 						<button onClick={() => {
 							if(editStorage !== ""){
@@ -419,13 +423,16 @@ export default function VenderUpload() {
 							/>
 						</div>
 						<div className={styles["pin-input-row"]}>
-							<label>在庫(主観)：</label>
-							<input 
-							type="text"
-							value={newPinData.storage}
-							style={{width:"100px"}}
-							onChange={(e) => setNewPinData({ ...newPinData, storage: e.target.value })}
-							/>
+							<label>在庫：</label>
+							<select 
+								value={newPinData.storage}
+								style={{width:"100px"}}
+								onChange={(e) => setNewPinData({ ...newPinData, storage: e.target.value })}
+							>
+							<option value="〇">〇(十分)</option>
+							<option value="△">△(少ない)</option>
+							<option value="×">×(なし)</option>
+							</select>
 						</div>
 
 						<button onClick={() => {
@@ -453,7 +460,7 @@ export default function VenderUpload() {
 						setIsCreating(true);
 					}		
         			setNewPinPos(null);
-				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置" : "ピンを新規作成")}</button>
+				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置(全情報を更新)" : "ピンを新規作成")}</button>
 			</div>
 		</div>
 		);
