@@ -39,6 +39,7 @@ function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
 }
 
 export default function MainMap() {
+  const [currentFloor, setCurrentFloor] = useState("3F");
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
@@ -183,12 +184,25 @@ export default function MainMap() {
 
       </MapContainer>
 
-      <div className={styles["floor-selector"]}>
+      {/* <div className={styles["floor-selector"]}>
         <button className={styles["floor-btn"]}>4F</button>
         <button className={`${styles["floor-btn"]} ${styles["active"]}`}>3F</button>
         <button className={styles["floor-btn"]}>2F</button>
         <button className={styles["floor-btn"]}>1F</button>
+      </div> */}
+
+      <div className={styles["floor-selector"]}>
+        {["4F", "3F", "2F", "1F"].map(floor => (
+        <button
+          key={floor}
+          className={`${styles["floor-btn"]} ${currentFloor === floor ? styles["active"] : ""}`}
+          onClick={() => setCurrentFloor(floor)}
+        >
+          {floor}
+        </button>
+        ))}
       </div>
+
 
     </div>
   );
