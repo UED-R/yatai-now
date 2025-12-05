@@ -11,7 +11,7 @@ export default function EventSelect() {
           屋台なう！は「雙峰祭」のイベントや屋台の情報をリアルタイムに知ることが出来る情報マップです。
         </p>
       </div>
-      <button className={styles["event-button"]} onClick={() => page_navigate(PAGES.MainMap, "1")}>
+      <button className={styles["event-button"]} onClick={() => page_navigate(PAGES.MAIN_MAP, "1")}>
         ご利用はこちらから！！
       </button>
     </div>

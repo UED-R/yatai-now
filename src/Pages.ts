@@ -3,10 +3,8 @@ import type { NavigateFunction } from "react-router-dom";
 // ページ変数の定義
 // ページを追加するときはURLで使いたいファイルパスを追加する
 export const PAGES = {
-  LEAF_MAP:       "/yatai-now/LeafMap",
-  MAIN:           "/yatai-now/Main",
-  MainMap:          "/yatai-now/MainMap",
-  TopPage:   "/yatai-now/",
+  MAIN_MAP:       "/yatai-now/MainMap",
+  TOP_PAGE:       "/yatai-now/",
   VEND_LOGIN:     "/yatai-now/VendorLogin",
   ORG_LOGIN:      "/yatai-now/OrganizerLogin",
   VEND_UPLOAD:    "/yatai-now/VendorUpload",

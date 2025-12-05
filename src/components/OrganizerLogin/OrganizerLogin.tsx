@@ -11,7 +11,7 @@ export default function OrganizerLogin() {
   return (
     <div className={`screen-general ${styles["login-screen"]}`}>
       <header className={styles["login-header"]}>
-        <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 戻る</button>
+        <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MAIN_MAP, "1")}>&lt; 戻る</button>
       </header>
       <div className={styles["login-container"]}>
         <h2>主催者ログインページ</h2>

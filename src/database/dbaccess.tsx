@@ -83,7 +83,14 @@ export async function updatePinData(eventId: string, newValues: any) {
     if ("ownerid" in newValues) {
       const { ownerid, ...rest } = newValues;
       newValues = rest;
-    }    
+    } 
+
+    for (const key in newValues) {// undefined → "" に置き換える処理
+      if (newValues[key] === undefined) {
+        newValues[key] = "";
+      }
+    }
+    
     newValues.updatetime = new Date().toISOString();
     return update(ref(fire_database, `${eventId}/${owneruid}`), newValues);
 }
