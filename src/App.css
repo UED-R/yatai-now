@@ -45,6 +45,16 @@ body {
   pointer-events: auto;
 }
 
+/* 共通：ヘッダに表示するテキスト */
+.common-header-text {
+  padding: 8px 16px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #333;
+  background-color: transparent;
+  pointer-events: auto;
+}
+
 /* 共通：戻るボタンのデザイン（枠線スタイル） */
 .common-btn-back {
   padding: 8px 16px;

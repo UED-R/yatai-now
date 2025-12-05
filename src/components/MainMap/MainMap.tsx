@@ -156,7 +156,7 @@ export default function MainMap() {
       {/* --- ヘッダーとボタン --- */}
       <header className={"common-header"}>
         <div className={styles["header-button-group"]}>
-          <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TopPage)}>&lt; 戻る</button>
+          <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TOP_PAGE)}>&lt; 戻る</button>
           <button className={"common-btn-reload"} onClick={() => fetchData()}>リロード</button>
         </div>
         <div className={styles["header-button-group"]}>

@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useRef } from "react";
 import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
@@ -186,8 +186,18 @@ export default function VenderUpload() {
 		return null;
 	}
 
+	function handleLogout() {
+		const auth = getAuth();
+		signOut(auth)
+		.then(() => {
+			console.log("ログアウトしました");
+			page_navigate(PAGES.MAIN_MAP, "1");
+		})
+		.catch((error) => {
+			console.error("ログアウト失敗", error);
+		});
+	}
 
-  
     // ピン表示の汎用関数
     function renderPinMarker(pin: any, useIcon: L.Icon) {
 		if (eventid === "0"){
@@ -280,10 +290,13 @@ export default function VenderUpload() {
 		<div className={`screen-general ${styles["leafmap-screen"]}`}>
             <header className="common-header">
 				<div className={styles["header-button-group"]}>
-                	<button className="common-btn-back" onClick={() => page_navigate(PAGES.MainMap, "1")}>&lt; 地図に戻る</button>
+                	<button className="common-btn-back" onClick={() => page_navigate(PAGES.MAIN_MAP, "1")}>&lt; 地図に戻る</button>
 					<button className={"common-btn-reload"} onClick={() => allPinFetch(user)}>リロード</button>
 				</div>
-				<p>ログインユーザ: {user?.email ? user.email.split("@")[0] : "ユーザerr"}</p>
+				<div className={styles["header-button-group"]}>
+					<p className='common-header-text'> ログインユーザ: {user?.email ? user.email.split("@")[0] : "ユーザerr"}</p>
+					<button className="common-btn-back" onClick={handleLogout}>ログアウト</button>
+				</div>
 			</header>
 
 			<MapContainer
