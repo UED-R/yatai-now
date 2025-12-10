@@ -9,7 +9,7 @@ import type { User } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 
-import MAP_SVG from '../../image/2025_11_19.svg';
+import MAP_SVG from '../../image/ground.svg';
 import PIN_RED from '/images/pin400x300.png';
 import PIN_GREEN from '/images/pin256_green.png';
 
