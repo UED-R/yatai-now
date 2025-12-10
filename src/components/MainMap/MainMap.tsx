@@ -43,7 +43,7 @@ function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
 }
 
 export default function MainMap() {
-  const [currentFloor, setCurrentFloor] = useState("3F");
+  const [currentFloor, setCurrentFloor] = useState("1F");
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし

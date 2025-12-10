@@ -9,11 +9,13 @@ import type { User } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
 
-import MAP_SVG from '../../image/ground.svg';
+import MAP_GROUND from '../../image/ground.svg'; // 1F + 屋外
+import MAP_2F from '../../image/2F.svg';
+import MAP_3F from '../../image/ground.svg';
+import MAP_4F from '../../image/2F.svg';
+
 import PIN_RED from '/images/pin400x300.png';
 import PIN_GREEN from '/images/pin256_green.png';
-
-
 
 // アイコン設定
 const defaultIcon = L.icon({
@@ -40,6 +42,7 @@ const myIcon = L.icon({
 
 export default function VenderUpload() {
     const eventid = "1" as string;
+	const [currentFloor, setCurrentFloor] = useState("1F");
     const defaultZoom = 18;
     const [_zoomLevel, setZoomLevel] = useState(defaultZoom); // _zoomLevelとして使用しない変数を明示
     const visibleGroup = (_zoomLevel >= 19) ? "shop" : "area"; // グループ切替
@@ -198,6 +201,16 @@ export default function VenderUpload() {
 		});
 	}
 
+  	const getMapByFloor = () => {
+    	switch (currentFloor) {
+      		case "4F": return MAP_4F;
+      		case "3F": return MAP_3F;
+      		case "2F": return MAP_2F;
+      		case "1F": return MAP_GROUND;
+      	default:   return MAP_GROUND;
+    	}
+  	};
+
     // ピン表示の汎用関数
     function renderPinMarker(pin: any, useIcon: L.Icon) {
 		if (eventid === "0"){
@@ -310,9 +323,21 @@ export default function VenderUpload() {
 				scrollWheelZoom={true}
 				crs={L.CRS.Simple}
 			>
-			<ImageOverlay url={MAP_SVG} bounds={bounds} />
+			<ImageOverlay url={getMapByFloor()} bounds={bounds} />
 			<ZoomWatcher />
 			<CreatePinHandler isCreating={isCreating}/>
+
+			<div className={styles["floor-selector"]}>
+    			{["4F", "3F", "2F", "1F"].map(floor => (
+        		<button
+        			key={floor}
+          			className={`${styles["floor-btn"]} ${currentFloor === floor ? styles["active"] : ""}`}
+          			onClick={() => setCurrentFloor(floor)}
+        		>
+          			{floor}
+        		</button>
+        		))}
+    		</div>
 
 			{/* 自分以外のピン */}
 			{otherPins.map((pin: any) => renderPinMarker(pin, otherIcon))} 
