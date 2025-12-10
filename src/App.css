@@ -18,6 +18,7 @@ body {
   box-sizing: border-box; /* paddingやborderをwidth/heightに含める */
 }
 
+/* ヘッダー自体のデザイン */
 .common-header {
   position: absolute;
   top: 10px;
@@ -81,18 +82,7 @@ body {
   transition: all 0.2s ease;
 }
 
-/* .common-btn-header {
-  padding: 8px 16px;
-  font-size: 0.9em;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.6);
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-} */
-
+/* 共通：そのほかログインボタンなど、ボタン用汎用デザイン*/
 .common-btn-header {
   padding: 8px 16px;
   font-size: 0.9em;
@@ -105,7 +95,30 @@ body {
   transition: all 0.2s ease;
 }
 
-.common-btn-back:hover, .common-btn-header:hover {
+.common-btn-back:hover, .common-btn-reload:hover, .common-btn-header:hover {
   background-color: #333;
   color: white;
+}
+
+
+@media (max-width: 767px) {
+  .common-header-text {
+    padding: 4px 8px;
+    font-size: 0.7em;
+  }
+  .common-btn-back {
+    padding: 4px 8px;
+    font-size: 0.7em;
+    border-radius: 10px;
+  }
+  .common-btn-reload {
+    padding: 4px 8px;
+    font-size: 0.7em;
+    border-radius: 10px;
+  }
+  .common-btn-header {
+    padding: 4px 8px;
+    font-size: 0.7em;
+    border-radius: 10px;
+  }
 }
