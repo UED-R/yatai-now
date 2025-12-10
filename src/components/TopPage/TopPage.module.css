@@ -33,6 +33,11 @@
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
 }
+@media (max-width: 767px) {
+  .event-button {
+    font-size: 1.4em;
+  }
+}
 
 .event-button:hover {
   transform: translateY(-5px);

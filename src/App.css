@@ -22,7 +22,7 @@ body {
 .common-header {
   position: absolute;
   top: 10px;
-  left: 10px;
+  left: 50px;
   right: 10px;
   height: 60px;
 
@@ -103,22 +103,22 @@ body {
 
 @media (max-width: 767px) {
   .common-header-text {
-    padding: 4px 8px;
-    font-size: 0.7em;
+    padding: 2px 2px;
+    font-size: 0.6em;
   }
   .common-btn-back {
-    padding: 4px 8px;
-    font-size: 0.7em;
+    padding: 8px 2px;
+    font-size: 0.6em;
     border-radius: 10px;
   }
   .common-btn-reload {
-    padding: 4px 8px;
-    font-size: 0.7em;
+    padding: 8px 2px;
+    font-size: 0.6em;
     border-radius: 10px;
   }
   .common-btn-header {
-    padding: 4px 8px;
-    font-size: 0.7em;
+    padding: 8px 2px;
+    font-size: 0.6em;
     border-radius: 10px;
   }
 }
