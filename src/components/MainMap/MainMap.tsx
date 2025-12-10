@@ -6,7 +6,11 @@ import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
 import { readPinData } from '../../database/dbaccess';
-import MAP_SVG from '../../image/2025_11_19.svg';
+import MAP_GROUND from '../../image/ground.svg'; // 1F + 屋外
+import MAP_2F from '../../image/2F.svg';
+import MAP_3F from '../../image/ground.svg';
+import MAP_4F from '../../image/2F.svg';
+
 import PIN from '../../image/pin400x300.png';
 
 // アイコン設定
@@ -39,7 +43,7 @@ function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
 }
 
 export default function MainMap() {
-  const [currentFloor, setCurrentFloor] = useState("3F");
+  const [currentFloor, setCurrentFloor] = useState("1F");
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
@@ -76,6 +80,15 @@ export default function MainMap() {
 		});
 	}
 
+  const getMapByFloor = () => {
+    switch (currentFloor) {
+      case "4F": return MAP_4F;
+      case "3F": return MAP_3F;
+      case "2F": return MAP_2F;
+      case "1F": return MAP_GROUND;
+      default:   return MAP_GROUND;
+    }
+  };
   
   function renderPinMarker(pin: any) {
     if (eventid === "0"){
@@ -176,7 +189,7 @@ export default function MainMap() {
         scrollWheelZoom={true}
         crs={L.CRS.Simple}
       >
-        <ImageOverlay url={MAP_SVG} bounds={bounds} />
+        <ImageOverlay url={getMapByFloor()} bounds={bounds} />
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
         
