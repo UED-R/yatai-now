@@ -121,6 +121,10 @@ export default function VenderUpload() {
         setOtherPins(others);
     }
 
+	function sleep(ms: number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 	//ピン保存か更新の関数
     async function saveNewPinToDB(dataarr: any) {
     	setIsUpdating(true);
@@ -131,12 +135,7 @@ export default function VenderUpload() {
 			// 更新処理
 			await updatePinData(eventid, dataarr);
 		}
-
-        function sleep(ms: number) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-		sleep(1000);
+		await sleep(300);
 		const auth = getAuth();
 		await allPinFetch(auth.currentUser);
     	setIsUpdating(false);
@@ -189,14 +188,16 @@ export default function VenderUpload() {
 		return null;
 	}
 
-	function handleLogout() {
+	async function handleLogout() {
+		setIsUpdating(true);
+		await sleep(300);
 		const auth = getAuth();
 		signOut(auth)
 		.then(() => {
-			console.log("ログアウトしました");
 			page_navigate(PAGES.MAIN_MAP, "1");
 		})
 		.catch((error) => {
+			setIsUpdating(false);
 			console.error("ログアウト失敗", error);
 		});
 	}
