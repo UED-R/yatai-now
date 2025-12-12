@@ -105,6 +105,7 @@ export default function MainMap() {
       );
     } else if(eventid === "1"){
       if(pin.class !== visibleGroup) return null;
+      if(pin.floor !== currentFloor) return null;
       if(pin.class === "area"){
         const shoplist = pinData
           .filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
