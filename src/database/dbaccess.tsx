@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, child, get, update } from "firebase/database";
+import { getDatabase, ref, set, child, get, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 // 呼び出し方
@@ -93,6 +93,11 @@ export async function updatePinData(eventId: string, newValues: any) {
     
     newValues.updatetime = new Date().toISOString();
     return update(ref(fire_database, `${eventId}/${owneruid}`), newValues);
+}
+
+export async function deletePin(path: string) {
+  const db = getDatabase();
+  return remove(ref(db, path));
 }
 
 // 通常ログイン関数
