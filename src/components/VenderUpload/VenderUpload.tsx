@@ -231,6 +231,7 @@ export default function VenderUpload() {
 			);
 		} else if(eventid === "1"){
 			if(pin.class !== visibleGroup) return null;
+			if(pin.floor !== currentFloor) return null;
 			if(pin.class === "area"){
 			const shoplist = otherPins
 				.filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
