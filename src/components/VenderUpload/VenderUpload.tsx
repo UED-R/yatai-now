@@ -7,7 +7,7 @@ import L from "leaflet";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { page_navigate, PAGES } from "../../Pages"
-import { readPinData, writePinData, updatePinData } from '../../database/dbaccess';
+import { readPinData, writePinData, updatePinData, deletePin } from '../../database/dbaccess';
 
 import MAP_GROUND from '../../image/ground.svg'; // 1F + 屋外
 import MAP_2F from '../../image/2F.svg';
@@ -214,6 +214,18 @@ export default function VenderUpload() {
       	default:   return MAP_GROUND;
     	}
   	};
+
+	async function deletepinHandler(pinid: string){
+    	setIsUpdating(true);
+		deletePin(eventid+"/"+pinid);
+		await sleep(300);
+		clearNewPinData();
+		setMyPin(null);
+		setIsCreating(false);
+		const auth = getAuth();
+		await allPinFetch(auth.currentUser);
+    	setIsUpdating(false);
+	}
 
     // ピン表示の汎用関数
     function renderPinMarker(pin: any, useIcon: L.Icon) {
@@ -514,6 +526,9 @@ export default function VenderUpload() {
 					}		
         			setNewPinPos(null);
 				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置(全情報を更新)" : "ピンを新規作成")}</button>
+				{myPin && (
+					<button className={styles["btn-create"]} onClick={() => {deletepinHandler(myPin.ownerid)}}>ピンを削除</button>
+				)}
 			</div>
 		</div>
 		);
