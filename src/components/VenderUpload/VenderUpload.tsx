@@ -67,7 +67,8 @@ export default function VenderUpload() {
 		type: "",
 		starttime: "",
 		endtime: "",
-		storage: ""
+		storage: "",
+		floor: ""
 	});
 	
 	function clearNewPinData(){
@@ -80,7 +81,8 @@ export default function VenderUpload() {
 			type: "",
 			starttime: "",
 			endtime: "",
-			storage: ""
+			storage: "",
+			floor: ""
 		});
 	}
 
@@ -171,7 +173,8 @@ export default function VenderUpload() {
 				type: myPin.type,
 				starttime: myPin.starttime,
 				endtime: myPin.endtime,
-				storage: myPin.storage
+				storage: myPin.storage,
+				floor: myPin.floor
 			});
 		}
 	}, [myPin]);
@@ -190,7 +193,7 @@ export default function VenderUpload() {
 
 	async function handleLogout() {
 		setIsUpdating(true);
-		await sleep(300);
+		await sleep(500);
 		const auth = getAuth();
 		signOut(auth)
 		.then(() => {
@@ -263,6 +266,7 @@ export default function VenderUpload() {
 				</Marker>
 			);
 			}else if(pin.class === "shop"){
+			if(pin.floor !== currentFloor) return null;
 			return (
 				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={useIcon}>
 				<Tooltip direction="top" offset={[0, -40]} permanent>
@@ -288,18 +292,14 @@ export default function VenderUpload() {
 		}
     }  
 
-	// 予定
-	// function renderOwnPinMarker(pin: any) {
-	// }
-
 	// 画面描画部分
-	if (isUpdating) {
+	if (isUpdating) {//アップデート中の画面
 		return (
 		<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
 			<h1>updating...</h1>
 		</div>
 		);
-	}else{
+	}else{ //メインマップ画面
 		return (
 		<div className={`screen-general ${styles["leafmap-screen"]}`}>
             <header className="common-header">
@@ -364,6 +364,7 @@ export default function VenderUpload() {
 						<p>出店団体：{myPin.teamname}</p>
 						<p>場所：{myPin.place}</p>
 						<p>種別：{myPin.type}</p>
+						<p>階層：{myPin.floor}</p>
 						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
 						<p>現状の在庫数：{myPin.storage}</p>
 						<p>更新日時：{formatUpdateTime(myPin.updatetime)}</p>
@@ -444,6 +445,19 @@ export default function VenderUpload() {
 							value={newPinData.type}
 							onChange={(e) => setNewPinData({ ...newPinData, type: e.target.value })}
 							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>階層：</label>
+							<select 
+								value={newPinData.floor}
+								style={{width:"100px"}}
+								onChange={(e) => setNewPinData({ ...newPinData, floor: e.target.value })}
+							>
+							<option value="1F">1F</option>
+							<option value="2F">2F</option>
+							<option value="3F">3F</option>
+							<option value="4F">4F</option>
+							</select>
 						</div>
 						<div className={styles["pin-input-row"]}>
 							<label>時間</label>

@@ -63,7 +63,7 @@ export function writePinData(eventId: string, newValues: any) {
   if (!("class" in newValues)) newValues.class = "shop";
   if (!("description" in newValues)) newValues.description = "sample text";
   if (!("areagroupid" in newValues)) newValues.areagroupid = "area01";
-  if (!("areagroupid" in newValues)) newValues.areagroupid = "area01";
+  if (!("floor" in newValues)) newValues.floor = "1F";
 
   
   // --- 4. updatetime を追加（現在時刻） ---

@@ -140,6 +140,7 @@ export default function MainMap() {
           </Marker>
         );
       }else if(pin.class === "shop"){
+        if(pin.floor !== currentFloor) return null;
         return (
           <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
             <Tooltip direction="top" offset={[0, -40]} permanent>
