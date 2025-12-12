@@ -8,8 +8,8 @@ import { page_navigate, PAGES } from "../../Pages"
 import { readPinData } from '../../database/dbaccess';
 import MAP_GROUND from '../../image/ground.svg'; // 1F + 屋外
 import MAP_2F from '../../image/2F.svg';
-import MAP_3F from '../../image/ground.svg';
-import MAP_4F from '../../image/2F.svg';
+import MAP_3F from '../../image/3F.svg';
+import MAP_4F from '../../image/4F.svg';
 
 import PIN from '../../image/pin400x300.png';
 
