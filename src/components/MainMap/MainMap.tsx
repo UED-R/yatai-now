@@ -105,7 +105,6 @@ export default function MainMap() {
       );
     } else if(eventid === "1"){
       if(pin.class !== visibleGroup) return null;
-      if(pin.floor !== currentFloor) return null;
       if(pin.class === "area"){
         const shoplist = pinData
           .filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
@@ -141,6 +140,7 @@ export default function MainMap() {
           </Marker>
         );
       }else if(pin.class === "shop"){
+        if(pin.floor !== currentFloor) return null;
         return (
           <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
             <Tooltip direction="top" offset={[0, -40]} permanent>

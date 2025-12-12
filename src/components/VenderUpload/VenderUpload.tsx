@@ -231,7 +231,6 @@ export default function VenderUpload() {
 			);
 		} else if(eventid === "1"){
 			if(pin.class !== visibleGroup) return null;
-			if(pin.floor !== currentFloor) return null;
 			if(pin.class === "area"){
 			const shoplist = otherPins
 				.filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
@@ -267,6 +266,7 @@ export default function VenderUpload() {
 				</Marker>
 			);
 			}else if(pin.class === "shop"){
+			if(pin.floor !== currentFloor) return null;
 			return (
 				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={useIcon}>
 				<Tooltip direction="top" offset={[0, -40]} permanent>
@@ -364,6 +364,7 @@ export default function VenderUpload() {
 						<p>出店団体：{myPin.teamname}</p>
 						<p>場所：{myPin.place}</p>
 						<p>種別：{myPin.type}</p>
+						<p>階層：{myPin.floor}</p>
 						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
 						<p>現状の在庫数：{myPin.storage}</p>
 						<p>更新日時：{formatUpdateTime(myPin.updatetime)}</p>
