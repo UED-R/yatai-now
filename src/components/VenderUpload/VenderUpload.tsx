@@ -67,7 +67,8 @@ export default function VenderUpload() {
 		type: "",
 		starttime: "",
 		endtime: "",
-		storage: ""
+		storage: "",
+		floor: ""
 	});
 	
 	function clearNewPinData(){
@@ -80,7 +81,8 @@ export default function VenderUpload() {
 			type: "",
 			starttime: "",
 			endtime: "",
-			storage: ""
+			storage: "",
+			floor: ""
 		});
 	}
 
@@ -121,6 +123,10 @@ export default function VenderUpload() {
         setOtherPins(others);
     }
 
+	function sleep(ms: number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 	//ピン保存か更新の関数
     async function saveNewPinToDB(dataarr: any) {
     	setIsUpdating(true);
@@ -131,12 +137,7 @@ export default function VenderUpload() {
 			// 更新処理
 			await updatePinData(eventid, dataarr);
 		}
-
-        function sleep(ms: number) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-		sleep(1000);
+		await sleep(300);
 		const auth = getAuth();
 		await allPinFetch(auth.currentUser);
     	setIsUpdating(false);
@@ -172,7 +173,8 @@ export default function VenderUpload() {
 				type: myPin.type,
 				starttime: myPin.starttime,
 				endtime: myPin.endtime,
-				storage: myPin.storage
+				storage: myPin.storage,
+				floor: myPin.floor
 			});
 		}
 	}, [myPin]);
@@ -189,14 +191,16 @@ export default function VenderUpload() {
 		return null;
 	}
 
-	function handleLogout() {
+	async function handleLogout() {
+		setIsUpdating(true);
+		await sleep(500);
 		const auth = getAuth();
 		signOut(auth)
 		.then(() => {
-			console.log("ログアウトしました");
 			page_navigate(PAGES.MAIN_MAP, "1");
 		})
 		.catch((error) => {
+			setIsUpdating(false);
 			console.error("ログアウト失敗", error);
 		});
 	}
@@ -287,18 +291,14 @@ export default function VenderUpload() {
 		}
     }  
 
-	// 予定
-	// function renderOwnPinMarker(pin: any) {
-	// }
-
 	// 画面描画部分
-	if (isUpdating) {
+	if (isUpdating) {//アップデート中の画面
 		return (
 		<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
 			<h1>updating...</h1>
 		</div>
 		);
-	}else{
+	}else{ //メインマップ画面
 		return (
 		<div className={`screen-general ${styles["leafmap-screen"]}`}>
             <header className="common-header">
@@ -443,6 +443,19 @@ export default function VenderUpload() {
 							value={newPinData.type}
 							onChange={(e) => setNewPinData({ ...newPinData, type: e.target.value })}
 							/>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>階層：</label>
+							<select 
+								value={newPinData.floor}
+								style={{width:"100px"}}
+								onChange={(e) => setNewPinData({ ...newPinData, floor: e.target.value })}
+							>
+							<option value="1F">1F</option>
+							<option value="2F">2F</option>
+							<option value="3F">3F</option>
+							<option value="4F">4F</option>
+							</select>
 						</div>
 						<div className={styles["pin-input-row"]}>
 							<label>時間</label>
