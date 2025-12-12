@@ -11,8 +11,8 @@ import { readPinData, writePinData, updatePinData } from '../../database/dbacces
 
 import MAP_GROUND from '../../image/ground.svg'; // 1F + 屋外
 import MAP_2F from '../../image/2F.svg';
-import MAP_3F from '../../image/ground.svg';
-import MAP_4F from '../../image/2F.svg';
+import MAP_3F from '../../image/3F.svg';
+import MAP_4F from '../../image/4F.svg';
 
 import PIN_RED from '/images/pin400x300.png';
 import PIN_GREEN from '/images/pin256_green.png';
