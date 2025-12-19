@@ -461,7 +461,8 @@ export default function VenderUpload() {
 						<div className={styles["pin-input-row"]}>
 							<label>階層：</label>
 							<select 
-								value={newPinData.floor}
+								// value={newPinData.floor!=="" ? newPinData.floor : currentFloor}
+								value={"4F"}
 								style={{width:"100px"}}
 								onChange={(e) => setNewPinData({ ...newPinData, floor: e.target.value })}
 							>
