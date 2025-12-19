@@ -45,7 +45,7 @@ export function writePinData(eventId: string, y_ido: number, x_keido: number, na
   if (eventId === "0"){
     return set(ref(fire_database, `${eventId}/${timeid}`), { "lat":y_ido, "lng":x_keido, name, description});
   }else if(eventId === "1"){
-    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, description, "areagroupid":"area01" });
+    return set(ref(fire_database, `${eventId}/${timeid}`), { "id":`shop${timeid}`, "class":"shop", y_ido, x_keido, name, "floor":"1F" ,description, "areagroupid":"area01" });
   }else{
     return Promise.reject(new Error("Unsupported eventId"));
   }

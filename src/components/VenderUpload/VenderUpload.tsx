@@ -82,7 +82,7 @@ export default function VenderUpload(){
             return;
         }
         // In Leaflet, Lat is Y, Lng is X.
-        writePinData("0", pinLocation.lat, pinLocation.lng, pinName, pinDescription)
+        writePinData("1", pinLocation.lat, pinLocation.lng, pinName, pinDescription)
             .then(() => {
                 alert("ピンを保存しました！");
                 // Reset form state but keep the saved marker on map (or remove it)
