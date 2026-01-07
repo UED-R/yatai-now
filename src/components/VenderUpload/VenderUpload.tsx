@@ -317,7 +317,6 @@ export default function VenderUpload() {
             <header className="common-header">
 				<div className={styles["header-button-group"]}>
                 	<button className="common-btn-back" onClick={() => page_navigate(PAGES.MAIN_MAP, "1")}>&lt; 地図に戻る</button>
-					<button className={"common-btn-reload"} onClick={() => allPinFetch(user)}>リロード</button>
 				</div>
 				<div className={styles["header-button-group"]}>
 					<p className='common-header-text'> ログインユーザ: {user?.email ? user.email.split("@")[0] : "ユーザerr"}</p>

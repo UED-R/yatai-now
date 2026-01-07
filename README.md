@@ -18,9 +18,9 @@
 ### 環境
 - 言語：TypeScript
 - フロントエンドフレームワーク：Node.js + React
-- Webホスティング：最初はGithub Pages、その後Vercelに移行?
-- DB
-    - firebase
+- Webホスティング：~~Github Pages~~
+    - 2026/01/07：vercelに移行しました
+- DataBase：firebase
 
 ## チーム名：**屋台なう**
 - 船越 : https://github.com/Takafumi122
@@ -43,8 +43,10 @@
 1. githubにアップロード
     - vscodeでcommit & push
     - (任意)Githubでプルリク
-1. Webページとして公開(ブランチ：gh-pages)
+1. Webページとして公開~~(ブランチ：gh-pages)~~
     - チームメンバの了解を得ること
-    - npm run deploy
-    - 1分くらいで https://ued-r.github.io/yatai-now/ に出るはず
+        - ~~npm run deploy~~
+        - ~~1分くらいで https://ued-r.github.io/yatai-now/ に出るはず~~
+    - mainブランチにアップロードプッシュしたら自動でデプロイされます
+    - リンクはhttps://yatai-now.vercel.app/
 
