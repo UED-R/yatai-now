@@ -8,6 +8,7 @@ export const PAGES = {
   VEND_LOGIN:     "/VendorLogin",
   ORG_LOGIN:      "/OrganizerLogin",
   VEND_UPLOAD:    "/VendorUpload",
+  LOGIN_PAGE:     "/LoginPage"
 } as const;
 export type RoutePath = (typeof PAGES)[keyof typeof PAGES];
 
