@@ -43,6 +43,7 @@ const myIcon = L.icon({
 export default function VenderUpload() {
     const eventid = "1" as string;
 	const [currentFloor, setCurrentFloor] = useState("1F");
+	const [isEditingPin, setIsEditingPin] = useState(false);
     const defaultZoom = 18;
     const [_zoomLevel, setZoomLevel] = useState(defaultZoom); // _zoomLevelとして使用しない変数を明示
     const visibleGroup = (_zoomLevel >= 19) ? "shop" : "area"; // グループ切替
@@ -100,7 +101,11 @@ export default function VenderUpload() {
 		});
 	}
 
-
+	const finishPinEdit = () => {
+		setIsEditingPin(false);
+		setIsCreating(false);
+		clearNewPinData();
+	};
 		
 	// ズームイベントの処理
 	function ZoomWatcher() {
@@ -340,16 +345,28 @@ export default function VenderUpload() {
 			<CreatePinHandler isCreating={isCreating}/>
 
 			<div className={styles["floor-selector"]}>
-    			{["4F", "3F", "2F", "1F"].map(floor => (
-        		<button
-        			key={floor}
-          			className={`${styles["floor-btn"]} ${currentFloor === floor ? styles["active"] : ""}`}
-          			onClick={() => setCurrentFloor(floor)}
-        		>
-          			{floor}
-        		</button>
-        		))}
-    		</div>
+				{["4F", "3F", "2F", "1F"].map(floor => {
+					const isDisabled = isCreating && floor !== currentFloor;
+					return (
+						<button
+							key={floor}
+        					disabled={isDisabled}
+        					className={`
+								${styles["floor-btn"]}
+          						${currentFloor === floor ? styles["active"] : ""}
+          						${isDisabled ? styles["disabled"] : ""}
+							`}
+        					onClick={() => {
+          						if (isDisabled) return;
+          						setCurrentFloor(floor);
+        					}}
+      					>
+        					{floor}
+      					</button>
+    				);
+  				})}
+			</div>
+
 
 			{/* 自分以外のピン */}
 			{otherPins.map((pin: any) => renderPinMarker(pin, otherIcon))} 
@@ -395,6 +412,7 @@ export default function VenderUpload() {
 							if(editStorage !== ""){
 								saveNewPinToDB({ ...myPin, storage: editStorage });
 								setIsCreating(false);
+								setIsEditingPin(false);
 								clearNewPinData();
 							}
 						}}>更新してリロード</button>
@@ -502,14 +520,12 @@ export default function VenderUpload() {
 						<button onClick={() => {
 							if(newPinData.name !==""){
 								saveNewPinToDB({y_ido: newPinPos[0], x_keido: newPinPos[1], ...newPinData});
-								setIsCreating(false);
-								clearNewPinData();
+								finishPinEdit();
 							}
 						}}>更新してリロード</button>
 
 						<button onClick={() => {
-							setIsCreating(false);
-							clearNewPinData();
+							finishPinEdit();
 						}}>キャンセル</button>
 					</div>
 				</Popup>
@@ -518,13 +534,16 @@ export default function VenderUpload() {
 			</MapContainer>
 			<div className={styles["leafmap-footer"]}>
 				<button className={styles["btn-create"]} onClick={() => {
-					if(isCreating){
+    				if (isCreating) {
 						setIsCreating(false);
-					}else{
-						setIsCreating(true);
-					}		
-        			setNewPinPos(null);
-				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置(全情報を更新)" : "ピンを新規作成")}</button>
+						setIsEditingPin(false);
+					} else {
+      					setIsCreating(true);
+      					setIsEditingPin(true);
+    				}
+    				setNewPinPos(null);
+  				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置(全情報を更新)" : "ピンを新規作成")}</button>
+
 				{myPin && (
 					<button className={styles["btn-create"]} onClick={() => {deletepinHandler(myPin.ownerid)}}>ピンを削除</button>
 				)}
