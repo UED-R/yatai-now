@@ -185,6 +185,8 @@ export default function MainMap() {
         // 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
         // 1mあたり経度 : 0.000010966382364 ≒ 0.000011
         zoom={defaultZoom}
+        minZoom={17}
+        maxZoom={24}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
         crs={L.CRS.Simple}
