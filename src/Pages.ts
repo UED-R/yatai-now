@@ -3,11 +3,11 @@ import type { NavigateFunction } from "react-router-dom";
 // ページ変数の定義
 // ページを追加するときはURLで使いたいファイルパスを追加する
 export const PAGES = {
-  MAIN_MAP:       "/yatai-now/MainMap",
-  TOP_PAGE:       "/yatai-now/",
-  VEND_LOGIN:     "/yatai-now/VendorLogin",
-  ORG_LOGIN:      "/yatai-now/OrganizerLogin",
-  VEND_UPLOAD:    "/yatai-now/VendorUpload",
+  TOP_PAGE:       "/",
+  MAIN_MAP:       "/MainMap",
+  VEND_LOGIN:     "/VendorLogin",
+  ORG_LOGIN:      "/OrganizerLogin",
+  VEND_UPLOAD:    "/VendorUpload",
 } as const;
 export type RoutePath = (typeof PAGES)[keyof typeof PAGES];
 
