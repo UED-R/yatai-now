@@ -1,11 +1,11 @@
-import styles from './OrganizerLogin.module.css';
+import styles from './LoginPage.module.css';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { PAGES, page_navigate } from '../../Pages';
 import { userCheck, userLogin } from "../../database/dbaccess";
 import { getAuth } from "firebase/auth";
 
-export default function OrganizerLogin() {
+export default function LoginPage() {
   // --- State for inputs and error message ---
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
@@ -19,11 +19,11 @@ export default function OrganizerLogin() {
         await new Promise(res => setTimeout(res, 400)); // ミリ秒待つ
         const userRes = await userCheck(auth.currentUser?.uid);
         if(userRes==="org"){
-          // page_navigate(); //主催者画面に移行予定
-          console.log("主催者");
+          console.log("org");
+          page_navigate(PAGES.ORG_MANAGE); //主催者画面に移行予定
         }else if(userRes==="vend"){
-          console.log("出店者");
-          // page_navigate(PAGES.VEND_UPLOAD);
+          console.log("vend");
+          page_navigate(PAGES.VEND_UPLOAD);
         }
       };
       redirect(); //自動でリダイレクト、キャッシュ削除で解除
@@ -39,12 +39,14 @@ export default function OrganizerLogin() {
       return;
     }
 
-    const usertype = await userLogin(loginId, password);
-      if(usertype==="org"){        
-        console.log("主催者");
-      }else if (usertype==="vend"){
-        console.log("出店者");
-      } else {
+    const userres = await userLogin(loginId, password);
+    if (userres==="org") {
+      console.log("org");
+      page_navigate(PAGES.ORG_MANAGE);
+    }else if(userres==="vend"){
+      console.log("vend");
+      page_navigate(PAGES.VEND_UPLOAD);
+    } else {
       setError("ログインに失敗しました。");
     }
   };
@@ -55,7 +57,7 @@ export default function OrganizerLogin() {
         <button className={styles["btn-back"]} onClick={() => page_navigate(PAGES.MAIN_MAP, "1")}>&lt; 戻る</button>
       </header>
       <div className={styles["login-container"]}>
-        <h2>主催者ログインページ</h2>
+        <h2>ログインページ</h2>
         <form className={styles["login-form"]} onSubmit={handleLoginSubmit}>
           <input 
             className={styles["login-input"]} 
