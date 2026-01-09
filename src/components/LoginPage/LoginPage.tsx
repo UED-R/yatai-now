@@ -19,8 +19,10 @@ export default function LoginPage() {
         await new Promise(res => setTimeout(res, 400)); // ミリ秒待つ
         const userRes = await userCheck(auth.currentUser?.uid);
         if(userRes==="org"){
-          // page_navigate(); //主催者画面に移行予定
+          console.log("org");
+          page_navigate(PAGES.ORG_MANAGE); //主催者画面に移行予定
         }else if(userRes==="vend"){
+          console.log("vend");
           page_navigate(PAGES.VEND_UPLOAD);
         }
       };
@@ -37,9 +39,12 @@ export default function LoginPage() {
       return;
     }
 
-    const uid = await userLogin(loginId, password);
-    if (uid) {
-      // console.log("手動ログイン成功: UID =", uid);
+    const userres = await userLogin(loginId, password);
+    if (userres==="org") {
+      console.log("org");
+      page_navigate(PAGES.ORG_MANAGE);
+    }else if(userres==="vend"){
+      console.log("vend");
       page_navigate(PAGES.VEND_UPLOAD);
     } else {
       setError("ログインに失敗しました。");

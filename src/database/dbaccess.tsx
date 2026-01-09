@@ -117,7 +117,7 @@ export async function userLogin(userID: string, userPwd: string): Promise<string
 export async function userCheck(uid: string | undefined){
   if (uid === undefined) return null;
   const snapshot = await get(ref(fire_database, `privilegeDB/${uid}`));
-    if (snapshot.exists() && snapshot.val() === true) {
+  if (snapshot.exists() && snapshot.val() === true) {
     // 特権ユーザ
     return "org";
   } else {

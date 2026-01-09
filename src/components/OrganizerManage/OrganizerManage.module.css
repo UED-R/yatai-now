@@ -80,3 +80,9 @@
   margin: -5px 0 5px 0; /* Adjust spacing */
   font-size: 0.9em;
 }
+
+.header-button-group {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* ボタンと文字の間隔を少し空ける */
+}
