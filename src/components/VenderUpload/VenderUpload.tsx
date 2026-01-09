@@ -43,7 +43,6 @@ const myIcon = L.icon({
 export default function VenderUpload() {
     const eventid = "1" as string;
 	const [currentFloor, setCurrentFloor] = useState("1F");
-	const [isEditingPin, setIsEditingPin] = useState(false);
     const defaultZoom = 18;
     const [_zoomLevel, setZoomLevel] = useState(defaultZoom); // _zoomLevelとして使用しない変数を明示
     const visibleGroup = (_zoomLevel >= 19) ? "shop" : "area"; // グループ切替
@@ -102,7 +101,7 @@ export default function VenderUpload() {
 	}
 
 	const finishPinEdit = () => {
-		setIsEditingPin(false);
+		// setIsEditingPin(false);
 		setIsCreating(false);
 		clearNewPinData();
 	};
@@ -412,7 +411,6 @@ export default function VenderUpload() {
 							if(editStorage !== ""){
 								saveNewPinToDB({ ...myPin, storage: editStorage });
 								setIsCreating(false);
-								setIsEditingPin(false);
 								clearNewPinData();
 							}
 						}}>更新してリロード</button>
@@ -536,10 +534,8 @@ export default function VenderUpload() {
 				<button className={styles["btn-create"]} onClick={() => {
     				if (isCreating) {
 						setIsCreating(false);
-						setIsEditingPin(false);
 					} else {
       					setIsCreating(true);
-      					setIsEditingPin(true);
     				}
     				setNewPinPos(null);
   				}}>{isCreating ? "キャンセル" : (myPin ? "ピンを再配置(全情報を更新)" : "ピンを新規作成")}</button>
