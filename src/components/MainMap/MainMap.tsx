@@ -154,7 +154,6 @@ export default function MainMap() {
                 {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
                 <p>出店団体：{pin.teamname}</p>
                 <p>場所：{pin.place}</p>
-                <p>種別：{pin.type}</p>
                 <p>時間：{pin.starttime}~{pin.endtime}</p>
                 <p>おおよその在庫数：{pin.storage}</p>
 						    <p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
