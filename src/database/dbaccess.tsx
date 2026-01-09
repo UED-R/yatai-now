@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import firebase from "firebase/compat/app";
+// import firebase from "firebase/compat/app";
 
 // 呼び出し方
 // 他のファイルの先頭で import { writePinData, readPinData } from '../../database/dbaccess';
