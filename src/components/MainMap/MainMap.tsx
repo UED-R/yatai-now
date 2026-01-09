@@ -55,6 +55,8 @@ export default function MainMap() {
     [36.108, 140.098], // 左下y,x
     [36.112, 140.104]  // 右上y,x
   ];
+  const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
+
 
   async function fetchData() {// firebaseDBからピンを取得
     const data = await readPinData(eventid);
@@ -116,23 +118,40 @@ export default function MainMap() {
         return (
           <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
             <Tooltip direction="top" offset={[0, -40]} permanent>
-              <strong>{pin.name}</strong>
+              <strong>
+                {pin.name}（{shoplist.length}団体）
+              </strong>
             </Tooltip>
             <Popup>
               <div>
-                <strong>{pin.name}</strong>
+                <strong>
+                  {pin.name}（{shoplist.length}団体）
+                </strong>
                 <br />
                 <p>概要：{pin.description}</p>
                 {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
                 <p>管理団体：{pin.teamname}</p>
+               
                 {shoplist.length > 0 && (
                   <div>
-                    <p>このエリアのお店：</p>
-                    <ul>
-                      {shoplist.map(function(shopName) {
-                        return <li key={shopName}>{shopName}</li>;
-                      })}
-                    </ul>
+                    <button
+                      onClick={() =>
+                        setOpenShopList(prev => ({
+                          ...prev,
+                          [pin.id]: !prev[pin.id],
+                        }))
+                      style={{ marginTop: "6px",  cursor: "pointer"}}
+                    >
+                      {openShopList ? "▲ 店舗を隠す" : "▼ 店舗を表示"}
+                    </button>
+
+                    {openShopList[pin.id] && (
+                      <ul>
+                        {shoplist.map(function(shopName)) {
+                          return <li key={shopName}>{shopName}</li>;
+                        })}
+                      </ul>
+                    )}
                   </div>
                 )}
               </div>
