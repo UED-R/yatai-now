@@ -187,6 +187,8 @@ export default function MainMap() {
         zoom={defaultZoom}
         minZoom={17}
         maxZoom={24}
+        maxBounds={bounds}
+        maxBoundsViscosity={1.0}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
         crs={L.CRS.Simple}
