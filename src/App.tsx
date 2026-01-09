@@ -10,8 +10,9 @@ import EventSelect      from './components/TopPage/TopPage';
 import MainMap          from './components/MainMap/MainMap';
 import OrganizerLogin   from './components/OrganizerLogin/OrganizerLogin';
 import VenderLogin      from './components/VenderLogin/VenderLogin';
-import VenderUpload     from './components/VenderUpload/VenderUpload';
 import LoginPage        from './components/LoginPage/LoginPage';
+import VenderUpload     from './components/VenderUpload/VenderUpload';
+import OrganizerManage  from './components/OrganizerManage/OrganizerManage';
 import { PAGES }        from './Pages';
 
 
@@ -32,8 +33,9 @@ export default function App() {
         <Route path={PAGES.MAIN_MAP}      element={<MainMap />} />
         <Route path={PAGES.ORG_LOGIN}     element={<OrganizerLogin />} />
         <Route path={PAGES.VEND_LOGIN}    element={<VenderLogin />} />
-        <Route path={PAGES.VEND_UPLOAD}   element={<VenderUpload />} />
         <Route path={PAGES.LOGIN_PAGE}    element={<LoginPage />} />
+        <Route path={PAGES.VEND_UPLOAD}   element={<VenderUpload />} />
+        <Route path={PAGES.ORG_MANAGE}    element={<OrganizerManage />} />
       </Routes>
     </Router>
   );
