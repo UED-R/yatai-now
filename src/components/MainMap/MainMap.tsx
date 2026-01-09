@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
+import { MapContainer, useMap, useMapEvents, Marker, Popup, ImageOverlay, Tooltip, Circle } from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -29,6 +29,32 @@ const myIcon = L.icon({
     popupAnchor: [1, -34]
 });
 
+const myLocationIcon = L.divIcon({
+  className: "my-location-icon",
+  html: `<div style="
+    width: 16px;
+    height: 16px;
+    background: #007bff;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  "></div>`,
+});
+
+function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (position) {
+      map.setView(position, map.getZoom());
+    }
+  }, [position]);
+
+  return null;
+}
+
+
+
 // 関数コンポーネント：呼び出すというよりHTMLのなかにインライン展開する感じ
 // propsはプロパティオブジェクト、関数も指定できる
 function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
@@ -55,6 +81,7 @@ export default function MainMap() {
     [36.108, 140.098], // 左下y,x
     [36.112, 140.104]  // 右上y,x
   ];
+  const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null); // 現在地用のstate
 
   async function fetchData() {// firebaseDBからピンを取得
     const data = await readPinData(eventid);
@@ -64,7 +91,32 @@ export default function MainMap() {
   // useEffect：画面のレンダリング完了後に自動実行
   useEffect(() => {
     fetchData(); // ピンをread
+    getCurrentLocation();
   }, []);
+
+  function getCurrentLocation() {
+    if (!navigator.geolocation) {
+      alert("このブラウザでは位置情報が利用できません");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        setCurrentPosition([lat, lng]);
+      },
+      (error) => {
+        console.error(error);
+        alert("現在地を取得できませんでした");
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  }
 
   function formatUpdateTime(isoString?: string) {
 		if (!isoString) return "日時不明";
@@ -192,6 +244,23 @@ export default function MainMap() {
         <ImageOverlay url={getMapByFloor()} bounds={bounds} />
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
+
+        <MoveToCurrentLocation position={currentPosition} />
+
+        {currentPosition && (
+          <>
+            <Marker position={currentPosition} icon={myLocationIcon}>
+              <Popup>現在地</Popup>
+            </Marker>
+
+            <Circle
+              center={currentPosition}
+              radius={10} // 誤差半径（m）
+              pathOptions={{ opacity: 0.3, fillOpacity: 0, }}
+            />
+          </>
+        )}
+
         
         {pinData.map((pin) => renderPinMarker(pin))}
 
