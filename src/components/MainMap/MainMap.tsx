@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip} from "react-leaflet";
+import { MapContainer, useMapEvents, useMap,  Marker, Popup, ImageOverlay, Tooltip} from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -57,17 +57,17 @@ function applyOffset(
 }
 
 
-// function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
-//   const map = useMap();
+function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
+  const map = useMap();
 
-//   useEffect(() => {
-//     if (position) {
-//       map.setView(position, map.getZoom());
-//     }
-//   }, [position]);
+  useEffect(() => {
+    if (position) {
+      map.setView(position, map.getZoom());
+    }
+  }, [position]);
 
-//   return null;
-// }
+  return null;
+}
 
 
 
@@ -268,7 +268,7 @@ export default function MainMap() {
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
 
-        {/* <MoveToCurrentLocation position={currentPosition} /> */}
+        <MoveToCurrentLocation position={currentPosition} />
 
         {adjustedPosition && (
           <>
