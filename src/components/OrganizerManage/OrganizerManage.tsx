@@ -3,10 +3,13 @@ import { PAGES, page_navigate } from '../../Pages';
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import type { User } from "firebase/auth";
+import { listupUsers } from "../../database/dbaccess";
 
 export default function OrganizerManagement() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [other_users, setOther_Users] = useState<any[]>([]);
+
 
   function sleep(ms: number) {
 		return new Promise(resolve => setTimeout(resolve, ms));
@@ -21,6 +24,19 @@ export default function OrganizerManagement() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const result = await listupUsers();
+        setOther_Users(result);
+      } catch (e) {
+        console.error("ユーザ一覧取得失敗", e);
+      }
+    };
+    loadUsers();
+  }, []);
+
 
   async function handleLogout() {
     setIsUpdating(true);
@@ -56,6 +72,22 @@ export default function OrganizerManagement() {
 
           <div className={styles["login-container"]}>
             <h2>主催者用管理ページ</h2>
+            <table className={styles["user-table"]}>
+              <thead>
+                <tr>
+                  <th>UID</th>
+                  <th>メールアドレス</th>
+                </tr>
+              </thead>
+              <tbody>
+                {other_users.map((u) => (
+                  <tr key={u.id}>
+                    <td>{u.id}</td>
+                    <td>{u.email ?? "―"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       );

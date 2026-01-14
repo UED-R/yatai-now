@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import firebase from "firebase/compat/app";
+import { collection, getDocs, getFirestore  } from "firebase/firestore";
 
 // 呼び出し方
 // 他のファイルの先頭で import { writePinData, readPinData } from '../../database/dbaccess';
@@ -125,3 +125,14 @@ export async function userCheck(uid: string | undefined){
     return "vend";
   }
 }
+
+export const listupUsers = async () => {
+  console.log("listup");
+  const usersRef = collection(getFirestore(app), "users");
+  const snapshot = await getDocs(usersRef);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};

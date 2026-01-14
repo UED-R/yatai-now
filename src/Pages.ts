@@ -5,8 +5,6 @@ import type { NavigateFunction } from "react-router-dom";
 export const PAGES = {
   TOP_PAGE:       "/",
   MAIN_MAP:       "/MainMap",
-  VEND_LOGIN:     "/VendorLogin",
-  ORG_LOGIN:      "/OrganizerLogin",
   VEND_UPLOAD:    "/VendorUpload",
   LOGIN_PAGE:     "/LoginPage",
   ORG_MANAGE:     "/OrganizerManage"

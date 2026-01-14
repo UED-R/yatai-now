@@ -174,8 +174,6 @@ export default function MainMap() {
           <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TOP_PAGE)}>&lt; 戻る</button>
         </div>
         <div className={styles["header-button-group"]}>
-          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
-          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>共通ログインボタン</button>
         </div>
       </header>
