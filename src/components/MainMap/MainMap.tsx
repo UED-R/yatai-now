@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMap, useMapEvents, Marker, Popup, ImageOverlay, Tooltip, Circle } from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip} from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -41,17 +41,33 @@ const myLocationIcon = L.divIcon({
   "></div>`,
 });
 
-function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
-  const map = useMap();
+// ===== 現在地オフセット設定 =====
+const LOCATION_OFFSET: [number, number] = [
+  0.000700,   // 緯度（上下）
+  -0.008720,  // 経度（左右）
+];
 
-  useEffect(() => {
-    if (position) {
-      map.setView(position, map.getZoom());
-    }
-  }, [position]);
-
-  return null;
+function applyOffset(
+  position: [number, number]
+): [number, number] {
+  return [
+    position[0] + LOCATION_OFFSET[0],
+    position[1] + LOCATION_OFFSET[1],
+  ];
 }
+
+
+// function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
+//   const map = useMap();
+
+//   useEffect(() => {
+//     if (position) {
+//       map.setView(position, map.getZoom());
+//     }
+//   }, [position]);
+
+//   return null;
+// }
 
 
 
@@ -216,7 +232,10 @@ export default function MainMap() {
         );
       }
     }
-  }  
+  }
+
+  const adjustedPosition = currentPosition ? applyOffset(currentPosition) : null;
+
 
   return (
     <div className={styles["leafmap-screen"]}>
@@ -245,21 +264,26 @@ export default function MainMap() {
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
 
-        <MoveToCurrentLocation position={currentPosition} />
+        {/* <MoveToCurrentLocation position={currentPosition} /> */}
 
-        {currentPosition && (
+        {adjustedPosition && (
           <>
-            <Marker position={currentPosition} icon={myLocationIcon}>
+            <Marker position={adjustedPosition} icon={myLocationIcon}>
               <Popup>現在地</Popup>
             </Marker>
 
-            <Circle
-              center={currentPosition}
-              radius={10} // 誤差半径（m）
-              pathOptions={{ opacity: 0.3, fillOpacity: 0, }}
-            />
+            {/* <Circle
+              center={adjustedPosition}
+              radius={10}
+              pathOptions={{
+                color: "#007bff",
+                opacity: 0.6,
+                fillOpacity: 0,
+              }}
+            /> */}
           </>
         )}
+
 
         
         {pinData.map((pin) => renderPinMarker(pin))}
