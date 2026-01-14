@@ -48,8 +48,8 @@ const myLocationIcon = L.divIcon({
 // ];
 
 const LOCATION_OFFSET: [number, number] = [
-  -0.000020,   // 緯度（上下）
-  0.000050,  // 経度（左右）
+  -0.000000,   // 緯度（上下）
+  0.000000,  // 経度（左右）
 ];
 
 function applyOffset(
