@@ -49,7 +49,7 @@ const myLocationIcon = L.divIcon({
 
 const LOCATION_OFFSET: [number, number] = [
   -0.000020,   // 緯度（上下）
-  0.000020,  // 経度（左右）
+  0.000050,  // 経度（左右）
 ];
 
 function applyOffset(
@@ -261,10 +261,10 @@ export default function MainMap() {
         // 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
         // 1mあたり経度 : 0.000010966382364 ≒ 0.000011
         zoom={defaultZoom}
-        // minZoom={17}
+        minZoom={17}
         maxZoom={24}
-        // maxBounds={bounds}
-        // maxBoundsViscosity={1.0}
+        maxBounds={bounds}
+        maxBoundsViscosity={1.0}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
         crs={L.CRS.Simple}
