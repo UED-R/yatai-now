@@ -17,6 +17,10 @@
     cursor: crosshair !important;
 }
 
+.floorBtnDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 /* --- Header --- */
 /* .map-header {

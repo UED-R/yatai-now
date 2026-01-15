@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+// import firebase from "firebase/compat/app";
 
 // 呼び出し方
 // 他のファイルの先頭で import { writePinData, readPinData } from '../../database/dbaccess';
@@ -106,10 +107,21 @@ export async function userLogin(userID: string, userPwd: string): Promise<string
   try{
     const userCredential = 
     await signInWithEmailAndPassword(auth, userID+"@u.tsukuba.example.test.ac.jp", userPwd)
-    const user = userCredential.user;
-    return user.uid; // 成功時：uidを返す
+    return userCheck(userCredential.user.uid);
   }catch (error: any) {
     console.error("ログイン失敗:", error.code, error.message);
     return null; // 失敗時：nullを返す
+  }
+}
+
+export async function userCheck(uid: string | undefined){
+  if (uid === undefined) return null;
+  const snapshot = await get(ref(fire_database, `privilegeDB/${uid}`));
+  if (snapshot.exists() && snapshot.val() === true) {
+    // 特権ユーザ
+    return "org";
+  } else {
+    // 一般ユーザ
+    return "vend";
   }
 }
