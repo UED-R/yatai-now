@@ -115,6 +115,8 @@ export default function MainMap() {
     getCurrentLocation();
   }, []);
 
+
+  //現在地取得関数
   function getCurrentLocation() {
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません");
