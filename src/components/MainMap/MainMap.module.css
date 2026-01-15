@@ -113,3 +113,8 @@
   background: #11237a; /* 濃い青 */
   color: white;
 }
+
+.danger {
+  background-color: #dc3545;
+  color: white;
+}

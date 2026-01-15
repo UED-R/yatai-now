@@ -103,6 +103,8 @@ export default function MainMap() {
     [36.112, 140.104]  // 右上y,x
   ];
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null); // 現在地用のstate
+  const [isTrackingLocation, setIsTrackingLocation] = useState(false); // 現在地の定期取得を開始してよいか
+  // const [showDebugPopup, setShowDebugPopup] = useState(false);
 
   async function fetchData() {// firebaseDBからピンを取得
     const data = await readPinData(eventid);
@@ -110,10 +112,26 @@ export default function MainMap() {
   }
 
   // useEffect：画面のレンダリング完了後に自動実行
+  // useEffect(() => {
+  //   fetchData(); // ピンをread
+  //   getCurrentLocation();
+  // }, []);
+
   useEffect(() => {
-    fetchData(); // ピンをread
-    getCurrentLocation();
-  }, []);
+    fetchData();
+    if (!isTrackingLocation) return;
+
+    // 5秒に1回現在地を取得
+    const intervalId = setInterval(() => {
+      getCurrentLocation();
+    }, 5000);
+
+    // クリーンアップ
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isTrackingLocation]);
+
 
   function getCurrentLocation() {
     if (!navigator.geolocation) {
@@ -126,6 +144,12 @@ export default function MainMap() {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         setCurrentPosition([lat, lng]);
+        // setShowDebugPopup(true); // ★ 取得できた合図
+
+        // // 1秒後にポップアップを消す
+        // setTimeout(() => {
+        //   setShowDebugPopup(false);
+        // }, 1000);
       },
       (error) => {
         console.error(error);
@@ -137,6 +161,18 @@ export default function MainMap() {
         maximumAge: 0,
       }
     );
+  }
+
+  function toggleLocationTracking() {
+    if (isTrackingLocation) {
+      // OFF にする
+      setIsTrackingLocation(false);
+      setCurrentPosition(null);
+    } else {
+      // ON にする
+      getCurrentLocation();       // まず1回取得
+      setIsTrackingLocation(true); // 定期取得開始
+    }
   }
 
   function formatUpdateTime(isoString?: string) {
@@ -247,6 +283,10 @@ export default function MainMap() {
       <header className={"common-header"}>
         <div className={styles["header-button-group"]}>
           <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TOP_PAGE)}>&lt; 戻る</button>
+          <button className={`common-btn-header ${isTrackingLocation ? styles.danger : ""}`} onClick={toggleLocationTracking}>
+            {isTrackingLocation ? "現在地の取得をやめる" : "現在地を取得"}
+          </button>
+
         </div>
         <div className={styles["header-button-group"]}>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
