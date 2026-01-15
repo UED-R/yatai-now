@@ -93,97 +93,117 @@ export default function MainMap() {
   };
   
   function renderPinMarker(pin: any) {
-    if (eventid === "0"){
+  if (eventid === "0") {
+    // シンプルなマーカー表示
+    return (
+      <Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={defaultIcon}>
+        <Popup>
+          <div>
+            <strong>{pin.name}</strong>
+            <br />
+            <p>概要：{pin.description}</p>
+          </div>
+        </Popup>
+      </Marker>
+    );
+  } else if (eventid === "1") {
+    // グループ表示切替
+    if (pin.class !== visibleGroup) return null;
+
+    if (pin.class === "area") {
+      // このエリアに属する店舗リスト
+      const shoplist = pinData
+        .filter(p => p.class === "shop" && p.areagroupid === pin.id)
+        .map(p => p.name);
+
       return (
-        <Marker key={pin.shopname} position={[pin.lat, pin.lng]} icon={defaultIcon}>
+        <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
+          <Tooltip direction="top" offset={[0, -40]} permanent>
+            <strong>
+              {pin.name}（{shoplist.length}団体）
+            </strong>
+          </Tooltip>
+
+          <Popup autoPan={false}>
+            <div>
+              <strong>
+                {pin.name}（{shoplist.length}団体）
+              </strong>
+              <br />
+              {/*
+              <p>概要：{pin.description}</p>
+              <p>管理団体：{pin.teamname}</p>
+              */}
+
+              {shoplist.length > 0 && (
+                <div>
+                  <button
+                    onClick={() =>
+                      setOpenShopList(prev => ({
+                        ...prev,
+                        [pin.id]: !prev[pin.id], // クリックで反転
+                      }))
+                    }
+                    style={{ marginTop: "6px", cursor: "pointer" }}
+                  >
+                    {!!openShopList[pin.id] ? "▲ 店舗を隠す" : "▼ 店舗を表示"}
+                  </button>
+
+                  {/* openShopList[pin.id] が true の時だけ店舗リスト表示 */}
+                  {!!openShopList[pin.id] && (
+                    <div
+                      style={{
+                        maxHeight: "150px", // 高さ制限
+                        overflowY: "auto",  // 縦スクロール
+                        marginTop: "6px",
+                        border: "1px solid #ccc",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        backgroundColor: "#fafafa"
+                      }}
+                    >
+                      <ul style={{ margin: 0, paddingLeft: "16px" }}>
+                        {shoplist.map((shopName) => (
+                          <li key={shopName}>{shopName}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      );
+    } else if (pin.class === "shop") {
+      // フロアフィルター
+      if (pin.floor !== currentFloor) return null;
+
+      return (
+        <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
+          <Tooltip direction="top" offset={[0, -40]} permanent>
+            <strong>{pin.name}</strong>
+          </Tooltip>
+
           <Popup>
             <div>
               <strong>{pin.name}</strong>
               <br />
               <p>概要：{pin.description}</p>
+              <p>出店団体：{pin.teamname}</p>
+              <p>場所：{pin.place}</p>
+              <p>種別：{pin.type}</p>
+              <p>時間：{pin.starttime}~{pin.endtime}</p>
+              <p>おおよその在庫数：{pin.storage}</p>
+              <p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
             </div>
           </Popup>
         </Marker>
       );
-    } else if(eventid === "1"){
-      if(pin.class !== visibleGroup) return null;
-      if(pin.class === "area"){
-        const shoplist = pinData
-          .filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
-            return temp_pindata.class === "shop" && temp_pindata.areagroupid === pin.id;
-          })
-          .map(function(shop) {
-            return shop.name;
-          });
-        return (
-          <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
-            <Tooltip direction="top" offset={[0, -40]} permanent>
-              <strong>
-                {pin.name}（{shoplist.length}団体）
-              </strong>
-            </Tooltip>
-            <Popup>
-              <div>
-                <strong>
-                  {pin.name}（{shoplist.length}団体）
-                </strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
-                <p>管理団体：{pin.teamname}</p>
-               
-                {shoplist.length > 0 && (
-                  <div>
-                    <button
-                      onClick={() =>
-                        setOpenShopList(prev => ({
-                          ...prev,
-                          [pin.id]: !prev[pin.id],
-                        }))
-                      style={{ marginTop: "6px",  cursor: "pointer"}}
-                    >
-                      {openShopList ? "▲ 店舗を隠す" : "▼ 店舗を表示"}
-                    </button>
-
-                    {openShopList[pin.id] && (
-                      <ul>
-                        {shoplist.map(function(shopName)) {
-                          return <li key={shopName}>{shopName}</li>;
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        );
-      }else if(pin.class === "shop"){
-        if(pin.floor !== currentFloor) return null;
-        return (
-          <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
-            <Tooltip direction="top" offset={[0, -40]} permanent>
-              <strong>{pin.name}</strong>
-            </Tooltip>
-            <Popup>
-              <div>
-                <strong>{pin.name}</strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
-                <p>出店団体：{pin.teamname}</p>
-                <p>場所：{pin.place}</p>
-                <p>種別：{pin.type}</p>
-                <p>時間：{pin.starttime}~{pin.endtime}</p>
-                <p>おおよその在庫数：{pin.storage}</p>
-						    <p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
-              </div>
-            </Popup>
-          </Marker>
-        );
-      }
     }
-  }  
+  }
+}
+  
 
   return (
     <div className={styles["leafmap-screen"]}>
