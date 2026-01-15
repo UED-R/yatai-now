@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip} from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -28,6 +28,7 @@ const myIcon = L.icon({
     iconAnchor: [30, 45],
     popupAnchor: [1, -34]
 });
+
 
 const myLocationIcon = L.divIcon({
   className: "my-location-icon",
@@ -76,6 +77,7 @@ function applyOffset(
 
 
 
+
 // 関数コンポーネント：呼び出すというよりHTMLのなかにインライン展開する感じ
 // propsはプロパティオブジェクト、関数も指定できる
 function ZoomWatcher(props: { onZoomChange: (zoom: number) => void }) {
@@ -105,6 +107,8 @@ export default function MainMap() {
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null); // 現在地用のstate
   const [isTrackingLocation, setIsTrackingLocation] = useState(false); // 現在地の定期取得を開始してよいか
   // const [showDebugPopup, setShowDebugPopup] = useState(false);
+  const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
+
 
   async function fetchData() {// firebaseDBからピンを取得
     const data = await readPinData(eventid);
@@ -133,6 +137,8 @@ export default function MainMap() {
   }, [isTrackingLocation]);
 
 
+
+  //現在地取得関数
   function getCurrentLocation() {
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません");
@@ -224,33 +230,69 @@ export default function MainMap() {
           });
         return (
           <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
-            <Tooltip direction="top" offset={[0, -40]} permanent>
-              <strong>{pin.name}</strong>
-            </Tooltip>
-            <Popup>
-              <div>
-                <strong>{pin.name}</strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
-                <p>管理団体：{pin.teamname}</p>
-                {shoplist.length > 0 && (
-                  <div>
-                    <p>このエリアのお店：</p>
-                    <ul>
-                      {shoplist.map(function(shopName) {
-                        return <li key={shopName}>{shopName}</li>;
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        );
-      }else if(pin.class === "shop"){
-        if(pin.floor !== currentFloor) return null;
-        return (
+          <Tooltip direction="top" offset={[0, -40]} permanent>
+            <strong>
+              {pin.name}（{shoplist.length}団体）
+            </strong>
+          </Tooltip>
+
+          <Popup autoPan={false}>
+            <div>
+              <strong>
+                {pin.name}（{shoplist.length}団体）
+              </strong>
+              <br />
+              
+              {/*
+              <p>概要：{pin.description}</p>
+              <p>管理団体：{pin.teamname}</p>
+              */}
+
+              {shoplist.length > 0 && (
+                <div>
+                  <button
+                    onClick={() =>
+                      setOpenShopList(prev => ({
+                        ...prev,
+                        [pin.id]: !prev[pin.id], // クリックで反転
+                      }))
+                    }
+                    style={{ marginTop: "6px", cursor: "pointer" }}
+                  >
+                    {!!openShopList[pin.id] ? "▲ 店舗を隠す" : "▼ 店舗を表示"}
+                  </button>
+
+                  {/* openShopList[pin.id] が true の時だけ店舗リスト表示 */}
+                  {!!openShopList[pin.id] && (
+                    <div
+                      style={{
+                        maxHeight: "150px", // 高さ制限
+                        overflowY: "auto",  // 縦スクロール
+                        marginTop: "6px",
+                        border: "1px solid #ccc",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        backgroundColor: "#fafafa"
+                      }}
+                    >
+                      <ul style={{ margin: 0, paddingLeft: "16px" }}>
+                        {shoplist.map((shopName) => (
+                          <li key={shopName}>{shopName}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      );
+    } else if (pin.class === "shop") {
+      // フロアフィルター
+      if (pin.floor !== currentFloor) return null;
+
+      return (
           <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
             <Tooltip direction="top" offset={[0, -40]} permanent>
               <strong>{pin.name}</strong>
@@ -291,7 +333,6 @@ export default function MainMap() {
         <div className={styles["header-button-group"]}>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
-          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>共通ログインボタン</button>
         </div>
       </header>
 
@@ -312,7 +353,6 @@ export default function MainMap() {
         <ImageOverlay url={getMapByFloor()} bounds={bounds} />
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
-
         {/* <MoveToCurrentLocation position={currentPosition} /> */}
 
         {adjustedPosition && (
@@ -332,9 +372,6 @@ export default function MainMap() {
             /> */}
           </>
         )}
-
-
-        
         {pinData.map((pin) => renderPinMarker(pin))}
 
       </MapContainer>
