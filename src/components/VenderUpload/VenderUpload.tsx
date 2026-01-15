@@ -67,8 +67,8 @@ export default function VenderUpload() {
 		type: "",
 		starttime: "",
 		endtime: "",
-		storage: "",
-		floor: ""
+		storage: "〇",
+		floor: "1F"
 	});
 	
 	function clearNewPinData(){
@@ -81,8 +81,8 @@ export default function VenderUpload() {
 			type: "",
 			starttime: "",
 			endtime: "",
-			storage: "",
-			floor: ""
+			storage: "〇",
+			floor: "1F"
 		});
 	}
 
