@@ -118,7 +118,7 @@ export default function MainMap() {
             <Tooltip direction="top" offset={[0, -40]} permanent>
               <strong>{pin.name}</strong>
             </Tooltip>
-            <Popup>
+            <Popup autoPan={false}>
               <div>
                 <strong>{pin.name}</strong>
                 <br />
@@ -146,7 +146,7 @@ export default function MainMap() {
             <Tooltip direction="top" offset={[0, -40]} permanent>
               <strong>{pin.name}</strong>
             </Tooltip>
-            <Popup>
+            <Popup autoPan={false}>
               <div>
                 <strong>{pin.name}</strong>
                 <br />
@@ -154,7 +154,6 @@ export default function MainMap() {
                 {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
                 <p>出店団体：{pin.teamname}</p>
                 <p>場所：{pin.place}</p>
-                <p>種別：{pin.type}</p>
                 <p>時間：{pin.starttime}~{pin.endtime}</p>
                 <p>おおよその在庫数：{pin.storage}</p>
 						    <p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
@@ -174,7 +173,7 @@ export default function MainMap() {
           <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TOP_PAGE)}>&lt; 戻る</button>
         </div>
         <div className={styles["header-button-group"]}>
-          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>共通ログインボタン</button>
+          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>出店者ログイン</button>
         </div>
       </header>
 

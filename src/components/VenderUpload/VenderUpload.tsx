@@ -67,7 +67,7 @@ export default function VenderUpload() {
 		type: "",
 		starttime: "",
 		endtime: "",
-		storage: "〇",
+		storage: "◎(すべて在庫十分)",
 		floor: "1F"
 	});
 	
@@ -81,7 +81,7 @@ export default function VenderUpload() {
 			type: "",
 			starttime: "",
 			endtime: "",
-			storage: "〇",
+			storage: "◎(すべて在庫十分)",
 			floor: "1F"
 		});
 	}
@@ -176,6 +176,12 @@ export default function VenderUpload() {
 				storage: myPin.storage,
 				floor: myPin.floor
 			});
+		}
+		if (newPinData.floor === "") {
+			setNewPinData({ ...newPinData, floor: "1F" })
+		}
+		if (newPinData.storage === "") {
+			setNewPinData({ ...newPinData, storage: "◎(すべて在庫十分)" })
 		}
 	}, [myPin]);
 
@@ -292,7 +298,6 @@ export default function VenderUpload() {
 					{/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 					<p>出店団体：{pin.teamname}</p>
 					<p>場所：{pin.place}</p>
-					<p>種別：{pin.type}</p>
 					<p>時間：{pin.starttime}~{pin.endtime}</p>
 					<p>おおよその在庫数：{pin.storage}</p>
 					<p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
@@ -374,11 +379,10 @@ export default function VenderUpload() {
 						{/* <img src={myPin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 						<p>出店団体：{myPin.teamname}</p>
 						<p>場所：{myPin.place}</p>
-						<p>種別：{myPin.type}</p>
 						<p>階層：{myPin.floor}</p>
 						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
-						<p>現状の在庫数：{myPin.storage}</p>
-						<p>更新日時：{formatUpdateTime(myPin.updatetime)}</p>
+						<p>現在の在庫数：{myPin.storage}</p>
+						<p>最新の更新日時：{formatUpdateTime(myPin.updatetime)}</p>
 						<div className={styles["pin-input-row"]}>
 						<strong>⇒在庫の更新：</strong>
 						<select
@@ -386,9 +390,10 @@ export default function VenderUpload() {
 							value={editStorage}
 							onChange={(e) => setEditStorage(e.target.value)}
 						>
-							<option value="〇">〇(十分)</option>
-							<option value="△">△(少ない)</option>
-							<option value="×">×(なし)</option>
+							<option value="◎(すべて在庫十分)">◎(すべて在庫十分)</option>
+							<option value="〇(一部商品は品切れ)">〇(一部商品は品切れ)</option>
+							<option value="△(すべての商品が在庫僅少)">△(すべての商品が在庫僅少)</option>
+							<option value="×(完全在庫切れ)">×(完全在庫切れ)</option>
 						</select>
 						</div>
 						<button onClick={() => {
@@ -450,14 +455,6 @@ export default function VenderUpload() {
 							/>
 						</div>
 						<div className={styles["pin-input-row"]}>
-							<label>種別：</label>
-							<input 
-							type="text"
-							value={newPinData.type}
-							onChange={(e) => setNewPinData({ ...newPinData, type: e.target.value })}
-							/>
-						</div>
-						<div className={styles["pin-input-row"]}>
 							<label>階層：</label>
 							<select 
 								value={newPinData.floor}
@@ -493,9 +490,10 @@ export default function VenderUpload() {
 								style={{width:"100px"}}
 								onChange={(e) => setNewPinData({ ...newPinData, storage: e.target.value })}
 							>
-							<option value="〇">〇(十分)</option>
-							<option value="△">△(少ない)</option>
-							<option value="×">×(なし)</option>
+							<option value="◎(すべて在庫十分)">◎(すべて在庫十分)</option>
+							<option value="〇(一部商品は品切れ)">〇(一部商品は品切れ)</option>
+							<option value="△(すべての商品が在庫僅少)">△(すべての商品が在庫僅少)</option>
+							<option value="×(完全在庫切れ)">×(完全在庫切れ)</option>
 							</select>
 						</div>
 
