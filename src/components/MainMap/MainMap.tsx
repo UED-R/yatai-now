@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip} from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -28,53 +28,6 @@ const myIcon = L.icon({
     iconAnchor: [30, 45],
     popupAnchor: [1, -34]
 });
-
-const myLocationIcon = L.divIcon({
-  className: "my-location-icon",
-  html: `<div style="
-    width: 16px;
-    height: 16px;
-    background: #007bff;
-    border-radius: 50%;
-    border: 3px solid white;
-    box-shadow: 0 0 6px rgba(0,0,0,0.5);
-  "></div>`,
-});
-
-// ===== 現在地オフセット設定 =====
-// const LOCATION_OFFSET: [number, number] = [
-//   0.000700,   // 緯度（上下）
-//   -0.008720,  // 経度（左右）
-// ];
-
-const LOCATION_OFFSET: [number, number] = [
-  -0.000000,   // 緯度（上下）
-  0.000000,  // 経度（左右）
-];
-
-function applyOffset(
-  position: [number, number]
-): [number, number] {
-  return [
-    position[0] + LOCATION_OFFSET[0],
-    position[1] + LOCATION_OFFSET[1],
-  ];
-}
-
-
-// function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
-//   const map = useMap();
-
-//   useEffect(() => {
-//     if (position) {
-//       map.setView(position, map.getZoom());
-//     }
-//   }, [position]);
-
-//   return null;
-// }
-
-
 
 // 関数コンポーネント：呼び出すというよりHTMLのなかにインライン展開する感じ
 // propsはプロパティオブジェクト、関数も指定できる
@@ -104,7 +57,6 @@ export default function MainMap() {
   ];
   const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
 
-  const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null); // 現在地用のstate
 
   async function fetchData() {// firebaseDBからピンを取得
     const data = await readPinData(eventid);
@@ -114,32 +66,7 @@ export default function MainMap() {
   // useEffect：画面のレンダリング完了後に自動実行
   useEffect(() => {
     fetchData(); // ピンをread
-    getCurrentLocation();
   }, []);
-
-  function getCurrentLocation() {
-    if (!navigator.geolocation) {
-      alert("このブラウザでは位置情報が利用できません");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        setCurrentPosition([lat, lng]);
-      },
-      (error) => {
-        console.error(error);
-        alert("現在地を取得できませんでした");
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 10000,
-        maximumAge: 0,
-      }
-    );
-  }
 
   function formatUpdateTime(isoString?: string) {
 		if (!isoString) return "日時不明";
@@ -288,7 +215,6 @@ export default function MainMap() {
         <div className={styles["header-button-group"]}>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
-          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>共通ログインボタン</button>
         </div>
       </header>
 
@@ -309,28 +235,6 @@ export default function MainMap() {
         <ImageOverlay url={getMapByFloor()} bounds={bounds} />
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
-
-        {/* <MoveToCurrentLocation position={currentPosition} /> */}
-
-        {adjustedPosition && (
-          <>
-            <Marker position={adjustedPosition} icon={myLocationIcon}>
-              <Popup>現在地</Popup>
-            </Marker>
-
-            {/* <Circle
-              center={adjustedPosition}
-              radius={10}
-              pathOptions={{
-                color: "#007bff",
-                opacity: 0.6,
-                fillOpacity: 0,
-              }}
-            /> */}
-          </>
-        )}
-
-
         
         {pinData.map((pin) => renderPinMarker(pin))}
 
