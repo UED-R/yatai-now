@@ -107,15 +107,17 @@ export async function userLogin(userID: string, userPwd: string): Promise<string
   try{
     const userCredential = 
     await signInWithEmailAndPassword(auth, userID+"@u.tsukuba.example.test.ac.jp", userPwd)
-    return userCheck(userCredential.user.uid);
+    const user = userCredential.user;
+    return user.uid; // 成功時：uidを返す
   }catch (error: any) {
     console.error("ログイン失敗:", error.code, error.message);
     return null; // 失敗時：nullを返す
   }
 }
 
-export async function userCheck(uid: string | undefined){
+export async function userCheck(uid: string | null | undefined){
   if (uid === undefined) return null;
+  if (uid === null) return null;
   const snapshot = await get(ref(fire_database, `privilegeDB/${uid}`));
   if (snapshot.exists() && snapshot.val() === true) {
     // 特権ユーザ

@@ -26,6 +26,8 @@ export default function LoginPage() {
         }else if(userRes==="vend"){
           console.log("vend");
           page_navigate(PAGES.VEND_UPLOAD);
+        }else{
+          console.log("err");
         }
       };
       redirect(); //自動でリダイレクト、キャッシュ削除で解除
@@ -41,7 +43,8 @@ export default function LoginPage() {
       return;
     }
 
-    const userres = await userLogin(loginId, password);
+    const usertemp = await userLogin(loginId, password);
+    const userres = await userCheck(usertemp);
     if (userres==="org") {
       console.log("org");
       page_navigate(PAGES.ORG_MANAGE);

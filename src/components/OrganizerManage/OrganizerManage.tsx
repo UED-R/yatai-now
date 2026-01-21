@@ -3,7 +3,7 @@ import { PAGES, page_navigate } from '../../Pages';
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import type { User } from "firebase/auth";
-import { listupUsers } from "../../database/dbaccess";
+// import { listupUsers } from "../../database/dbaccess";
 
 export default function OrganizerManagement() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -25,17 +25,17 @@ export default function OrganizerManagement() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const result = await listupUsers();
-        setOther_Users(result);
-      } catch (e) {
-        console.error("ユーザ一覧取得失敗", e);
-      }
-    };
-    loadUsers();
-  }, []);
+  // useEffect(() => {
+  //   const loadUsers = async () => {
+  //     try {
+  //       const result = await listupUsers();
+  //       setOther_Users(result);
+  //     } catch (e) {
+  //       console.error("ユーザ一覧取得失敗", e);
+  //     }
+  //   };
+  //   loadUsers();
+  // }, []);
 
 
   async function handleLogout() {

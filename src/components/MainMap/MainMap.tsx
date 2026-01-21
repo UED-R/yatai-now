@@ -1,7 +1,7 @@
 import styles from "./MainMap.module.css";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, useMapEvents, useMap,  Marker, Popup, ImageOverlay, Tooltip} from "react-leaflet";
+import { MapContainer, useMapEvents, Marker, Popup, ImageOverlay, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import { useLocation } from "react-router-dom";
 import { page_navigate, PAGES } from "../../Pages"
@@ -29,6 +29,7 @@ const myIcon = L.icon({
     popupAnchor: [1, -34]
 });
 
+
 const myLocationIcon = L.divIcon({
   className: "my-location-icon",
   html: `<div style="
@@ -42,9 +43,14 @@ const myLocationIcon = L.divIcon({
 });
 
 // ===== 現在地オフセット設定 =====
+// const LOCATION_OFFSET: [number, number] = [
+//   0.000700,   // 緯度（上下）
+//   -0.008720,  // 経度（左右）
+// ];
+
 const LOCATION_OFFSET: [number, number] = [
-  0.000700,   // 緯度（上下）
-  -0.008720,  // 経度（左右）
+  -0.000000,   // 緯度（上下）
+  0.000000,  // 経度（左右）
 ];
 
 function applyOffset(
@@ -57,17 +63,18 @@ function applyOffset(
 }
 
 
-function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
-  const map = useMap();
+// function MoveToCurrentLocation({ position }: { position: [number, number] | null }) {
+//   const map = useMap();
 
-  useEffect(() => {
-    if (position) {
-      map.setView(position, map.getZoom());
-    }
-  }, [position]);
+//   useEffect(() => {
+//     if (position) {
+//       map.setView(position, map.getZoom());
+//     }
+//   }, [position]);
 
-  return null;
-}
+//   return null;
+// }
+
 
 
 
@@ -89,7 +96,7 @@ export default function MainMap() {
   const location = useLocation();
   const eventid = location.state as string;
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
-  const defaultZoom = 18;
+  const defaultZoom = 19;
   const [zoomLevel, setZoomLevel] = useState(defaultZoom); //型指定なしのuseState、初期値は初期拡大率
   const visibleGroup = (zoomLevel >= 19) ? "shop" : "area"; // グループ切替
   const bounds: [[number, number], [number, number]] = [
@@ -98,6 +105,10 @@ export default function MainMap() {
     [36.112, 140.104]  // 右上y,x
   ];
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null); // 現在地用のstate
+  const [isTrackingLocation, setIsTrackingLocation] = useState(false); // 現在地の定期取得を開始してよいか
+  // const [showDebugPopup, setShowDebugPopup] = useState(false);
+  const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
+
 
   async function fetchData() {// firebaseDBからピンを取得
     const data = await readPinData(eventid);
@@ -105,11 +116,29 @@ export default function MainMap() {
   }
 
   // useEffect：画面のレンダリング完了後に自動実行
-  useEffect(() => {
-    fetchData(); // ピンをread
-    getCurrentLocation();
-  }, []);
+  // useEffect(() => {
+  //   fetchData(); // ピンをread
+  //   getCurrentLocation();
+  // }, []);
 
+  useEffect(() => {
+    fetchData();
+    if (!isTrackingLocation) return;
+
+    // 5秒に1回現在地を取得
+    const intervalId = setInterval(() => {
+      getCurrentLocation();
+    }, 5000);
+
+    // クリーンアップ
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isTrackingLocation]);
+
+
+
+  //現在地取得関数
   function getCurrentLocation() {
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません");
@@ -121,6 +150,12 @@ export default function MainMap() {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         setCurrentPosition([lat, lng]);
+        // setShowDebugPopup(true); // ★ 取得できた合図
+
+        // // 1秒後にポップアップを消す
+        // setTimeout(() => {
+        //   setShowDebugPopup(false);
+        // }, 1000);
       },
       (error) => {
         console.error(error);
@@ -132,6 +167,18 @@ export default function MainMap() {
         maximumAge: 0,
       }
     );
+  }
+
+  function toggleLocationTracking() {
+    if (isTrackingLocation) {
+      // OFF にする
+      setIsTrackingLocation(false);
+      setCurrentPosition(null);
+    } else {
+      // ON にする
+      getCurrentLocation();       // まず1回取得
+      setIsTrackingLocation(true); // 定期取得開始
+    }
   }
 
   function formatUpdateTime(isoString?: string) {
@@ -183,33 +230,69 @@ export default function MainMap() {
           });
         return (
           <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
-            <Tooltip direction="top" offset={[0, -40]} permanent>
-              <strong>{pin.name}</strong>
-            </Tooltip>
-            <Popup autoPan={false}>
-              <div>
-                <strong>{pin.name}</strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
-                <p>管理団体：{pin.teamname}</p>
-                {shoplist.length > 0 && (
-                  <div>
-                    <p>このエリアのお店：</p>
-                    <ul>
-                      {shoplist.map(function(shopName) {
-                        return <li key={shopName}>{shopName}</li>;
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        );
-      }else if(pin.class === "shop"){
-        if(pin.floor !== currentFloor) return null;
-        return (
+          <Tooltip direction="top" offset={[0, -40]} permanent>
+            <strong>
+              {pin.name}（{shoplist.length}団体）
+            </strong>
+          </Tooltip>
+
+          <Popup autoPan={false}>
+            <div>
+              <strong>
+                {pin.name}（{shoplist.length}団体）
+              </strong>
+              <br />
+              
+              {/*
+              <p>概要：{pin.description}</p>
+              <p>管理団体：{pin.teamname}</p>
+              */}
+
+              {shoplist.length > 0 && (
+                <div>
+                  <button
+                    onClick={() =>
+                      setOpenShopList(prev => ({
+                        ...prev,
+                        [pin.id]: !prev[pin.id], // クリックで反転
+                      }))
+                    }
+                    style={{ marginTop: "6px", cursor: "pointer" }}
+                  >
+                    {!!openShopList[pin.id] ? "▲ 店舗を隠す" : "▼ 店舗を表示"}
+                  </button>
+
+                  {/* openShopList[pin.id] が true の時だけ店舗リスト表示 */}
+                  {!!openShopList[pin.id] && (
+                    <div
+                      style={{
+                        maxHeight: "150px", // 高さ制限
+                        overflowY: "auto",  // 縦スクロール
+                        marginTop: "6px",
+                        border: "1px solid #ccc",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        backgroundColor: "#fafafa"
+                      }}
+                    >
+                      <ul style={{ margin: 0, paddingLeft: "16px" }}>
+                        {shoplist.map((shopName) => (
+                          <li key={shopName}>{shopName}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      );
+    } else if (pin.class === "shop") {
+      // フロアフィルター
+      if (pin.floor !== currentFloor) return null;
+
+      return (
           <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
             <Tooltip direction="top" offset={[0, -40]} permanent>
               <strong>{pin.name}</strong>
@@ -242,14 +325,18 @@ export default function MainMap() {
       <header className={"common-header"}>
         <div className={styles["header-button-group"]}>
           <button className={"common-btn-back"} onClick={() => page_navigate(PAGES.TOP_PAGE)}>&lt; 戻る</button>
+          <button className={`common-btn-header ${isTrackingLocation ? styles.danger : ""}`} onClick={toggleLocationTracking}>
+            {isTrackingLocation ? "現在地の取得をやめる" : "現在地を取得"}
+          </button>
+
         </div>
         <div className={styles["header-button-group"]}>
-          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>出店者ログイン</button>
+          <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>ログイン</button>
         </div>
       </header>
 
       <MapContainer
-        center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
+        center={[36.1105, 140.1010]} // 初期位置の緯度経度(小数点以下6桁)
         // 緯度が上下、経度が左右、つまり [y, x]
         // 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
         // 1mあたり経度 : 0.000010966382364 ≒ 0.000011
@@ -265,8 +352,7 @@ export default function MainMap() {
         <ImageOverlay url={getMapByFloor()} bounds={bounds} />
 
         <ZoomWatcher onZoomChange={(z) => setZoomLevel(z)} />
-
-        <MoveToCurrentLocation position={currentPosition} />
+        {/* <MoveToCurrentLocation position={currentPosition} /> */}
 
         {adjustedPosition && (
           <>
@@ -285,9 +371,6 @@ export default function MainMap() {
             /> */}
           </>
         )}
-
-
-        
         {pinData.map((pin) => renderPinMarker(pin))}
 
       </MapContainer>

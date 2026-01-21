@@ -1,13 +1,13 @@
 import type { NavigateFunction } from "react-router-dom";
 
 // ページ変数の定義
-// ページを追加するときはURLとして使いたいパスを追加する
+// ページを追加するときはURLで使いたいファイルパスを追加する
 export const PAGES = {
   TOP_PAGE:       "/",
   MAIN_MAP:       "/MainMap",
   VEND_UPLOAD:    "/VendorUpload",
   LOGIN_PAGE:     "/LoginPage",
-  ORG_MANAGE:     "/OrganizerManage"
+  ORG_MANAGE:     "/OrgManage"
 } as const;
 export type RoutePath = (typeof PAGES)[keyof typeof PAGES];
 
