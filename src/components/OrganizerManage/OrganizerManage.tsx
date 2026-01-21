@@ -8,7 +8,7 @@ import type { User } from "firebase/auth";
 export default function OrganizerManagement() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [other_users, setOther_Users] = useState<any[]>([]);
+  // const [other_users, setOther_Users] = useState<any[]>([]);
 
 
   function sleep(ms: number) {
@@ -72,22 +72,6 @@ export default function OrganizerManagement() {
 
           <div className={styles["login-container"]}>
             <h2>主催者用管理ページ</h2>
-            <table className={styles["user-table"]}>
-              <thead>
-                <tr>
-                  <th>UID</th>
-                  <th>メールアドレス</th>
-                </tr>
-              </thead>
-              <tbody>
-                {other_users.map((u) => (
-                  <tr key={u.id}>
-                    <td>{u.id}</td>
-                    <td>{u.email ?? "―"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       );

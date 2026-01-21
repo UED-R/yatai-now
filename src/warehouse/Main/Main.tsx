@@ -27,8 +27,8 @@ export default function Main() {
       <header className="main-header">
         <button className="btn-back" onClick={() => page_navigate(PAGES.TOP_PAGE)}>&lt; 戻る</button>
         <div className="header-right-buttons">
-          <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
-          <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button>
+          {/* <button className="btn-header" onClick={() => page_navigate(PAGES.ORG_LOGIN)}>主催者はこちら</button>
+          <button className="btn-header" onClick={() => page_navigate(PAGES.VEND_LOGIN)}>出店者はこちら</button> */}
         </div>
       </header>
       <TransformWrapper
