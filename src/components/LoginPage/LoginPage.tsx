@@ -5,6 +5,8 @@ import { PAGES, page_navigate } from '../../Pages';
 import { userCheck, userLogin } from "../../database/dbaccess";
 import { getAuth } from "firebase/auth";
 
+//編集
+
 export default function LoginPage() {
   // --- State for inputs and error message ---
   const [loginId, setLoginId] = useState('');
