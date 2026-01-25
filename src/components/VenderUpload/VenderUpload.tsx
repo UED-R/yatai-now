@@ -379,7 +379,6 @@ export default function VenderUpload() {
 						{/* <img src={myPin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 						<p>出店団体：{myPin.teamname}</p>
 						<p>場所：{myPin.place}</p>
-						<p>種別：{myPin.type}</p>
 						<p>階層：{myPin.floor}</p>
 						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
 						<p>現在の在庫数：{myPin.storage}</p>

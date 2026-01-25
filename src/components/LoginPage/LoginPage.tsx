@@ -11,6 +11,7 @@ export default function LoginPage() {
   // --- State for inputs and error message ---
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -21,13 +22,13 @@ export default function LoginPage() {
         await new Promise(res => setTimeout(res, 400)); // ミリ秒待つ
         const userRes = await userCheck(auth.currentUser?.uid);
         if(userRes==="org"){
-          console.log("org");
+          // console.log("org");
           page_navigate(PAGES.ORG_MANAGE); //主催者画面に移行予定
         }else if(userRes==="vend"){
-          console.log("vend");
+          // console.log("vend");
           page_navigate(PAGES.VEND_UPLOAD);
         }else{
-          console.log("err");
+          // console.log("err");
         }
       };
       redirect(); //自動でリダイレクト、キャッシュ削除で解除
@@ -42,17 +43,25 @@ export default function LoginPage() {
       setError("ユーザ名とパスワードを入力してください");
       return;
     }
+    setError("");
+    setLoading(true);
 
-    const usertemp = await userLogin(loginId, password);
-    const userres = await userCheck(usertemp);
-    if (userres==="org") {
-      console.log("org");
-      page_navigate(PAGES.ORG_MANAGE);
-    }else if(userres==="vend"){
-      console.log("vend");
-      page_navigate(PAGES.VEND_UPLOAD);
-    } else {
-      setError("ログインに失敗しました。");
+    try{
+      const usertemp = await userLogin(loginId, password);
+      const userres = await userCheck(usertemp);
+      if (userres==="org") {
+        // console.log("org");
+        page_navigate(PAGES.ORG_MANAGE);
+      }else if(userres==="vend"){
+        // console.log("vend");
+        page_navigate(PAGES.VEND_UPLOAD);
+      } else {
+        setError("ログインできません");
+      }
+    } catch(e){
+      setError("ログイン中にエラーが発生しました");
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +87,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {/* --- Error message display --- */}
+          {loading && (<p className={styles["login-loading"]}>ログイン処理中です…</p>)}
           {error && <p className={styles["login-error"]}>{error}</p>}
           
           <button className={styles["btn"]} type="submit">ログイン</button>
