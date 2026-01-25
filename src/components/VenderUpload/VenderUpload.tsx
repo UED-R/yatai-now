@@ -56,7 +56,6 @@ export default function VenderUpload() {
   	const [user, setUser] = useState<User | null>(null);
 	const [isUpdating, setIsUpdating] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
-	const [editStorage, setEditStorage] = useState("");
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
   	const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
 
@@ -351,39 +350,47 @@ export default function VenderUpload() {
 						<strong>編集中のピン</strong>
 					</Tooltip>
 					<Popup>
-						<div>
-						<strong>{myPin.name}</strong>
-						<br />
-						<p>概要：{myPin.description}</p>
-						<p>出店団体：{myPin.teamname}</p>
-						<p>場所：{myPin.place}</p>
-						<p>階層：{myPin.floor}</p>
-						<p>エリア：{myPin.areagroupid === "area03" ? "第３エリア"
-							: myPin.areagroupid === "area02" ? "第２エリア" : ""}</p>
-						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
-						<p>現在の在庫数：{myPin.storage}</p>
-						<p>最新の更新日時：{formatUpdateTime(myPin.updatetime)}</p>
-						<div className={styles["pin-input-row"]}>
-						<strong>⇒在庫数の更新：</strong>
-						<select
-							style={{ width: "100px" }}
-							value={editStorage}
-							onChange={(e) => setEditStorage(e.target.value)}
-						>
-							<option value="◎(すべて在庫十分)">◎(すべて在庫十分)</option>
-							<option value="〇(一部商品は品切れ)">〇(一部商品は品切れ)</option>
-							<option value="△(すべての商品が在庫僅少)">△(すべての商品が在庫僅少)</option>
-							<option value="×(完全在庫切れ)">×(完全在庫切れ)</option>
-						</select>
-						</div>
-						<button onClick={() => {
-							if(editStorage !== ""){
-								saveNewPinToDB({ ...myPin, storage: editStorage });
+						<form
+						onSubmit={(e) => {
+							e.preventDefault();
+
+							const fd = new FormData(e.currentTarget);
+							const newStorage = fd.get("storage") as string;
+
+							if (newStorage && newStorage !== myPin.storage) {
+								saveNewPinToDB({ ...myPin, storage: newStorage });
 								setIsCreating(false);
 								setNewPinPos(null);
 							}
-						}}>更新してリロード</button>
-					</div>
+						}}
+						>
+						<div>
+							<strong>{myPin.name}</strong>
+							<p>概要：{myPin.description}</p>
+							<p>出店団体：{myPin.teamname}</p>
+							<p>場所：{myPin.place}</p>
+							<p>階層：{myPin.floor}</p>
+							<p>エリア：{myPin.areagroupid === "area03" ? "第３エリア" 
+								: myPin.areagroupid === "area02" ? "第２エリア" : ""}</p>
+							<p>時間：{myPin.starttime}~{myPin.endtime}</p>
+							<p>現在の在庫数：{myPin.storage}</p>
+							<p>最新の更新日時：{formatUpdateTime(myPin.updatetime)}</p>
+							<div className={styles["pin-input-row"]}>
+								<strong>⇒在庫数の更新：</strong>
+								<select
+									name="storage"
+									defaultValue={myPin.storage}
+									style={{ width: "100px" }}
+								>
+									<option value="◎(すべて在庫十分)">◎(すべて在庫十分)</option>
+									<option value="〇(一部商品は品切れ)">〇(一部商品は品切れ)</option>
+									<option value="△(すべての商品が在庫僅少)">△(すべての商品が在庫僅少)</option>
+									<option value="×(完全在庫切れ)">×(完全在庫切れ)</option>
+								</select>
+							</div>
+							<button type="submit">更新してリロード</button>
+						</div>
+						</form>
 					</Popup>
 				</Marker>
 			)}
