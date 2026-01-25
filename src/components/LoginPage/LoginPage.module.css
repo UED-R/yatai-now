@@ -84,7 +84,7 @@
 }
 
 .login-loding {
-  color: #000055; /* Red color for error text */
+  color: #000077; /* Red color for error text */
   text-align: center;
   margin: -5px 0 5px 0; /* Adjust spacing */
   font-size: 0.9em;

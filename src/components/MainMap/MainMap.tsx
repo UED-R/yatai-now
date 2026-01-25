@@ -98,7 +98,7 @@ export default function MainMap() {
   const [pinData, setPins] = useState<any[]>([]); //配列型のuseState、初期値なし
   const defaultZoom = 19;
   const [zoomLevel, setZoomLevel] = useState(defaultZoom); //型指定なしのuseState、初期値は初期拡大率
-  const visibleGroup = (zoomLevel >= 19) ? "shop" : "area"; // グループ切替
+  const visibleGroup = (zoomLevel >= 20) ? "shop" : "area"; // グループ切替
   const bounds: [[number, number], [number, number]] = [
     // bounds: [[南西緯度, 南西経度], [北東緯度, 北東経度]]
     [36.108, 140.098], // 左下y,x
@@ -289,9 +289,9 @@ export default function MainMap() {
 
       return (
           <Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={myIcon}>
-            <Tooltip direction="top" offset={[0, -40]} permanent>
+            {zoomLevel >= 21 && (<Tooltip direction="top" offset={[0, -40]} opacity={0.8} permanent>
               <strong>{pin.name}</strong>
-            </Tooltip>
+            </Tooltip>)}
             <Popup autoPan={false}>
               <div>
                 <strong>{pin.name}</strong>
@@ -321,7 +321,7 @@ export default function MainMap() {
           <button className={`common-btn-header ${isTrackingLocation ? styles.danger : ""}`} onClick={toggleLocationTracking}>
             {isTrackingLocation ? "現在地の取得をやめる" : "現在地を取得"}
           </button>
-
+          <p className='common-header-text'>ズームでエリアピンとショップピンを切り替え</p>
         </div>
         <div className={styles["header-button-group"]}>
           <button className={"common-btn-header"} onClick={() => page_navigate(PAGES.LOGIN_PAGE)}>ログイン</button>

@@ -61,8 +61,7 @@ export function writePinData(eventId: string, newValues: any) {
 
   // --- 3. 不足しているkeyを追加 ---
   if (!("class" in newValues)) newValues.class = "shop";
-  if (!("description" in newValues)) newValues.description = "sample text";
-  if (!("areagroupid" in newValues)) newValues.areagroupid = "area01";
+  if (!("areagroupid" in newValues)) newValues.areagroupid = "area03";
   if (!("floor" in newValues)) newValues.floor = "1F";
 
   
