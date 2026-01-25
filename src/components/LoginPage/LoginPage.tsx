@@ -45,6 +45,7 @@ export default function LoginPage() {
     }
     setError("");
     setLoading(true);
+    await new Promise(res => setTimeout(res, 1000)); // ミリ秒待つ
 
     try{
       const usertemp = await userLogin(loginId, password);
@@ -57,10 +58,10 @@ export default function LoginPage() {
         page_navigate(PAGES.VEND_UPLOAD);
       } else {
         setError("ログインできません");
+        setLoading(false);
       }
     } catch(e){
       setError("ログイン中にエラーが発生しました");
-    }finally {
       setLoading(false);
     }
   };
@@ -78,6 +79,7 @@ export default function LoginPage() {
             type="text" 
             placeholder="ログインID"
             value={loginId}
+            disabled={loading}
             onChange={(e) => setLoginId(e.target.value)}
           />
           <input 
@@ -85,12 +87,12 @@ export default function LoginPage() {
             type="password" 
             placeholder="パスワード" 
             value={password}
+            disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {loading && (<p className={styles["login-loading"]}>ログイン処理中です…</p>)}
           {error && <p className={styles["login-error"]}>{error}</p>}
           
-          <button className={styles["btn"]} type="submit">ログイン</button>
+          <button className={styles["btn"]} type="submit" disabled={loading}>{loading ? "ログイン中…" : "ログイン"}</button>
         </form>
       </div>
     </div>

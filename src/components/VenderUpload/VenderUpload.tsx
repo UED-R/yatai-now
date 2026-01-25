@@ -44,8 +44,8 @@ export default function VenderUpload() {
     const eventid = "1" as string;
 	const [currentFloor, setCurrentFloor] = useState("1F");
     const defaultZoom = 19;
-    const [_zoomLevel, setZoomLevel] = useState(defaultZoom); // _zoomLevelとして使用しない変数を明示
-    const visibleGroup = (_zoomLevel >= 19) ? "shop" : "area"; // グループ切替
+    const [zoomLevel, setZoomLevel] = useState(defaultZoom);
+    const visibleGroup = (zoomLevel >= 20) ? "shop" : "area"; // グループ切替
     const bounds: [[number, number], [number, number]] = [
         // bounds: [[南西緯度, 南西経度], [北東緯度, 北東経度]]
         [36.108, 140.098], // 左下y,x
@@ -273,9 +273,9 @@ export default function VenderUpload() {
 			if(pin.floor !== currentFloor) return null;
 			return (
 				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={useIcon}>
-				<Tooltip direction="top" offset={[0, -40]} permanent>
-					<strong>{pin.name}</strong>
-				</Tooltip>
+				{zoomLevel >= 21 && (<Tooltip direction="top" offset={[0, -40]} opacity={0.8} permanent>
+              		<strong>{pin.name}</strong>
+            	</Tooltip>)}
 				<Popup>
 					<div>
 					<strong>{pin.name}</strong>
@@ -316,7 +316,7 @@ export default function VenderUpload() {
 
 			<MapContainer
 				ref={mapRef}
-				center={[36.110251, 140.100381]} // 初期位置の緯度経度(小数点以下6桁)
+				center={[36.1104, 140.1011]} // 初期位置の緯度経度(小数点以下6桁)
 				// 緯度が上下、経度が左右、つまり [y, x]
 				// 1mあたり緯度 : 0.000008983148616 ≒ 0.000009
 				// 1mあたり経度 : 0.000010966382364 ≒ 0.000011
