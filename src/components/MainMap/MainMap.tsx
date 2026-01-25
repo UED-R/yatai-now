@@ -241,13 +241,8 @@ export default function MainMap() {
               <strong>
                 {pin.name}（{shoplist.length}団体）
               </strong>
-              <br />
-              
-              {/*
               <p>概要：{pin.description}</p>
-              <p>管理団体：{pin.teamname}</p>
-              */}
-
+             
               {shoplist.length > 0 && (
                 <div>
                   <button

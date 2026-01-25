@@ -64,11 +64,11 @@ export default function VenderUpload() {
 		description: "",
 		teamname: "",
 		place: "",
-		type: "",
 		starttime: "",
 		endtime: "",
 		storage: "◎(すべて在庫十分)",
-		floor: "1F"
+		floor: "1F",
+		areagroupid: ""
 	});
 	
 	function clearNewPinData(){
@@ -78,11 +78,11 @@ export default function VenderUpload() {
 			description: "",
 			teamname: "",
 			place: "",
-			type: "",
 			starttime: "",
 			endtime: "",
 			storage: "◎(すべて在庫十分)",
-			floor: "1F"
+			floor: "1F",
+			areagroupid: ""
 		});
 	}
 
@@ -170,11 +170,11 @@ export default function VenderUpload() {
 				description: myPin.description,
 				teamname: myPin.teamname,
 				place: myPin.place,
-				type: myPin.type,
 				starttime: myPin.starttime,
 				endtime: myPin.endtime,
 				storage: myPin.storage,
-				floor: myPin.floor
+				floor: myPin.floor,
+				areagroupid: myPin.areagroupid
 			});
 		}
 		if (newPinData.floor === "") {
@@ -267,8 +267,6 @@ export default function VenderUpload() {
 					<strong>{pin.name}</strong>
 					<br />
 					<p>概要：{pin.description}</p>
-					{/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
-					<p>管理団体：{pin.teamname}</p>
 					{shoplist.length > 0 && (
 						<div>
 						<p>このエリアのお店：</p>
@@ -465,6 +463,17 @@ export default function VenderUpload() {
 							<option value="2F">2F</option>
 							<option value="3F">3F</option>
 							<option value="4F">4F</option>
+							</select>
+						</div>
+						<div className={styles["pin-input-row"]}>
+							<label>エリア：</label>
+							<select 
+								value={newPinData.areagroupid}
+								style={{width:"100px"}}
+								onChange={(e) => setNewPinData({ ...newPinData, areagroupid: e.target.value })}
+							>
+							<option value="area02">第２エリア</option>
+							<option value="area01">第３エリア</option>
 							</select>
 						</div>
 						<div className={styles["pin-input-row"]}>
