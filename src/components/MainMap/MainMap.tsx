@@ -295,13 +295,11 @@ export default function MainMap() {
             <Popup autoPan={false}>
               <div>
                 <strong>{pin.name}</strong>
-                <br />
-                <p>概要：{pin.description}</p>
-                {/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
-                <p>出店団体：{pin.teamname}</p>
-                <p>場所：{pin.place}</p>
-                <p>時間：{pin.starttime}~{pin.endtime}</p>
-                <p>おおよその在庫数：{pin.storage}</p>
+                {pin.description && (<p>概要：{pin.description}</p>)}
+                {pin.teamname && (<p>出店団体：{pin.teamname}</p>)}
+                {pin.place && (<p>場所：{pin.place}</p>)}
+                {(pin.starttime && pin.endtime) && (<p>時間：{pin.starttime}~{pin.endtime}</p>)}
+                <p>在庫数：{pin.storage}</p>
 						    <p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
               </div>
             </Popup>
@@ -354,16 +352,6 @@ export default function MainMap() {
             <Marker position={adjustedPosition} icon={myLocationIcon}>
               <Popup>現在地</Popup>
             </Marker>
-
-            {/* <Circle
-              center={adjustedPosition}
-              radius={10}
-              pathOptions={{
-                color: "#007bff",
-                opacity: 0.6,
-                fillOpacity: 0,
-              }}
-            /> */}
           </>
         )}
         {pinData.map((pin) => renderPinMarker(pin))}

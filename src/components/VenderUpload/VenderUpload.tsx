@@ -58,33 +58,7 @@ export default function VenderUpload() {
     const [isCreating, setIsCreating] = useState(false);
 	const [editStorage, setEditStorage] = useState("");
     const [newPinPos, setNewPinPos] = useState<[number, number] | null>(null);
-	const [newPinData, setNewPinData] = useState({
-		name: "",
-		description: "",
-		teamname: "",
-		place: "",
-		starttime: "",
-		endtime: "",
-		storage: "◎(すべて在庫十分)",
-		floor: "1F",
-		areagroupid: "area01"
-	});
   	const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
-	
-	function clearNewPinData(){
-        setNewPinPos(null);
-		setNewPinData({
-			name: "",
-			description: "",
-			teamname: "",
-			place: "",
-			starttime: "",
-			endtime: "",
-			storage: "◎(すべて在庫十分)",
-			floor: "1F",
-			areagroupid: "area01"
-		});
-	}
 
 	function formatUpdateTime(isoString?: string) {
 		if (!isoString) return "日時不明";
@@ -171,28 +145,6 @@ export default function VenderUpload() {
 		}
 	}, [isCreating]);
 
-	useEffect(() => {
-		if (myPin) {
-			setNewPinData({
-				name: myPin.name,
-				description: myPin.description,
-				teamname: myPin.teamname,
-				place: myPin.place,
-				starttime: myPin.starttime,
-				endtime: myPin.endtime,
-				storage: myPin.storage,
-				floor: myPin.floor,
-				areagroupid: myPin.areagroupid
-			});
-		}
-		if (newPinData.floor === "") {
-			setNewPinData({ ...newPinData, floor: "1F" })
-		}
-		if (newPinData.storage === "") {
-			setNewPinData({ ...newPinData, storage: "◎(すべて在庫十分)" })
-		}
-	}, [myPin]);
-
 	// ピン作成モードで地図クリックしたとき
 	function CreatePinHandler({ isCreating }: { isCreating: boolean }) {
 		useMapEvents({
@@ -232,11 +184,11 @@ export default function VenderUpload() {
     	setIsUpdating(true);
 		deletePin(eventid+"/"+pinid);
 		await sleep(300);
-		clearNewPinData();
+		setNewPinPos(null);
 		setMyPin(null);
-		setIsCreating(false);
 		const auth = getAuth();
 		await allPinFetch(auth.currentUser);
+		setIsCreating(false);
     	setIsUpdating(false);
 	}
 
@@ -329,11 +281,10 @@ export default function VenderUpload() {
 					<strong>{pin.name}</strong>
 					<br />
 					<p>概要：{pin.description}</p>
-					{/* <img src={pin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 					<p>出店団体：{pin.teamname}</p>
 					<p>場所：{pin.place}</p>
 					<p>時間：{pin.starttime}~{pin.endtime}</p>
-					<p>おおよその在庫数：{pin.storage}</p>
+					<p>在庫数：{pin.storage}</p>
 					<p>更新日時：{formatUpdateTime(pin.updatetime)}</p>
 					</div>
 				</Popup>
@@ -407,11 +358,13 @@ export default function VenderUpload() {
 						<p>出店団体：{myPin.teamname}</p>
 						<p>場所：{myPin.place}</p>
 						<p>階層：{myPin.floor}</p>
+						<p>エリア：{myPin.areagroupid === "area03" ? "第３エリア"
+							: myPin.areagroupid === "area02" ? "第２エリア" : ""}</p>
 						<p>時間：{myPin.starttime}~{myPin.endtime}</p>
 						<p>現在の在庫数：{myPin.storage}</p>
 						<p>最新の更新日時：{formatUpdateTime(myPin.updatetime)}</p>
 						<div className={styles["pin-input-row"]}>
-						<strong>⇒在庫の更新：</strong>
+						<strong>⇒在庫数の更新：</strong>
 						<select
 							style={{ width: "100px" }}
 							value={editStorage}
@@ -427,7 +380,7 @@ export default function VenderUpload() {
 							if(editStorage !== ""){
 								saveNewPinToDB({ ...myPin, storage: editStorage });
 								setIsCreating(false);
-								clearNewPinData();
+								setNewPinPos(null);
 							}
 						}}>更新してリロード</button>
 					</div>
@@ -448,106 +401,125 @@ export default function VenderUpload() {
 					<strong>編集中のピン</strong>
 				</Tooltip>
 				<Popup>
-					<div style={{ width: "280px" }}>
-						<div className={styles["pin-input-row"]}>
-							<label>新しいピン名：</label>
-							<input 
-							type="text"
-							value={newPinData.name}
-							onChange={(e) => setNewPinData({ ...newPinData, name: e.target.value })}
-							/>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>説明：</label>
-							<input 
-							type="text"
-							value={newPinData.description}
-							onChange={(e) => setNewPinData({ ...newPinData, description: e.target.value })}
-							/>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>出店団体：</label>
-							<input 
-							type="text"
-							value={newPinData.teamname ? newPinData.teamname : (user?.email ? user.email.split("@")[0] : "") }
-							onChange={(e) => setNewPinData({ ...newPinData, teamname: e.target.value })}
-							/>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>場所：</label>
-							<input 
-							type="text"
-							value={newPinData.place}
-							onChange={(e) => setNewPinData({ ...newPinData, place: e.target.value })}
-							/>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>階層：</label>
-							<select 
-								value={newPinData.floor}
-								style={{width:"100px"}}
-								onChange={(e) => setNewPinData({ ...newPinData, floor: e.target.value })}
-							>
-							<option value="1F">1F</option>
-							<option value="2F">2F</option>
-							<option value="3F">3F</option>
-							<option value="4F">4F</option>
-							</select>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>エリア：</label>
-							<select 
-								value={newPinData.areagroupid}
-								style={{width:"100px"}}
-								onChange={(e) => setNewPinData({ ...newPinData, areagroupid: e.target.value })}
-							>
-							<option value="area02">第２エリア</option>
-							<option value="area01">第３エリア</option>
-							</select>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>時間</label>
-							<input 
-							type="text"
-							value={newPinData.starttime}
-							style={{width:"50px"}}
-							onChange={(e) => setNewPinData({ ...newPinData, starttime: e.target.value })}
-							/>
-							<label>~</label>
-							<input 
-							type="text"
-							value={newPinData.endtime}
-							style={{width:"50px"}}
-							onChange={(e) => setNewPinData({ ...newPinData, endtime: e.target.value })}
-							/>
-						</div>
-						<div className={styles["pin-input-row"]}>
-							<label>在庫：</label>
-							<select 
-								value={newPinData.storage}
-								style={{width:"100px"}}
-								onChange={(e) => setNewPinData({ ...newPinData, storage: e.target.value })}
-							>
-							<option value="◎(すべて在庫十分)">◎(すべて在庫十分)</option>
-							<option value="〇(一部商品は品切れ)">〇(一部商品は品切れ)</option>
-							<option value="△(すべての商品が在庫僅少)">△(すべての商品が在庫僅少)</option>
-							<option value="×(完全在庫切れ)">×(完全在庫切れ)</option>
-							</select>
-						</div>
+					<form style={{ width: "280px" }}
+					onSubmit={(e) => {
+						e.preventDefault();
 
-						<button onClick={() => {
-							if(newPinData.name !==""){
-								saveNewPinToDB({y_ido: newPinPos[0], x_keido: newPinPos[1], ...newPinData});
-								setIsCreating(false);
-								clearNewPinData();
-							}
-						}}>更新してリロード</button>
+						const fd = new FormData(e.currentTarget);
+						const data = {
+							name: 		 fd.get("pinname")?.toString() 		?? "",
+							description: fd.get("description")?.toString()	?? "",
+							teamname: 	 fd.get("teamname")?.toString()		?? "",
+							place: 		 fd.get("place")?.toString() 		?? "",
+							floor: 		 fd.get("floor")?.toString() 		?? "",
+							areagroupid: fd.get("areagroupid")?.toString() 	?? "",
+							starttime:   fd.get("starttime")?.toString() 	?? "",
+							endtime: 	 fd.get("endtime")?.toString() 		?? "",
+							storage: 	 fd.get("storage")?.toString() 		?? "",
+						};
 
-						<button onClick={() => {
+						if (data.name !== "") {
+							saveNewPinToDB({
+								y_ido: newPinPos[0],
+								x_keido: newPinPos[1],
+								...data,
+							});
 							setIsCreating(false);
-							clearNewPinData();
-						}}>キャンセル</button>
+							setNewPinPos(null);
+						}
+					}}
+					>
+					<div className={styles["pin-input-row"]}>
+						<label>新しいピン名：</label>
+						<input type="text" name="pinname" defaultValue={myPin?.name} />
 					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>説明：</label>
+						<input type="text" name="description" defaultValue={myPin?.description} />
+					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>出店団体：</label>
+						<input
+						type="text"
+						name="teamname"
+						defaultValue={
+							myPin?.teamname ??
+							(user?.email ? user.email.split("@")[0] : "")
+						}
+						/>
+					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>場所：</label>
+						<input type="text" name="place" defaultValue={myPin?.place} />
+					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>階層：</label>
+						<select name="floor" defaultValue={myPin?.floor} style={{ width: "100px" }}>
+						<option value="1F">1F</option>
+						<option value="2F">2F</option>
+						<option value="3F">3F</option>
+						<option value="4F">4F</option>
+						</select>
+					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>エリア：</label>
+						<select
+						name="areagroupid"
+						defaultValue={myPin?.areagroupid}
+						style={{ width: "100px" }}
+						>
+						<option value="area03">第３エリア</option>
+						<option value="area02">第２エリア</option>
+						</select>
+					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>時間</label>
+						<input
+						type="text"
+						name="starttime"
+						defaultValue={myPin?.starttime}
+						style={{ width: "50px" }}
+						/>
+						<label>~</label>
+						<input
+						type="text"
+						name="endtime"
+						defaultValue={myPin?.endtime}
+						style={{ width: "50px" }}
+						/>
+					</div>
+
+					<div className={styles["pin-input-row"]}>
+						<label>在庫数：</label>
+						<select
+						name="storage"
+						defaultValue={myPin?.storage}
+						style={{ width: "100px" }}
+						>
+						<option value="◎(すべて在庫十分)">◎(すべて在庫十分)</option>
+						<option value="〇(一部商品は品切れ)">〇(一部商品は品切れ)</option>
+						<option value="△(すべての商品が在庫僅少)">△(すべての商品が在庫僅少)</option>
+						<option value="×(完全在庫切れ)">×(完全在庫切れ)</option>
+						</select>
+					</div>
+
+					<button type="submit">更新してリロード</button>
+
+					<button
+						type="button"
+						onClick={() => {
+							setIsCreating(false);
+							setNewPinPos(null);
+						}}
+					>キャンセル</button>
+					</form>
+
 				</Popup>
 				</Marker>
 			)}
