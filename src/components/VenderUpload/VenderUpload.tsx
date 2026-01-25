@@ -43,7 +43,7 @@ const myIcon = L.icon({
 export default function VenderUpload() {
     const eventid = "1" as string;
 	const [currentFloor, setCurrentFloor] = useState("1F");
-    const defaultZoom = 18;
+    const defaultZoom = 19;
     const [_zoomLevel, setZoomLevel] = useState(defaultZoom); // _zoomLevelとして使用しない変数を明示
     const visibleGroup = (_zoomLevel >= 19) ? "shop" : "area"; // グループ切替
     const bounds: [[number, number], [number, number]] = [
@@ -53,7 +53,6 @@ export default function VenderUpload() {
     ];
     const [otherPins, setOtherPins] = useState<any[]>([]);
     const [myPin, setMyPin] = useState<any | null>(null);
-    // const [myNewPin, setMyNewPin] = useState<any | null>(null);
   	const [user, setUser] = useState<User | null>(null);
 	const [isUpdating, setIsUpdating] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
@@ -68,8 +67,9 @@ export default function VenderUpload() {
 		endtime: "",
 		storage: "◎(すべて在庫十分)",
 		floor: "1F",
-		areagroupid: ""
+		areagroupid: "area01"
 	});
+  	const [openShopList, setOpenShopList] = useState<{ [key: string]: boolean }>({});
 	
 	function clearNewPinData(){
         setNewPinPos(null);
@@ -82,7 +82,7 @@ export default function VenderUpload() {
 			endtime: "",
 			storage: "◎(すべて在庫十分)",
 			floor: "1F",
-			areagroupid: ""
+			areagroupid: "area01"
 		});
 	}
 
@@ -99,8 +99,6 @@ export default function VenderUpload() {
 			minute: "2-digit",
 		});
 	}
-
-
 		
 	// ズームイベントの処理
 	function ZoomWatcher() {
@@ -154,6 +152,16 @@ export default function VenderUpload() {
 		return () => unsubscribe();
 	}, []);
 
+
+	// 自動ポップアップの処理
+	const markerRef = useRef<L.Marker | null>(null);
+	const openedRef = useRef(false);
+	useEffect(() => {
+		if (!markerRef.current || openedRef.current) return;
+		openedRef.current = true;
+		markerRef.current.openPopup();
+	}, [markerRef.current]);
+
 	// マウスカーソル切替
 	const mapRef = useRef<L.Map>(null);
 	useEffect(() => { //初回含め、isCreatingが更新されたときに実行
@@ -185,12 +193,11 @@ export default function VenderUpload() {
 		}
 	}, [myPin]);
 
-
 	// ピン作成モードで地図クリックしたとき
 	function CreatePinHandler({ isCreating }: { isCreating: boolean }) {
 		useMapEvents({
 			click(e) {
-			if (!isCreating) return;
+				if (!isCreating) return;
 				setNewPinPos([e.latlng.lat, e.latlng.lng]);
 			}
 		});
@@ -202,13 +209,13 @@ export default function VenderUpload() {
 		await sleep(500);
 		const auth = getAuth();
 		signOut(auth)
-		.then(() => {
-			page_navigate(PAGES.MAIN_MAP, "1");
-		})
-		.catch((error) => {
-			setIsUpdating(false);
-			console.error("ログアウト失敗", error);
-		});
+			.then(() => {
+				page_navigate(PAGES.MAIN_MAP, "1");
+			})
+			.catch((error) => {
+				setIsUpdating(false);
+				console.error("ログアウト失敗", error);
+			});
 	}
 
   	const getMapByFloor = () => {
@@ -250,37 +257,66 @@ export default function VenderUpload() {
 		} else if(eventid === "1"){
 			if(pin.class !== visibleGroup) return null;
 			if(pin.class === "area"){
-			const shoplist = otherPins
-				.filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
-				return temp_pindata.class === "shop" && temp_pindata.areagroupid === pin.id;
-				})
-				.map(function(shop) {
-				return shop.name;
-				});
-			return (
-				<Marker key={pin.ownerid} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
-				<Tooltip direction="top" offset={[0, -40]} permanent>
-					<strong>{pin.name}</strong>
-				</Tooltip>
-				<Popup>
-					<div>
-					<strong>{pin.name}</strong>
-					<br />
-					<p>概要：{pin.description}</p>
-					{shoplist.length > 0 && (
-						<div>
-						<p>このエリアのお店：</p>
-						<ul>
-							{shoplist.map(function(shopName) {
-							return <li key={shopName}>{shopName}</li>;
-							})}
-						</ul>
-						</div>
-					)}
-					</div>
-				</Popup>
-				</Marker>
-			);
+					const shoplist = [...(myPin ? [myPin] : []), ...otherPins] //初回のみ、myPinがnullなので除外する
+						.filter(function(temp_pindata) { // areaIDが同じ、shopピンの名前だけ抜き出す
+							return temp_pindata.class === "shop" && temp_pindata.areagroupid === pin.id;
+						})
+						.map(function(shop) {
+							return shop.name; //ここで座標も取得するとクリックで店ピンを開けるかも
+						});
+					return (
+						<Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
+						<Tooltip direction="top" offset={[0, -40]} permanent>
+							<strong>
+								{pin.name}（{shoplist.length}団体）
+							</strong>
+						</Tooltip>
+				
+						<Popup autoPan={false}>
+							<strong>
+								{pin.name}（{shoplist.length}団体）
+							</strong>
+							<p>概要：{pin.description}</p>
+							
+							{shoplist.length > 0 && (
+								<div>
+								<button
+									onClick={() =>
+										setOpenShopList(prev => ({
+											...prev,
+											[pin.id]: !prev[pin.id], // クリックで反転
+										}))
+									}
+									style={{ marginTop: "6px", cursor: "pointer" }}
+								>
+									{!!openShopList[pin.id] ? "▲ 店舗を隠す" : "▼ 店舗を表示"}
+								</button>
+				
+								{/* openShopList[pin.id] が true の時だけ店舗リスト表示 */}
+								{!!openShopList[pin.id] && (
+									<div
+									style={{
+										maxHeight: "150px", // 高さ制限
+										overflowY: "auto",  // 縦スクロール
+										marginTop: "6px",
+										border: "1px solid #ccc",
+										padding: "4px",
+										borderRadius: "4px",
+										backgroundColor: "#fafafa"
+									}}
+									>
+									<ul style={{ margin: 0, paddingLeft: "16px" }}>
+										{shoplist.map((shopName) => (
+										<li key={shopName}>{shopName}</li>
+										))}
+									</ul>
+									</div>
+								)}
+								</div>
+							)}
+						</Popup>
+					</Marker>
+				  );
 			}else if(pin.class === "shop"){
 			if(pin.floor !== currentFloor) return null;
 			return (
@@ -359,13 +395,7 @@ export default function VenderUpload() {
 
 			{/* 自分の既存ピン (新しいピンの編集中は非表示)  在庫のみ更新できる*/}
 			{!isCreating && myPin && (
-				<Marker position={[myPin.y_ido, myPin.x_keido]} icon={myIcon} ref={(marker) => {
-						if (marker) {
-							setTimeout(() => {
-								marker.openPopup();//一瞬待って自動ポップアップ
-							}, 0);
-						}
-					}}>
+				<Marker position={[myPin.y_ido, myPin.x_keido]} icon={myIcon} ref={markerRef}>
 					<Tooltip direction="top" offset={[0, -30]} permanent>
 						<strong>編集中のピン</strong>
 					</Tooltip>
@@ -374,7 +404,6 @@ export default function VenderUpload() {
 						<strong>{myPin.name}</strong>
 						<br />
 						<p>概要：{myPin.description}</p>
-						{/* <img src={myPin.imageURL} style={{ width: "100%", maxWidth: "300px", height: "auto" }}/> */}
 						<p>出店団体：{myPin.teamname}</p>
 						<p>場所：{myPin.place}</p>
 						<p>階層：{myPin.floor}</p>
@@ -411,7 +440,7 @@ export default function VenderUpload() {
 				<Marker position={newPinPos} icon={myIcon} ref={(marker) => {
 						if (marker) {
 							setTimeout(() => {
-								marker.openPopup();//一瞬待って自動ポップアップ
+								marker.openPopup();
 							}, 0);
 						}
 					}}>
@@ -440,7 +469,7 @@ export default function VenderUpload() {
 							<label>出店団体：</label>
 							<input 
 							type="text"
-							value={newPinData.teamname}
+							value={newPinData.teamname ? newPinData.teamname : (user?.email ? user.email.split("@")[0] : "") }
 							onChange={(e) => setNewPinData({ ...newPinData, teamname: e.target.value })}
 							/>
 						</div>

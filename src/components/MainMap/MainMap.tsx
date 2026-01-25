@@ -226,7 +226,7 @@ export default function MainMap() {
             return temp_pindata.class === "shop" && temp_pindata.areagroupid === pin.id;
           })
           .map(function(shop) {
-            return shop.name;
+            return shop.name; //ここで座標も取得するとクリックで店ピンを開けるかも
           });
         return (
           <Marker key={pin.id} position={[pin.y_ido, pin.x_keido]} icon={defaultIcon}>
