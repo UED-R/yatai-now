@@ -350,14 +350,13 @@ export default function VenderUpload() {
 						<strong>編集中のピン</strong>
 					</Tooltip>
 					<Popup>
-						<form
-						onSubmit={(e) => {
+						<form onSubmit={(e) => {
 							e.preventDefault();
 
 							const fd = new FormData(e.currentTarget);
 							const newStorage = fd.get("storage") as string;
 
-							if (newStorage && newStorage !== myPin.storage) {
+							if (myPin.storage === "" || (newStorage && newStorage !== myPin.storage)) {
 								saveNewPinToDB({ ...myPin, storage: newStorage });
 								setIsCreating(false);
 								setNewPinPos(null);
